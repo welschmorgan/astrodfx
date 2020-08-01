@@ -4,7 +4,7 @@ add_library(quasarfx-core
         Engine.cxx Engine.h
         String.h
         Window.cxx Window.h
-        Renderer.h)
+        Renderer.cxx Renderer.h)
 
 target_include_directories(quasarfx-core PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include)
 

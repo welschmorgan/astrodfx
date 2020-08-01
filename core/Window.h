@@ -6,6 +6,7 @@
 #define QUASARFX_CORE_WINDOW_H
 
 #include <memory>
+#include <vector>
 #include "String.h"
 
 namespace quasar {
@@ -13,6 +14,7 @@ namespace quasar {
 		class Window {
 		protected:
 			String          mName;
+			bool            mInitialized;
 
 		public:
 			Window(const String &name);
@@ -24,11 +26,16 @@ namespace quasar {
 			const String    &getName() const noexcept;
 			void            setName(const String &name);
 
+			virtual bool    isInitialized();
+
 			virtual void    initialize() = 0;
-			virtual void    update() = 0;
+			virtual void    shutdown() = 0;
+
+			virtual void    update(double dt);
 		};
 
 		using SharedWindow = std::shared_ptr<Window>;
+		using SharedWindowList = std::vector<SharedWindow>;
 	}
 }
 #endif //QUASARFX_CORE_WINDOW_H

@@ -3,22 +3,29 @@
 //
 
 #include "render/GLRenderer.h"
+#include "GLRenderer.h"
+
 
 namespace quasar {
 	using namespace core;
 
 	namespace render {
-		SharedWindow GLRenderer::createWindow(const std::string &name) {
-			auto win = new GLWindow(name);
-			try {
-				win->initialize();
-			} catch (std::exception &ex) {
-				if (win) {
-					delete win;
-				}
-				throw;
+		void GLRenderer::initialize() {
+			if (mInitialized) {
+				throw std::runtime_error("GLRenderer already initialized");
 			}
-			return core::SharedWindow((core::Window *) win);
+			mInitialized = true;
+		}
+
+		void GLRenderer::shutdown() {
+			if (!mInitialized) {
+				return;
+			}
+			mInitialized = false;
+		}
+
+		SharedWindow GLRenderer::createWindow(const std::string &name) {
+			return addWindow(std::static_pointer_cast<Window>(std::make_shared<GLWindow>(name)));
 		}
 	}
 }

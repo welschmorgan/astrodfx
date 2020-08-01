@@ -17,8 +17,10 @@ namespace quasar {
 
 		void GLWindow::initialize() {
 		}
+		void GLWindow::shutdown() {
+		}
 
-		void GLWindow::update() {
+		void GLWindow::update(double dt) {
 		}
 	}
 }

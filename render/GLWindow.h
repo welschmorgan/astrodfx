@@ -20,7 +20,8 @@ namespace quasar {
 			GLWindow            &operator=(const GLWindow &rhs) = delete;
 
 			void                initialize();
-			void                update();
+			void                shutdown();
+			void                update(double update);
 		};
 
 		using SharedGLWindow = std::shared_ptr<GLWindow>;

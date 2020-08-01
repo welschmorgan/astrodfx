@@ -9,6 +9,7 @@ namespace quasar {
 	namespace core {
 		Window::Window(const String &name)
 			: mName(name)
+			, mInitialized(false)
 		{}
 
 		const String &Window::getName() const noexcept {
@@ -17,6 +18,14 @@ namespace quasar {
 
 		void Window::setName(const String &name) {
 			mName = name;
+		}
+
+		bool Window::isInitialized() {
+			return mInitialized;
+		}
+
+		void Window::update(double dt) {
+
 		}
 	}
 }

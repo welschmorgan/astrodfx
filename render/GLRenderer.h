@@ -21,7 +21,10 @@ namespace quasar {
 
 			GLRenderer &operator=(const GLRenderer &rhs) = delete;
 
-			core::SharedWindow createWindow(const std::string &name) override;
+			void                initialize() override;
+			void                shutdown() override;
+
+			core::SharedWindow  createWindow(const std::string &name) override;
 		};
 
 		using SharedGLRenderer = std::shared_ptr<GLRenderer>;
