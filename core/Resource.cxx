@@ -2,6 +2,7 @@
 // Created by darkboss on 8/1/20.
 //
 
+#include <iostream>
 #include "Resource.h"
 
 namespace quasar {
@@ -23,8 +24,10 @@ namespace quasar {
 		{}
 
 		Resource::~Resource() noexcept {
-			if (mStage >= ResourceStage::Created) {
+			try {
 				destroy();
+			} catch (std::exception &ex) {
+				std::cerr << mName << ": failed to destroy resource: " << ex.what() << std::endl;
 			}
 		}
 

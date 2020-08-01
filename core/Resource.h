@@ -27,7 +27,7 @@ namespace quasar {
 			Resource(const Resource &rhs) = delete;
 			virtual ~Resource() noexcept;
 
-			Resource            &operator=(const Resource &rhs) = delete;
+			Resource                &operator=(const Resource &rhs) = delete;
 
 			ResourceFactory         *getFactory() noexcept;
 			const ResourceFactory   *getFactory() const noexcept;

@@ -10,6 +10,9 @@
 
 namespace quasar {
 	namespace core {
+		/**
+		 * @brief The main engine class, aggregates everything and orchestrates initialization.
+		 */
 		class Engine {
 		protected:
 			bool                    mInitialized;

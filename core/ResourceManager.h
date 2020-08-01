@@ -10,6 +10,9 @@
 
 namespace quasar {
 	namespace core {
+		/**
+		 * @brief The ResourceManager class allows easy resource manipulation.
+		 */
 		class ResourceManager {
 		protected:
 			SharedResourceFactoryList   mFactories;
@@ -26,8 +29,11 @@ namespace quasar {
 			SharedResourceFactory               &addFactory(const SharedResourceFactory &f);
 			SharedResourceFactory               getFactoryByName(const String &name) const;
 			SharedResourceFactoryList           getFactoriesByType(const ResourceType &t) const;
+			SharedResourceFactoryList           getFactoriesByExtension(const String &ext) const;
 			bool                                removeFactory(SharedResourceFactory &f);
 
+			SharedResource                      loadResource(const String &path, const String &name = String(), const StringMap<String> &properties = StringMap<String>());
+			SharedResource                      createResource(const String &name, const ResourceType &t, const StringMap<String> &properties = StringMap<String>());
 			const SharedResourceList            &getResources() const noexcept;
 			SharedResource                      &addResource(const SharedResource &f);
 			SharedResource                      getResourceByName(const String &name) const;

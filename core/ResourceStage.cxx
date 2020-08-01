@@ -35,31 +35,6 @@ namespace quasar {
 			return !(*this == rhs);
 		}
 
-		OStream                 &operator<<(OStream &os, const ResourceStage &rt) {
-			return os << rt.getName();
-		}
-
-		IStream                 &operator>>(IStream &is, ResourceStage &rt) {
-			String              word;
-			StringStream        ss2i;
-			long                s2i;
-
-			is >> word;
-			ss2i.clear();
-			ss2i << word;
-			ss2i >> s2i;
-
-			for (auto t: ResourceStage::All) {
-				if (word == t.getName() || s2i == t.getValue()) {
-					rt = ResourceStage(t);
-					break;
-				}
-			}
-
-			return is;
-		}
-
-
 		ResourceStage ResourceStage::next() const noexcept {
 			if (mValue == None.mValue) {
 				return Created;
@@ -101,3 +76,28 @@ namespace quasar {
 		}
 	}
 }
+
+quasar::core::OStream                 &operator<<(quasar::core::OStream &os, const quasar::core::ResourceStage &rt) {
+	return os << rt.getName();
+}
+
+quasar::core::IStream                 &operator>>(quasar::core::IStream &is, quasar::core::ResourceStage &rt) {
+	quasar::core::String              word;
+	quasar::core::StringStream        ss2i;
+	long                s2i;
+
+	is >> word;
+	ss2i.clear();
+	ss2i << word;
+	ss2i >> s2i;
+
+	for (auto t: quasar::core::ResourceStage::All) {
+		if (word == t.getName() || s2i == t.getValue()) {
+			rt = quasar::core::ResourceStage(t);
+			break;
+		}
+	}
+
+	return is;
+}
+

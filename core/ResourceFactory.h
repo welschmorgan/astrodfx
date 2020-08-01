@@ -12,25 +12,31 @@
 namespace quasar {
 	namespace core {
 		class Resource;
+		using SharedResource = std::shared_ptr<Resource>;
 
 		class ResourceFactory {
 		public:
 			using priority_type                 = unsigned short;
 
 		protected:
+			bool                                mInitialized;
 			String                              mName;
 			ResourceType                        mType;
 			priority_type                       mPriority;
 
 		public:
 			ResourceFactory(const String &name, const ResourceType &t, priority_type priority = priority_type(-1));
-			virtual ~ResourceFactory() noexcept = default;
+			virtual ~ResourceFactory() noexcept;
 
+			virtual bool                        isInitialized() const noexcept;
 			virtual String                      getName() const noexcept;
 			virtual ResourceType                getType() const noexcept;
 			virtual priority_type               getPriority() const noexcept;
 
-			virtual Resource                    *create(const String &name, const String &path, const StringMap <String> &properties) = 0;
+			virtual void                        initialize();
+			virtual void                        shutdown();
+
+			virtual SharedResource              create(const String &name, const String &path, const StringMap<String> &properties) = 0;
 			virtual void                        destroy(Resource &res) = 0;
 		};
 
