@@ -4,8 +4,12 @@ add_library(quasarfx-core
         Engine.cxx Engine.h
         String.h
         Window.cxx Window.h
-        Renderer.cxx Renderer.h)
+        Renderer.cxx Renderer.h
+        Viewport.cxx Viewport.h)
 
 target_include_directories(quasarfx-core PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 #target_link_libraries(quasarfx-core)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_UNIT_TESTS)
+    add_subdirectory(tests)
+endif()

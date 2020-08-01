@@ -8,20 +8,28 @@
 #include <memory>
 #include <core/Window.h>
 #include <core/String.h>
+#include <SDL2/SDL_video.h>
+#include <SDL2/SDL_render.h>
 
 namespace quasar {
 	namespace render {
 		class GLWindow: public core::Window {
+		protected:
+			SDL_Window          *mWindow;
+			SDL_Renderer        *mRenderer;
 		public:
 			GLWindow(const core::String &name);
 			GLWindow(const GLWindow &rhs) = delete;
-			virtual ~GLWindow() = default;
+			virtual ~GLWindow() noexcept;
 
 			GLWindow            &operator=(const GLWindow &rhs) = delete;
 
-			void                initialize();
-			void                shutdown();
-			void                update(double update);
+			void                initialize() override;
+			void                shutdown() override;
+			void                update(double update) override;
+
+			SDL_Window          *getSDLWindow() noexcept;
+			SDL_Renderer        *getSDLRenderer() noexcept;
 		};
 
 		using SharedGLWindow = std::shared_ptr<GLWindow>;

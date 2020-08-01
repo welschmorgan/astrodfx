@@ -27,6 +27,8 @@ namespace quasar {
 			virtual void                initialize() = 0;
 			virtual void                shutdown() = 0;
 
+			virtual void                update(double dt);
+
 			const String                &getName() const noexcept;
 			bool                        isInitialized() const noexcept;
 

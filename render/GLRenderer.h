@@ -15,14 +15,16 @@ namespace quasar {
 	namespace render {
 		class GLRenderer: public core::Renderer {
 		public:
-			GLRenderer() = default;
+			GLRenderer();
 			GLRenderer(const GLRenderer &rhs) = delete;
-			virtual ~GLRenderer() = default;
+			virtual ~GLRenderer();
 
 			GLRenderer &operator=(const GLRenderer &rhs) = delete;
 
 			void                initialize() override;
 			void                shutdown() override;
+
+			void                update(double dt) override;
 
 			core::SharedWindow  createWindow(const std::string &name) override;
 		};

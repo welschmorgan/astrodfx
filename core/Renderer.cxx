@@ -62,5 +62,11 @@ namespace quasar {
 			}
 			return false;
 		}
+
+		void Renderer::update(double dt) {
+			for (auto w: mWindows) {
+				w->update(dt);
+			}
+		}
 	}
 }
