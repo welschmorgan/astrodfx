@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.1...3.16)
 
+# Test: Path
+add_executable(quasarfx-core-test-path TestPath.cxx)
+target_include_directories(quasarfx-core-test-path PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/core)
+target_link_libraries(quasarfx-core-test-path quasarfx-core)
+add_test(NAME QuasarFXCoreTestPath COMMAND quasarfx-core-test-path)
+
 # Test: ResourceType
 add_executable(quasarfx-core-test-resource-type TestResourceType.cxx)
 target_include_directories(quasarfx-core-test-resource-type PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/core)
