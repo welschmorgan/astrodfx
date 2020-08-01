@@ -39,7 +39,7 @@ namespace quasar {
 			for (auto it = mWindows.begin(); it != mWindows.end(); it++) {
 				if (it->get()->getName() == name) {
 					mWindows.erase(it);
-					break;
+					return true;
 				}
 			}
 			return false;

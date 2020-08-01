@@ -6,18 +6,34 @@
 #define QUASARFX_CORE_H
 
 #include "Renderer.h"
+#include "ResourceManager.h"
 
 namespace quasar {
 	namespace core {
 		class Engine {
+		protected:
+			bool                    mInitialized;
+			SharedRenderer          mRenderer;
+			SharedResourceManager   mResourceManager;
+
 		public:
-			Engine() = default;
+			Engine();
 			Engine(const Engine &rhs) = delete;
-			virtual ~Engine() noexcept = default;
+			virtual ~Engine() noexcept;
 
-			Engine      &operator=(const Engine &rhs) = delete;
+			Engine                  &operator=(const Engine &rhs) = delete;
 
-			void        setRenderer(const SharedRenderer &r);
+			void                    loadConfig(const String &path);
+
+			void                    initialize();
+			bool                    isInitialized() const noexcept;
+			void                    shutdown();
+
+			void                    setRenderer(const SharedRenderer &r) noexcept;
+			SharedRenderer          getRenderer() const noexcept;
+
+			void                    setResourceManager(const SharedResourceManager &r) noexcept;
+			SharedResourceManager   getResourceManager() const noexcept;
 		};
 	}
 }
