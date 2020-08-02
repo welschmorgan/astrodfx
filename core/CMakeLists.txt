@@ -7,6 +7,7 @@ add_library(quasarfx-core
         Renderer.cxx Renderer.h
         Viewport.cxx Viewport.h
         Path.cxx Path.h
+        Collection.cxx Collection.h
         Resource.cxx Resource.h
         ResourceType.cxx ResourceType.h
         ResourceStage.cxx ResourceStage.h
