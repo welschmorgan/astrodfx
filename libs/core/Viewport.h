@@ -6,6 +6,8 @@
 #define QUASARFX_VIEWPORT_H
 
 #include "String.h"
+#include "Collection.h"
+#include <memory>
 
 namespace quasar {
 	namespace core {
@@ -30,6 +32,9 @@ namespace quasar {
 			virtual void    shutdown() = 0;
 			virtual void    update(double dt);
 		};
+
+		using SharedViewport            = std::shared_ptr<Viewport>;
+		using SharedViewportList        = Collection<SharedViewport>;
 	}
 }
 

@@ -8,13 +8,16 @@
 #include <memory>
 #include <vector>
 #include "String.h"
+#include "Collection.h"
+#include "Viewport.h"
 
 namespace quasar {
 	namespace core {
 		class Window {
 		protected:
-			String          mName;
-			bool            mInitialized;
+			String              mName;
+			bool                mInitialized;
+			SharedViewportList  mViewports;
 
 		public:
 			Window(const String &name);
@@ -25,6 +28,12 @@ namespace quasar {
 
 			const String    &getName() const noexcept;
 			void            setName(const String &name);
+
+			SharedViewport      &addViewport(const SharedViewport &v);
+			bool                hasViewport(const String &name) const;
+			SharedViewport      getViewport(const String &name) const;
+			SharedViewportList  getViewports() const;
+			SharedViewport      removeViewport(const String &name);
 
 			virtual bool    isInitialized();
 
