@@ -18,6 +18,7 @@ add_library(quasarfx-core
         ResourcePriority.cxx ResourcePriority.h)
 
 target_link_libraries(quasarfx-core stdc++fs)
+
 target_include_directories(quasarfx-core PRIVATE ${CMAKE_SOURCE_DIR}/libs ${CMAKE_SOURCE_DIR}/libs/core ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 #target_link_libraries(quasarfx-core)
