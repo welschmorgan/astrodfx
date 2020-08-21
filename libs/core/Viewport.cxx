@@ -7,9 +7,10 @@
 
 namespace quasar {
 	namespace core {
-		Viewport::Viewport(const String &name)
+		Viewport::Viewport(const String &name, const Rect2f bounds)
 			: mName(name)
 			, mInitialized(false)
+			, mBounds(bounds)
 		{}
 
 		Viewport::~Viewport() noexcept {
@@ -34,6 +35,14 @@ namespace quasar {
 
 		void Viewport::update(double dt) {
 
+		}
+
+		const Rect2f Viewport::getBounds() const noexcept {
+			return mBounds;
+		}
+
+		void Viewport::setBounds(const Rect2f &bounds) noexcept {
+			mBounds = bounds;
 		}
 	}
 }

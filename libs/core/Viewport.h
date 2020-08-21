@@ -8,6 +8,11 @@
 #include "String.h"
 #include "Collection.h"
 #include <memory>
+#include <math/Vector.h>
+#include <math/Rect.h>
+
+using quasar::math::Rect2f;
+using quasar::math::Vec2f;
 
 namespace quasar {
 	namespace core {
@@ -15,9 +20,10 @@ namespace quasar {
 		protected:
 			String          mName;
 			bool            mInitialized;
+			Rect2f          mBounds;
 
 		public:
-			Viewport(const String &name = String());
+			Viewport(const String &name = String(), const Rect2f bounds = Rect2f(Vec2f::Zero, Vec2f::UnitScale));
 			Viewport(const Viewport &rhs) = delete;
 			virtual ~Viewport() noexcept;
 
@@ -25,6 +31,9 @@ namespace quasar {
 
 			const String    &getName() const noexcept;
 			void            setName(const String &n);
+
+			const Rect2f    getBounds() const noexcept;
+			void            setBounds(const Rect2f &bounds) noexcept;
 
 			bool            isInitialized() const noexcept;
 
