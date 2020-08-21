@@ -18,29 +18,40 @@ namespace quasar {
 			String              mName;
 			bool                mInitialized;
 			SharedViewportList  mViewports;
+			SharedViewport      mActiveViewport;
 
 		public:
 			Window(const String &name);
 			Window(const Window &rhs) = delete;
-			virtual         ~Window() = default;
+			virtual             ~Window() = default;
 
-			Window          &operator=(const Window &rhs) = delete;
+			Window              &operator=(const Window &rhs) = delete;
 
-			const String    &getName() const noexcept;
-			void            setName(const String &name);
+			const String        &getName() const noexcept;
+			void                setName(const String &name);
 
-			SharedViewport      &addViewport(const SharedViewport &v);
+			SharedViewport      &addViewport(const SharedViewport &v, bool activate = true) noexcept(false);
 			bool                hasViewport(const String &name) const;
 			SharedViewport      getViewport(const String &name) const;
+			SharedViewport      getViewport(size_t id) const;
 			SharedViewportList  getViewports() const;
+			SharedViewport      removeViewport(size_t id);
 			SharedViewport      removeViewport(const String &name);
 
-			virtual bool    isInitialized();
+			SharedViewport      getActiveViewport() const noexcept;
+			void                setActiveViewport(const SharedViewport &vp) noexcept;
+			void                setActiveViewport(const String &name);
+			void                setActiveViewport(size_t id);
 
-			virtual void    initialize() = 0;
-			virtual void    shutdown() = 0;
+			virtual bool        isInitialized();
 
-			virtual void    update(double dt);
+			virtual void        initialize() = 0;
+			virtual void        shutdown() = 0;
+
+			virtual void        update(double dt);
+
+		protected:
+			virtual void        activateViewport(const SharedViewport &vp);
 		};
 
 		using SharedWindow = std::shared_ptr<Window>;

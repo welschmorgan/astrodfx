@@ -10,6 +10,8 @@ namespace quasar {
 		Window::Window(const String &name)
 			: mName(name)
 			, mInitialized(false)
+			, mViewports()
+			, mActiveViewport()
 		{}
 
 		const String &Window::getName() const noexcept {
@@ -28,7 +30,17 @@ namespace quasar {
 
 		}
 
-		SharedViewport &Window::addViewport(const SharedViewport &v) {
+		SharedViewport &Window::addViewport(const SharedViewport &v, bool activate) noexcept(false) {
+			if (!v) {
+				throw std::runtime_error("Cannot add invalid viewport to window '" + mName + "'");
+			}
+			if (mViewports.includes(v) || hasViewport(v->getName())) {
+				throw std::runtime_error("Viewport '" + v->getName() + "' already added to window '" + mName + "'");
+			}
+			mViewports.add(v);
+			if (activate) {
+				setActiveViewport(mViewports->back());
+			}
 			return mViewports->back();
 		}
 
@@ -55,14 +67,49 @@ namespace quasar {
 					return ret;
 				}
 			}
-			auto found = mViewports.find([=](const SharedViewport &vp) {
-				return vp->getName() == name;
+			return nullptr;
+		}
+
+		SharedViewport Window::removeViewport(size_t id) {
+			return mViewports.remove([=](size_t i, const SharedViewport &vp) {
+				return id == i;
 			});
-			return *found;
 		}
 
 		SharedViewportList Window::getViewports() const {
 			return quasar::core::SharedViewportList();
+		}
+
+		SharedViewport Window::getViewport(size_t id) const {
+			auto found = mViewports.find([=](size_t i, const SharedViewport &vp) {
+				return id == i;
+			});
+			if (found) {
+				return *found;
+			}
+			return nullptr;
+		}
+
+		SharedViewport Window::getActiveViewport() const noexcept {
+			return mActiveViewport;
+		}
+
+		void Window::setActiveViewport(const quasar::core::SharedViewport &vp) noexcept {
+			if (vp) {
+				activateViewport(vp);
+			}
+			mActiveViewport = vp;
+		}
+
+		void Window::setActiveViewport(const String &name) {
+			setActiveViewport(getViewport(name));
+		}
+
+		void Window::setActiveViewport(size_t id) {
+			setActiveViewport(getViewport(id));
+		}
+
+		void Window::activateViewport(const SharedViewport &vp) {
 		}
 	}
 }

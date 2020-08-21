@@ -10,6 +10,7 @@
 #include <core/String.h>
 #include <SDL2/SDL_video.h>
 #include <SDL2/SDL_render.h>
+#include <core/Viewport.h>
 
 namespace quasar {
 	namespace render {
@@ -30,6 +31,9 @@ namespace quasar {
 
 			SDL_Window          *getSDLWindow() noexcept;
 			SDL_Renderer        *getSDLRenderer() noexcept;
+
+		protected:
+			void                activateViewport(const core::SharedViewport &vp) override;
 		};
 
 		using SharedGLWindow = std::shared_ptr<GLWindow>;
