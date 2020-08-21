@@ -80,10 +80,10 @@ namespace quasar {
 			citer_type          cbegin() const {
 				return mData.cbegin();
 			}
-			riter_type           rbegin() {
+			riter_type          rbegin() {
 				return mData.rbegin();
 			}
-			criter_type          crbegin() const {
+			criter_type         crbegin() const {
 				return mData.crbegin();
 			}
 
@@ -94,10 +94,37 @@ namespace quasar {
 			citer_type          cend() const {
 				return mData.end();
 			}
-			riter_type           rend() {
+			riter_type          rend() {
 				return mData.end();
 			}
-			criter_type          crend() const {
+			criter_type         crend() const {
+				return mData.end();
+			}
+
+			self_type           take(size_t n) {
+				self_type       ret;
+				while (n--) {
+					ret.add(mData.front());
+					mData.erase(mData.begin());
+				}
+				return ret;
+			}
+
+			iter_type           iter(const filter_predicate &p) {
+				for (iter_type it = mData.begin(); it != mData.end(); ++it) {
+					if (p(*it)) {
+						return it;
+					}
+				}
+				return mData.end();
+			}
+
+			citer_type          iter(const cfilter_predicate &p) const {
+				for (citer_type it = mData.begin(); it != mData.end(); ++it) {
+					if (p(*it)) {
+						return it;
+					}
+				}
 				return mData.end();
 			}
 

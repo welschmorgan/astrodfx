@@ -9,13 +9,19 @@
 
 using quasar::core::Collection;
 
+TEST_CASE("Collection<vector>'s take works") {
+	auto collec = Collection<int>({1, 3, 6});
+	auto filtered = collec.take(2);
+	REQUIRE(filtered == Collection<int>({6}));
+}
+
 TEST_CASE("Collection<vector> can be searched") {
 	auto collec = Collection<int>({1, 3, 6});
 	auto filtered = collec.find([](const int &i) {
 		return i == 3;
 	});
-			REQUIRE(filtered != nullptr);
-			REQUIRE(*filtered == 3);
+	REQUIRE(filtered != nullptr);
+	REQUIRE(*filtered == 3);
 }
 
 TEST_CASE("Collection<vector> can be searched (reverse)") {
