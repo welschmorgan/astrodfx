@@ -67,6 +67,7 @@ namespace quasar {
 			bool                empty() const noexcept { return mData.empty(); }
 			size_t              size() const noexcept { return mData.size(); }
 			void                add(Value &&v) { mData.push_back(v); }
+			void                add(const Value &v) { mData.push_back(v); }
 
 			bool                includes(const Value &wanted) const noexcept {
 				return find([&](const Value &it) {
@@ -101,15 +102,6 @@ namespace quasar {
 				return mData.end();
 			}
 
-			self_type           take(size_t n) {
-				self_type       ret;
-				while (n--) {
-					ret.add(mData.front());
-					mData.erase(mData.begin());
-				}
-				return ret;
-			}
-
 			iter_type           iter(const filter_predicate &p) {
 				for (iter_type it = mData.begin(); it != mData.end(); ++it) {
 					if (p(*it)) {
@@ -122,6 +114,26 @@ namespace quasar {
 			citer_type          iter(const cfilter_predicate &p) const {
 				for (citer_type it = mData.begin(); it != mData.end(); ++it) {
 					if (p(*it)) {
+						return it;
+					}
+				}
+				return mData.end();
+			}
+
+			iter_type           iter(const filter_predicate_with_id &p) {
+				size_t id = 0;
+				for (iter_type it = mData.begin(); it != mData.end(); ++it, ++id) {
+					if (p(id, *it)) {
+						return it;
+					}
+				}
+				return mData.end();
+			}
+
+			citer_type          iter(const cfilter_predicate_with_id &p) const {
+				size_t id = 0;
+				for (iter_type it = mData.begin(); it != mData.end(); ++it, ++id) {
+					if (p(id, *it)) {
 						return it;
 					}
 				}
@@ -501,6 +513,33 @@ namespace quasar {
 				}
 				return c;
 			}
+
+
+			self_type           take(size_t n) {
+				self_type       ret;
+				while (n--) {
+					ret.add(mData.front());
+					mData.erase(mData.begin());
+				}
+				return ret;
+			}
+
+			value_type          remove(const filter_predicate &p) {
+				auto it = iter(p);
+				if (it != mData.end()) {
+					mData.erase(it);
+				}
+				return *it;
+			}
+
+			value_type          remove(const filter_predicate_with_id &p) {
+				auto it = iter(p);
+				if (it != mData.end()) {
+					mData.erase(it);
+				}
+				return *it;
+			}
+
 		};
 	}
 }

@@ -12,7 +12,8 @@ using quasar::core::Collection;
 TEST_CASE("Collection<vector>'s take works") {
 	auto collec = Collection<int>({1, 3, 6});
 	auto filtered = collec.take(2);
-	REQUIRE(filtered == Collection<int>({6}));
+	REQUIRE(filtered.size() == 1);
+	REQUIRE(filtered->at(0) == 6);
 }
 
 TEST_CASE("Collection<vector> can be searched") {
