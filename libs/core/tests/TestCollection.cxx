@@ -4,7 +4,7 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include <core/Collection.h>
+#include <libs/core/Collection.h>
 #include "doctest.h"
 
 using quasar::core::Collection;

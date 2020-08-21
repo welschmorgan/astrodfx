@@ -4,7 +4,7 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include <core/ResourceType.h>
+#include <libs/core/ResourceType.h>
 #include "doctest.h"
 
 using quasar::core::ResourceType;

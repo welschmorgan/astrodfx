@@ -4,11 +4,11 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include <core/Resource.h>
-#include <core/ResourceFactory.h>
-#include <core/ResourceType.h>
-#include <core/String.h>
-#include <core/ResourceManager.h>
+#include <libs/core/Resource.h>
+#include <libs/core/ResourceFactory.h>
+#include <libs/core/ResourceType.h>
+#include <libs/core/String.h>
+#include <libs/core/ResourceManager.h>
 #include "doctest.h"
 
 using quasar::core::SharedResource;
@@ -19,6 +19,7 @@ using quasar::core::ResourceType;
 using quasar::core::ResourceStage;
 using quasar::core::ResourceManager;
 using quasar::core::String;
+using quasar::core::Path;
 using quasar::core::StringMap;
 
 class MockResourceFactory: public ResourceFactory {
@@ -88,7 +89,7 @@ TEST_CASE("ResourceManager can load resource using factories") {
 	ResourceManager resMgr;
 
 	resMgr.addFactory(std::static_pointer_cast<ResourceFactory>(std::make_shared<MockResourceFactory>()));
-	auto res = resMgr.loadResource("test.txt");
+	auto res = resMgr.loadResource(Path("test.txt"));
 
 	REQUIRE(res != nullptr);
 	REQUIRE(res->getType() == ResourceType::Text);

@@ -4,7 +4,7 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include <core/Path.h>
+#include <libs/core/Path.h>
 #include "doctest.h"
 
 using quasar::core::Path;

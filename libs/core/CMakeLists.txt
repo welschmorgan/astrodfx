@@ -12,10 +12,11 @@ add_library(quasarfx-core
         ResourceType.cxx ResourceType.h
         ResourceStage.cxx ResourceStage.h
         ResourceManager.cxx ResourceManager.h
-        ResourceFactory.cxx ResourceFactory.h)
+        ResourceFactory.cxx ResourceFactory.h
+        ResourcePriority.cxx ResourcePriority.h)
 
 target_link_libraries(quasarfx-core stdc++fs)
-target_include_directories(quasarfx-core PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(quasarfx-core PRIVATE ${CMAKE_SOURCE_DIR}/libs ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 #target_link_libraries(quasarfx-core)
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_UNIT_TESTS)

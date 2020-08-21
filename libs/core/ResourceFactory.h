@@ -8,6 +8,7 @@
 #include <memory>
 #include "String.h"
 #include "ResourceType.h"
+#include "ResourcePriority.h"
 
 namespace quasar {
 	namespace core {
@@ -15,23 +16,21 @@ namespace quasar {
 		using SharedResource = std::shared_ptr<Resource>;
 
 		class ResourceFactory {
-		public:
-			using priority_type                 = unsigned short;
 
 		protected:
 			bool                                mInitialized;
 			String                              mName;
 			ResourceType                        mType;
-			priority_type                       mPriority;
+			ResourcePriority                    mPriority;
 
 		public:
-			ResourceFactory(const String &name, const ResourceType &t, priority_type priority = priority_type(-1));
+			ResourceFactory(const String &name, const ResourceType &t, ResourcePriority priority = ResourcePriority::None);
 			virtual ~ResourceFactory() noexcept;
 
 			virtual bool                        isInitialized() const noexcept;
 			virtual String                      getName() const noexcept;
 			virtual ResourceType                getType() const noexcept;
-			virtual priority_type               getPriority() const noexcept;
+			virtual ResourcePriority            getPriority() const noexcept;
 
 			virtual void                        initialize();
 			virtual void                        shutdown();

@@ -7,7 +7,7 @@ add_library(quasarfx-render
         GLWindow.cxx GLWindow.h
         GLViewport.cxx GLViewport.h)
 
-target_include_directories(quasarfx-render PRIVATE ${SDL2_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/core/include ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(quasarfx-render PRIVATE ${SDL2_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/libs ${CMAKE_SOURCE_DIR}/core/include ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(quasarfx-render
                         PRIVATE quasarfx-core

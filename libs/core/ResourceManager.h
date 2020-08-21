@@ -7,6 +7,8 @@
 
 #include "ResourceFactory.h"
 #include "Resource.h"
+#include "Path.h"
+#include "Collection.h"
 
 namespace quasar {
 	namespace core {
@@ -17,22 +19,31 @@ namespace quasar {
 		protected:
 			SharedResourceFactoryList   mFactories;
 			SharedResourceList          mResources;
+			Collection<Path>            mLocations;
 
 		public:
 			ResourceManager() = default;
 			ResourceManager(const ResourceManager &) = delete;
 			virtual ~ResourceManager() = default;
 
-			ResourceManager &operator=(const ResourceManager &) = delete;
+			ResourceManager                     &operator=(const ResourceManager &) = delete;
+
+			void                                discoverResources();
+
+			const Collection<Path>              &getLocations() const noexcept;
+			void                                clearLocations() noexcept;
+			Path                                &addLocation(const Path &location) noexcept;
+			Path                                getLocation(size_t n) const noexcept;
+			bool                                hasLocation(const Path &path) const noexcept;
 
 			const SharedResourceFactoryList     &getFactories() const noexcept;
 			SharedResourceFactory               &addFactory(const SharedResourceFactory &f);
 			SharedResourceFactory               getFactoryByName(const String &name) const;
 			SharedResourceFactoryList           getFactoriesByType(const ResourceType &t) const;
-			SharedResourceFactoryList           getFactoriesByExtension(const String &ext) const;
+			SharedResourceFactoryList           getFactoriesByExtension(const PathExt &ext) const;
 			bool                                removeFactory(SharedResourceFactory &f);
 
-			SharedResource                      loadResource(const String &path, const String &name = String(), const StringMap<String> &properties = StringMap<String>());
+			SharedResource                      loadResource(const Path &path, String name = String(), const StringMap<String> &properties = StringMap<String>());
 			SharedResource                      createResource(const String &name, const ResourceType &t, const StringMap<String> &properties = StringMap<String>());
 			const SharedResourceList            &getResources() const noexcept;
 			SharedResource                      &addResource(const SharedResource &f);

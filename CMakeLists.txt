@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(BUILD_CORE "Enable building core library" ON)
+option(BUILD_FORMATS "Enable building formats library" ON)
 option(BUILD_RENDER "Enable building rendering library" ON)
 option(BUILD_EXAMPLES "Enable building examples" ON)
 option(BUILD_UNIT_TESTS "Enable building unit tests" ON)
@@ -15,13 +16,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     enable_testing()
 endif()
 
-if(BUILD_CORE)
-    add_subdirectory(core)
-endif()
-
-if(BUILD_RENDER)
-    add_subdirectory(render)
-endif()
+add_subdirectory(libs)
 
 if(BUILD_EXAMPLES)
     add_subdirectory(examples)

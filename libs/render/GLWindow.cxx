@@ -2,11 +2,11 @@
 // Created by darkboss on 8/1/20.
 //
 
-#include <render/GLWindow.h>
+#include <libs/render/GLWindow.h>
 #include <iostream>
 
-#include "core/Window.h"
-#include "render/GLWindow.h"
+#include "libs/core/Window.h"
+#include "GLWindow.h"
 #include "GLWindow.h"
 
 

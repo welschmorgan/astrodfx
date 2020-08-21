@@ -8,7 +8,7 @@
 namespace quasar {
 	namespace core {
 
-		ResourceFactory::ResourceFactory(const String &name, const ResourceType &t, priority_type priority)
+		ResourceFactory::ResourceFactory(const String &name, const ResourceType &t, ResourcePriority priority)
 			: mInitialized(false)
 			, mName(name)
 			, mType(t)
@@ -24,7 +24,7 @@ namespace quasar {
 			return mType;
 		}
 
-		ResourceFactory::priority_type ResourceFactory::getPriority() const noexcept {
+		ResourcePriority ResourceFactory::getPriority() const noexcept {
 			return mPriority;
 		}
 

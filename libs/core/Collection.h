@@ -74,6 +74,33 @@ namespace quasar {
 				}) != nullptr;
 			}
 
+			iter_type           begin() {
+				return mData.begin();
+			}
+			citer_type          cbegin() const {
+				return mData.cbegin();
+			}
+			riter_type           rbegin() {
+				return mData.rbegin();
+			}
+			criter_type          crbegin() const {
+				return mData.crbegin();
+			}
+
+
+			iter_type           end() {
+				return mData.end();
+			}
+			citer_type          cend() const {
+				return mData.end();
+			}
+			riter_type           rend() {
+				return mData.end();
+			}
+			criter_type          crend() const {
+				return mData.end();
+			}
+
 			/**
 			 * Iterate over each element. If true is returned from the predicate, stop the iteration.
 			 *

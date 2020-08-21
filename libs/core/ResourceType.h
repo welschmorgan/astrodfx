@@ -7,6 +7,8 @@
 
 #include <vector>
 #include "String.h"
+#include "Path.h"
+#include "Collection.h"
 
 namespace quasar {
 	namespace core {
@@ -25,13 +27,14 @@ namespace quasar {
 			static const ResourceType                   Model;
 			static const ResourceType                   Scene;
 			static const ResourceType                   Unknown;
+			static ResourceType                         Custom(long value, const String &label, const Collection<PathExt> &exts = Collection<PathExt>());
 
 		protected:
 			long                                        mValue;
 			String                                      mLabel;
-			std::vector<String>                         mExtensions;
+			Collection<PathExt>                         mExtensions;
 
-			ResourceType(long v, const String &l, const std::vector<String> &exts = std::vector<String>());
+			ResourceType(long v, const String &l, const Collection<PathExt> &exts = Collection<PathExt>());
 
 		public:
 			ResourceType(): ResourceType(None) {}
@@ -44,7 +47,7 @@ namespace quasar {
 			bool                                        operator!=(const ResourceType &rhs) const noexcept;
 
 			const String                                &getLabel() const noexcept { return mLabel; }
-			const StringVector                          &getExtensions() const noexcept { return mExtensions; }
+			const Collection<PathExt>                   &getExtensions() const noexcept { return mExtensions; }
 			long                                        getCode() const noexcept { return mValue; }
 		};
 	}

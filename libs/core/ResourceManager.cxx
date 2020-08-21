@@ -87,13 +87,13 @@ namespace quasar {
 			return false;
 		}
 
-		SharedResourceFactoryList ResourceManager::getFactoriesByExtension(const String &ext) const {
+		SharedResourceFactoryList ResourceManager::getFactoriesByExtension(const PathExt &ext) const {
 			SharedResourceFactoryList found;
-			StringVector facExts;
+			Collection<PathExt> facExts;
 			for (auto fac = mFactories.begin(); fac != mFactories.end(); fac++) {
 				facExts = fac->get()->getType().getExtensions();
 				for (auto &facExt: facExts) {
-					if (ext == facExt) {
+					if (ext == facExt || facExt == "*") {
 						found.push_back(*fac);
 					}
 				}
@@ -104,27 +104,31 @@ namespace quasar {
 			return found;
 		}
 
-		SharedResource ResourceManager::loadResource(const String &path, const String &name, const StringMap<String> &properties) {
-			String ext = "";
+		SharedResource ResourceManager::loadResource(const Path &path, String name, const StringMap<String> &properties) {
+			PathExt ext = path.ext();
 			size_t pos = -1;
-			if ((pos = path.find_last_of('.')) != String::npos) {
-				ext = path.substr(pos);
-			}
 			auto facs = getFactoriesByExtension(ext);
+			StringVector tried;
+			if (name.empty()) {
+				name = path.base();
+			}
 			for (auto fac: facs) {
 				try {
-					auto res = fac->create(name, "", properties);
+//					std::cout << "try loading with " << fac->getName() << std::endl;
+					auto res = fac->create(name, path.absolute(), properties);
 					if (res->getStage() < ResourceStage::Created) {
 						res->create(properties);
 					}
 					if (res->getStage() < ResourceStage::Loaded) {
 						res->load();
 					}
+//					std::cout << path << ": successfully loaded resource" << std::endl;
 					return this->addResource(res);
 				} catch (std::exception &ex) {
-					std::cerr << name << ": failed to create resource using factory '" << fac->getName() << "'" << std::endl;
+					std::cerr << name << ": failed to load resource using factory '" << fac->getName() << "': " << ex.what() << std::endl;
 				}
 			}
+			throw std::runtime_error(path + ": failed to find suitable factory to handle this type of resource");
 			return SharedResource();
 		}
 
@@ -142,7 +146,45 @@ namespace quasar {
 					std::cerr << name << ": failed to create resource using factory '" << fac->getName() << "'" << std::endl;
 				}
 			}
-			return nullptr;
+			throw std::runtime_error(name + ": failed to create resource, no factory registered to handle type '" + t.getLabel() + "'");
+			return SharedResource();
+		}
+
+		const Collection<Path> &ResourceManager::getLocations() const noexcept {
+			return mLocations;
+		}
+
+		void ResourceManager::clearLocations() noexcept {
+			mLocations.clear();
+		}
+
+		Path &ResourceManager::addLocation(const Path &location) noexcept {
+			mLocations->push_back(location);
+			return mLocations->back();
+		}
+
+		Path ResourceManager::getLocation(size_t n) const noexcept {
+			return mLocations->at(n);
+		}
+
+		bool ResourceManager::hasLocation(const Path &path) const noexcept {
+			return mLocations.includes(path);
+		}
+
+		void ResourceManager::discoverResources() {
+			for (auto it = mLocations->begin(); it != mLocations->end(); it++) {
+				std::cout << *it << ": discovering location..." << std::endl;
+				if (it->exists()) {
+					auto entries = it->readDir(true);
+					for (auto &entry: entries) {
+						try {
+							loadResource(entry);
+						} catch (std::exception &ex) {
+							std::cerr << "\t" << ex.what() << std::endl;
+						}
+					}
+				}
+			}
 		}
 	}
 }
