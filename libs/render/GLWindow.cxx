@@ -2,10 +2,10 @@
 // Created by darkboss on 8/1/20.
 //
 
-#include <libs/render/GLWindow.h>
+#include <render/GLWindow.h>
 #include <iostream>
 
-#include "libs/core/Window.h"
+#include <core/Window.h>
 #include "GLWindow.h"
 #include "GLWindow.h"
 

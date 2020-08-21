@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.1...3.16)
 
 add_library(quasarfx-core
-        Engine.cxx Engine.h
+        ${QUASAR_BUILD_LIBS_TYPE}
         String.h
+        Platform.h
+        Engine.cxx Engine.h
         Window.cxx Window.h
         Renderer.cxx Renderer.h
         Viewport.cxx Viewport.h
@@ -16,9 +18,9 @@ add_library(quasarfx-core
         ResourcePriority.cxx ResourcePriority.h)
 
 target_link_libraries(quasarfx-core stdc++fs)
-target_include_directories(quasarfx-core PRIVATE ${CMAKE_SOURCE_DIR}/libs ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(quasarfx-core PRIVATE ${CMAKE_SOURCE_DIR}/libs ${CMAKE_SOURCE_DIR}/libs/core ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 #target_link_libraries(quasarfx-core)
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_UNIT_TESTS)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND QUASAR_BUILD_UNIT_TESTS)
     add_subdirectory(tests)
 endif()
