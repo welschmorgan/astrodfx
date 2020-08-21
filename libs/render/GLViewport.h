@@ -11,13 +11,14 @@ namespace quasar {
 	namespace render {
 		class GLViewport: public core::Viewport {
 		public:
-			GLViewport(const core::String &name);
+			GLViewport(core::Window *window, const core::String &name, const Rect2f &bounds = Rect2f(Vec2f::Zero, Vec2f::UnitScale));
 			GLViewport(const GLViewport &rhs) = delete;
 			virtual ~GLViewport() noexcept;
 
 			GLViewport  &operator=(const core::String &name) = delete;
 
 			void        initialize();
+			void        activate();
 			void        shutdown();
 		};
 	}

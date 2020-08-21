@@ -64,15 +64,5 @@ namespace quasar {
 		SDL_Renderer *GLWindow::getSDLRenderer() noexcept {
 			return mRenderer;
 		}
-
-		void GLWindow::activateViewport(const core::SharedViewport &vp) {
-			SDL_Rect rc;
-			Rect2f bounds = vp->getBounds();
-			rc.x = bounds.min().x;
-			rc.y = bounds.min().y;
-			rc.w = bounds.size().x;
-			rc.h = bounds.size().y;
-			SDL_RenderSetViewport(mRenderer, &rc);
-		}
 	}
 }

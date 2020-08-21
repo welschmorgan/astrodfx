@@ -7,12 +7,19 @@
 
 #include <memory>
 #include <vector>
+#include <math/Rect.h>
 #include "String.h"
 #include "Collection.h"
-#include "Viewport.h"
+
+using quasar::math::Rect2f;
+using quasar::math::Vec2f;
 
 namespace quasar {
 	namespace core {
+		class Viewport;
+		using SharedViewport = std::shared_ptr<Viewport>;
+		using SharedViewportList = Collection<SharedViewport>;
+
 		class Window {
 		protected:
 			String              mName;
@@ -30,6 +37,11 @@ namespace quasar {
 			const String        &getName() const noexcept;
 			void                setName(const String &name);
 
+			template<typename VPT = Viewport>
+			SharedViewport      &createViewport(const String &name, const Rect2f &bounds = Rect2f(), bool activate = true) {
+				addViewport(std::shared_ptr(new VPT(this, name, bounds)), activate);
+				return mViewports->back();
+			}
 			SharedViewport      &addViewport(const SharedViewport &v, bool activate = true) noexcept(false);
 			bool                hasViewport(const String &name) const;
 			SharedViewport      getViewport(const String &name) const;
@@ -49,9 +61,6 @@ namespace quasar {
 			virtual void        shutdown() = 0;
 
 			virtual void        update(double dt);
-
-		protected:
-			virtual void        activateViewport(const SharedViewport &vp);
 		};
 
 		using SharedWindow = std::shared_ptr<Window>;

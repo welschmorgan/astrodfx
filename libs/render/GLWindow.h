@@ -31,9 +31,6 @@ namespace quasar {
 
 			SDL_Window          *getSDLWindow() noexcept;
 			SDL_Renderer        *getSDLRenderer() noexcept;
-
-		protected:
-			void                activateViewport(const core::SharedViewport &vp) override;
 		};
 
 		using SharedGLWindow = std::shared_ptr<GLWindow>;

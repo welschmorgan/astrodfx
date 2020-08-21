@@ -1,9 +1,9 @@
 //
 // Created by darkboss on 8/1/20.
 //
-
 #include "String.h"
 #include "Window.h"
+#include "Viewport.h"
 
 namespace quasar {
 	namespace core {
@@ -96,7 +96,7 @@ namespace quasar {
 
 		void Window::setActiveViewport(const quasar::core::SharedViewport &vp) noexcept {
 			if (vp) {
-				activateViewport(vp);
+				vp->activate();
 			}
 			mActiveViewport = vp;
 		}
@@ -109,7 +109,5 @@ namespace quasar {
 			setActiveViewport(getViewport(id));
 		}
 
-		void Window::activateViewport(const SharedViewport &vp) {
-		}
 	}
 }

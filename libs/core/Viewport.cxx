@@ -4,13 +4,15 @@
 
 #include <iostream>
 #include "Viewport.h"
+#include "Window.h"
 
 namespace quasar {
 	namespace core {
-		Viewport::Viewport(const String &name, const Rect2f bounds)
+		Viewport::Viewport(Window *window, const String &name, const Rect2f &bounds)
 			: mName(name)
 			, mInitialized(false)
 			, mBounds(bounds)
+			, mWindow(window)
 		{}
 
 		Viewport::~Viewport() noexcept {
@@ -43,6 +45,22 @@ namespace quasar {
 
 		void Viewport::setBounds(const Rect2f &bounds) noexcept {
 			mBounds = bounds;
+		}
+
+		void Viewport::activate() {
+
+		}
+
+		Window *Viewport::getWindow() noexcept {
+			return mWindow;
+		}
+
+		const Window *Viewport::getWindow() const noexcept {
+			return mWindow;
+		}
+
+		void Viewport::setWindow(Window *win) noexcept {
+			mWindow = win;
 		}
 	}
 }
