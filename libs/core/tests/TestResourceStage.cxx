@@ -4,7 +4,7 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include <libs/core/ResourceStage.h>
+#include <core/ResourceStage.h>
 #include "doctest.h"
 
 using quasar::core::ResourceStage;

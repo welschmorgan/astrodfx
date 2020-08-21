@@ -5,8 +5,8 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 //#define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
-#include <libs/render/GLRenderer.h>
-#include <libs/render/GLWindow.h>
+#include <render/GLRenderer.h>
+#include <render/GLWindow.h>
 #include <iostream>
 
 TEST_CASE ("initialize should instanciate SDL_Window") {
