@@ -1,0 +1,20 @@
+function(capitalize word output)
+    string(SUBSTRING ${word} 0 1 FIRST_LETTER)
+    string(TOUPPER ${FIRST_LETTER} FIRST_LETTER)
+    string(REGEX REPLACE "^.(.*)" "${FIRST_LETTER}\\1" PROTO_NAME_CAP "${word}")
+    set(${output} ${PROTO_NAME_CAP} PARENT_SCOPE)
+endfunction()
+
+function(describe_test module name sources include_dirs link_libs)
+    # Test: Collection
+    set(TEST_NAME "quasarfx-${module}-test-${name}")
+    capitalize(${module} CAP_MODULE)
+    capitalize(${name} CAP_NAME)
+    set(PRETTY_TEST_NAME "QuasarFX${CAP_MODULE}Test${CAP_NAME}")
+
+    #message("name: ${CAP_NAME} - module: ${CAP_MODULE} - pretty: ${PRETTY_TEST_NAME}")
+    add_executable(${TEST_NAME} ${sources})
+    target_include_directories(${TEST_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libs ${CMAKE_SOURCE_DIR}/libs/${module} ${include_dirs})
+    target_link_libraries(${TEST_NAME} quasarfx-${module} ${link_libs})
+    add_test(NAME ${PRETTY_TEST_NAME} COMMAND ${TEST_NAME})
+endfunction()
