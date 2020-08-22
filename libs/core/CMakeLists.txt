@@ -15,7 +15,7 @@ add_library(quasarfx-core
         ResourceStage.cxx ResourceStage.h
         ResourceManager.cxx ResourceManager.h
         ResourceFactory.cxx ResourceFactory.h
-        ResourcePriority.cxx ResourcePriority.h)
+        ResourcePriority.cxx ResourcePriority.h Config.cxx Config.h String.cpp)
 
 target_link_libraries(quasarfx-core stdc++fs)
 
