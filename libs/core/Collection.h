@@ -6,16 +6,22 @@
 #define QUASARFX_COLLECTION_H
 
 #include <vector>
+#include <list>
+#include <queue>
+#include <deque>
+#include <stack>
+
 #include <functional>
+#include <map>
 
 namespace quasar {
 	namespace core {
 		template<typename Value, typename Container = std::vector<Value>>
-		class Collection {
+		class BasicCollection {
 		public:
 			using value_type = Value;
 			using container_type = Container;
-			using self_type = Collection<Value, Container>;
+			using self_type = BasicCollection<Value, Container>;
 
 			using iter_type = typename container_type::iterator;
 			using riter_type = typename container_type::reverse_iterator;
@@ -42,14 +48,14 @@ namespace quasar {
 			container_type      mData;
 
 		public:
-			Collection() = default;
-			explicit Collection(const container_type &data): mData(data) {}
-			Collection(const std::initializer_list<Value> &data): mData(data) {}
-			Collection(const Collection &rhs) = default;
-			virtual ~Collection() = default;
+			BasicCollection() = default;
+			explicit BasicCollection(const container_type &data): mData(data) {}
+			BasicCollection(const std::initializer_list<Value> &data): mData(data) {}
+			BasicCollection(const BasicCollection &rhs) = default;
+			virtual ~BasicCollection() = default;
 
-			Collection          &operator=(const Collection &rhs) = default;
-			Collection          &operator=(const std::initializer_list<Value> &rhs) {
+			BasicCollection          &operator=(const BasicCollection &rhs) = default;
+			BasicCollection          &operator=(const std::initializer_list<Value> &rhs) {
 				mData = rhs.mData;
 				return *this;
 			}
@@ -66,8 +72,8 @@ namespace quasar {
 			void                clear() noexcept { mData.clear(); }
 			bool                empty() const noexcept { return mData.empty(); }
 			size_t              size() const noexcept { return mData.size(); }
-			void                add(Value &&v) { mData.push_back(v); }
-			void                add(const Value &v) { mData.push_back(v); }
+//			virtual void        add(Value &&v) { mData.push_back(v); }
+//			virtual void        add(const Value &v) { mData.push_back(v); }
 
 			bool                includes(const Value &wanted) const noexcept {
 				return find([&](const Value &it) {
@@ -324,10 +330,10 @@ namespace quasar {
 			 *
 			 * @param p			Predicate called on each element.
 			 *
-			 * @return			A new collection representing this aggregation
+			 * @return			A new basicCollection representing this aggregation
 			 */
-			Collection          filter(cfilter_predicate p) const noexcept {
-				Collection ret;
+			BasicCollection          filter(cfilter_predicate p) const noexcept {
+				BasicCollection ret;
 				for (citer_type it = mData.begin(); it != mData.end(); ++it) {
 					if (p(*it)) {
 						ret.mData.push_back(*it);
@@ -341,10 +347,10 @@ namespace quasar {
 			 *
 			 * @param p			Predicate called on each element.
 			 *
-			 * @return			A new collection representing this aggregation
+			 * @return			A new basicCollection representing this aggregation
 			 */
-			Collection          filter(cfilter_predicate_with_id p) const noexcept {
-				Collection      ret;
+			BasicCollection          filter(cfilter_predicate_with_id p) const noexcept {
+				BasicCollection      ret;
 				size_t          id = 0;
 				for (citer_type it = mData.begin(); it != mData.end(); ++it, ++id) {
 					if (p(id, *it)) {
@@ -360,10 +366,10 @@ namespace quasar {
 			 *
 			 * @param p			Predicate called on each element.
 			 *
-			 * @return			A new collection representing this aggregation
+			 * @return			A new basicCollection representing this aggregation
 			 */
-			Collection          rfilter(cfilter_predicate p) const noexcept {
-				Collection ret;
+			BasicCollection          rfilter(cfilter_predicate p) const noexcept {
+				BasicCollection ret;
 				for (criter_type it = mData.rbegin(); it != mData.rend(); ++it) {
 					if (p(*it)) {
 						ret.mData.push_back(*it);
@@ -377,10 +383,10 @@ namespace quasar {
 			 *
 			 * @param p			Predicate called on each element.
 			 *
-			 * @return			A new collection representing this aggregation
+			 * @return			A new basicCollection representing this aggregation
 			 */
-			Collection          rfilter(cfilter_predicate_with_id p) const noexcept {
-				Collection      ret;
+			BasicCollection          rfilter(cfilter_predicate_with_id p) const noexcept {
+				BasicCollection      ret;
 				size_t          id = mData.size() - 1;
 				for (criter_type it = mData.rbegin(); it != mData.rend(); ++it, --id) {
 					if (p(id, *it)) {
@@ -395,10 +401,10 @@ namespace quasar {
 			 *
 			 * @param mapper	Transformation function called on each element.
 			 *
-			 * @return			A new collection representing this transformation
+			 * @return			A new basicCollection representing this transformation
 			 */
-			Collection          map(map_fn mapper) const noexcept {
-				Collection      ret;
+			BasicCollection          map(map_fn mapper) const noexcept {
+				BasicCollection      ret;
 				for (citer_type it = mData.begin(); it != mData.end(); ++it) {
 					ret.mData.push_back(mapper(*it));
 				}
@@ -410,10 +416,10 @@ namespace quasar {
 			 *
 			 * @param mapper	Transformation function called on each element.
 			 *
-			 * @return			A new collection representing this transformation
+			 * @return			A new basicCollection representing this transformation
 			 */
-			Collection          map(map_fn_with_id mapper) const noexcept {
-				Collection      ret;
+			BasicCollection          map(map_fn_with_id mapper) const noexcept {
+				BasicCollection      ret;
 				size_t          id = 0;
 				for (citer_type it = mData.begin(); it != mData.end(); ++it, ++id) {
 					ret.mData.push_back(mapper(id, *it));
@@ -426,10 +432,10 @@ namespace quasar {
 			 *
 			 * @param mapper	Transformation function called on each element.
 			 *
-			 * @return			A new collection representing this transformation
+			 * @return			A new basicCollection representing this transformation
 			 */
-			Collection          rmap(map_fn mapper) const noexcept {
-				Collection      ret;
+			BasicCollection          rmap(map_fn mapper) const noexcept {
+				BasicCollection      ret;
 				for (criter_type it = mData.rbegin(); it != mData.rend(); ++it) {
 					ret.mData.push_back(mapper(*it));
 				}
@@ -441,10 +447,10 @@ namespace quasar {
 			 *
 			 * @param mapper	Transformation function called on each element.
 			 *
-			 * @return			A new collection representing this transformation
+			 * @return			A new basicCollection representing this transformation
 			 */
-			Collection          rmap(map_fn_with_id mapper) const noexcept {
-				Collection      ret;
+			BasicCollection          rmap(map_fn_with_id mapper) const noexcept {
+				BasicCollection      ret;
 				size_t id = mData.size() - 1;
 				for (criter_type it = mData.rbegin(); it != mData.rend(); ++it, --id) {
 					ret.mData.push_back(mapper(id, *it));
@@ -453,7 +459,7 @@ namespace quasar {
 			}
 
 			/**
-			 * Reduce this collection to a simple value.
+			 * Reduce this basicCollection to a simple value.
 			 *
 			 * @param r			Transformation function called on each element.
 			 *
@@ -468,7 +474,7 @@ namespace quasar {
 			}
 
 			/**
-			 * Reduce this collection to a simple value.
+			 * Reduce this basicCollection to a simple value.
 			 *
 			 * @param r			Transformation function called on each element.
 			 *
@@ -484,7 +490,7 @@ namespace quasar {
 			}
 
 			/**
-			 * Reduce this collection to a simple value starting at the end.
+			 * Reduce this basicCollection to a simple value starting at the end.
 			 *
 			 * @param r			Transformation function called on each element.
 			 *
@@ -499,7 +505,7 @@ namespace quasar {
 			}
 
 			/**
-			 * Reduce this collection to a simple value starting at the end.
+			 * Reduce this basicCollection to a simple value starting at the end.
 			 *
 			 * @param r			Transformation function called on each element.
 			 *
@@ -514,15 +520,15 @@ namespace quasar {
 				return c;
 			}
 
-
-			self_type           take(size_t n) {
-				self_type       ret;
-				while (n--) {
-					ret.add(mData.front());
-					mData.erase(mData.begin());
-				}
-				return ret;
-			}
+//
+//			self_type           take(size_t n) {
+//				self_type       ret;
+//				while (n--) {
+//					ret.mData.push_back(mData.front());
+//					mData.erase(mData.begin());
+//				}
+//				return ret;
+//			}
 
 			value_type          remove(const filter_predicate &p) {
 				auto it = iter(p);
@@ -539,8 +545,108 @@ namespace quasar {
 				}
 				return *it;
 			}
+		};
+
+		template<typename Value, typename Container = std::vector<Value>>
+		class Collection: public BasicCollection<Value, std::vector<Value>> {
+		public:
+			using container_type = std::vector<Value>;
+			using base_type = BasicCollection<Value, container_type>;
+			using self_type = Collection<Value, container_type>;
+			using value_type = typename base_type::value_type;
+
+			Collection() = default;
+			explicit Collection(const container_type &data): base_type(data) {}
+			Collection(const std::initializer_list<Value> &data): base_type(data) {}
+			Collection(const Collection &rhs) = default;
+			virtual ~Collection() = default;
+
+			Collection          &operator=(const Collection &rhs) = default;
+
+			self_type           take(size_t n) {
+				self_type       ret;
+				while (n--) {
+					ret.mData.push_back(base_type::mData.front());
+					base_type::mData.erase(base_type::mData.begin());
+				}
+				return ret;
+			}
+
+			void                add(value_type &&v) { base_type::mData.push_back(v); }
+			void                add(const value_type &v) { base_type::mData.push_back(v); }
+		};
+
+		template<typename Value>
+		class Collection<Value, std::map<typename Value::first_type, typename Value::second_type>>
+			: public BasicCollection<Value, std::map<typename Value::first_type, typename Value::second_type>> {
+		public:
+			using key_type = typename Value::first_type;
+			using value_type = typename Value::second_type;
+			using item_type = std::pair<typename Value::first_type, typename Value::second_type>;
+			using container_type = std::map<key_type, value_type>;
+
+			using base_type = BasicCollection<item_type, container_type>;
+			using self_type = Collection<item_type, container_type>;
+
+			Collection() = default;
+			explicit Collection(const container_type &data): base_type(data) {}
+			Collection(std::initializer_list<std::pair<const key_type, value_type>> data): base_type(data) {}
+			Collection(const Collection &rhs) = default;
+			virtual ~Collection() = default;
+
+			Collection          &operator=(const Collection &rhs) = default;
+
+			void                add(item_type &&v) {
+				auto it = base_type::mData.insert(v);
+				if (!it.second) {
+					throw std::runtime_error("Failed to insert pair!");
+				}
+			}
+			void                add(const item_type &v) {
+				auto it = base_type::mData.insert(v);
+				if (!it.second) {
+					throw std::runtime_error("Failed to insert pair!");
+				}
+			}
+
+			self_type           take(size_t n) {
+				self_type       ret;
+				while (n--) {
+					ret.mData.insert(*base_type::mData.begin());
+					base_type::mData.erase(base_type::mData.begin());
+				}
+				return ret;
+			}
+
+			self_type           &put(const key_type &k, const value_type &v) {
+				add(std::make_pair(k, v));
+				return *this;
+			}
+
+			self_type           &put(const key_type &k, value_type &&v) {
+				add(std::make_pair(k, v));
+				return *this;
+			}
 
 		};
+
+		template<typename V>
+		using Vector = Collection<V, std::vector<V>>;
+
+		template<typename V>
+		using List = Collection<V, std::list<V>>;
+
+		template<typename V>
+		using Queue = Collection<V, std::queue<V>>;
+
+		template<typename V>
+		using Deque = Collection<V, std::deque<V>>;
+
+		template<typename V>
+		using Stack = Collection<V, std::stack<V>>;
+
+		template<typename K, typename V>
+		using Map = Collection<std::pair<K, V>, std::map<K, V>>;
 	}
 }
 
