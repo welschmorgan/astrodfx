@@ -6,7 +6,7 @@
 
 namespace quasar {
 	namespace core {
-		const String Whitespaces = String("");
+		const String Whitespaces = String(" \t\r\v\b\n");
 
 		String &ltrim(String &s, const String &charset) {
 			while (!s.empty() && charset.find(*s.begin()) != String::npos) {
@@ -25,6 +25,21 @@ namespace quasar {
 
 		String &trim(String &s, const String &charset) {
 			return ltrim(rtrim(s, charset), charset);
+		}
+
+		String ltrimmed(const String &s, const String &charset) {
+			String ret(s);
+			return ltrim(ret);
+		}
+
+		String rtrimmed(const String &s, const String &charset) {
+			String ret(s);
+			return rtrim(ret);
+		}
+
+		String trimmed(const String &s, const String &charset) {
+			String ret(s);
+			return trim(ret);
 		}
 	}
 }

@@ -45,7 +45,13 @@ namespace quasar {
 
 		extern const String     Whitespaces;
 
+		extern String           &rtrim(String &s, const String &charset = Whitespaces);
+		extern String           &ltrim(String &s, const String &charset = Whitespaces);
 		extern String           &trim(String &s, const String &charset = Whitespaces);
+
+		extern String           rtrimmed(const String &s, const String &charset = Whitespaces);
+		extern String           ltrimmed(const String &s, const String &charset = Whitespaces);
+		extern String           trimmed(const String &s, const String &charset = Whitespaces);
 	}
 }
 
