@@ -5,7 +5,11 @@ find_package(SDL2 REQUIRED)
 add_library(quasarfx-formats
         ${QUASAR_BUILD_LIBS_TYPE}
         text/Text.cxx text/Text.h
-        text/TextFactory.cxx text/TextFactory.h)
+        text/TextFactory.cxx text/TextFactory.h
+        ini/IniSerializer.cxx ini/IniSerializer.h
+        ini/IniFile.cxx ini/IniFile.h
+        tests/TestIniSerializer.cxx
+)
 
 target_include_directories(quasarfx-formats PRIVATE ${SDL2_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/libs ${CMAKE_SOURCE_DIR}/libs/core ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
