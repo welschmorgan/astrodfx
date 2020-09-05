@@ -12,25 +12,20 @@
 
 # ifdef UNICODE
 #  include <wstring>
-namespace quasar {
-	namespace core {
-		using String = std::wstring;
-	}
-}
+using Char = wchar_t;
 # define T(x) L##x
 # else
 #  include <string>
-
-namespace quasar {
-	namespace core {
-		using String = std::string;
-	}
-}
+using Char = char;
 # define T(x) x
 # endif
 
+template class std::basic_string<char>;
+template class std::basic_string<wchar_t>;
+
 namespace quasar {
 	namespace core {
+		using String        = std::basic_string<Char>;
 		using StringList    = std::list<String>;
 		using StringVector  = std::vector<String>;
 
