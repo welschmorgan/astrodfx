@@ -62,20 +62,22 @@ namespace quasar {
 				}
 
 				core::String path;
+				core::ConfigNode *section;
 				for (auto &sec: ini.sections) {
 					for (auto &prop: sec.values) {
 						path = prop.first;
 						if (!sec.name.empty()) {
-							path = sec.name + StoreSectionDelim + path;
+							section = &into.createChild(sec.name);
+						} else {
+							section = &into;
 						}
-						std::cout << "put " << path << " = " << prop.second << std::endl;
-						into.getStore().put(path, prop.second);
+						section->setProperty(prop.first, prop.second);
 					}
 				}
 			}
 
 			void    write(ostream_type &os, const value_type &from) override {
-				auto store = from.getStore();
+				auto store = from.getProperties();
 				if (!os) {
 					return;
 				}
