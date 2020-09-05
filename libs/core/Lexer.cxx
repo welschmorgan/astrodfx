@@ -6,9 +6,6 @@
 
 namespace quasar {
 	namespace core {
-		template class BasicToken<char>;
-		template class BasicToken<wchar_t>;
-
 		template class BasicTokenList<char>;
 		template class BasicTokenList<wchar_t>;
 

@@ -9,13 +9,23 @@
 #include <formats/ini/IniLexer.h>
 #include "doctest.h"
 
-using quasar::formats::BasicToken;
-using quasar::formats::BasicIniLexer;
+using quasar::core::Token;
+using quasar::core::Lexer;
+using quasar::formats::IniLexer;
+using quasar::formats::IniTokens;
 using quasar::core::TF_REGEX;
 using quasar::core::TF_AGGREGATE;
 
-TEST_CASE("Lexer can parse file") {
-	using lexer = BasicIniLexer<char>;
+void checkToken(IniLexer::result_type &list, size_t id, const IniLexer::token_type &expected, const std::streamoff offset) {
+	auto const& actual = list.at(id);
+	REQUIRE(actual.getType() == expected.getType());
+	REQUIRE(actual.getText() == expected.getTrigger());
+	REQUIRE(actual.getTrigger() == expected.getTrigger());
+	REQUIRE(actual.getOffset() == offset);
+}
+
+TEST_CASE("IniLexer can parse file") {
+	using lexer = IniLexer;
 	using token = lexer::token_type;
 	using token_list = lexer::token_list;
 
@@ -26,6 +36,10 @@ TEST_CASE("Lexer can parse file") {
 	ss << "key = val";
 	lex.analyse(ss, tokens);
 
-	REQUIRE(tokens.size() == 6);
+	REQUIRE(tokens.size() == 4);
+	checkToken(tokens, 0, IniTokens::SectionOpen, 0);
+	checkToken(tokens, 1, IniTokens::SectionClose, 8);
+	checkToken(tokens, 2, IniTokens::NewLine, 9);
+	checkToken(tokens, 3, IniTokens::ValueAssign, 14);
 }
 

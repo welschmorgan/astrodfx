@@ -3,3 +3,8 @@
 //
 
 #include "IniLexer.h"
+
+namespace quasar {
+	namespace formats {
+	}
+}
