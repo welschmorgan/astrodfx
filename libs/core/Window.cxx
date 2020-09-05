@@ -52,7 +52,7 @@ namespace quasar {
 			auto found = mViewports.find([=](const SharedViewport &vp) {
 				return vp->getName() == name;
 			});
-			if (found) {
+			if (found != mViewports.end()) {
 				return *found;
 			}
 			return nullptr;
@@ -84,7 +84,7 @@ namespace quasar {
 			auto found = mViewports.find([=](size_t i, const SharedViewport &vp) {
 				return id == i;
 			});
-			if (found) {
+			if (found != mViewports.end()) {
 				return *found;
 			}
 			return nullptr;

@@ -78,7 +78,7 @@ namespace quasar {
 			bool                includes(const Value &wanted) const noexcept {
 				return find([&](const Value &it) {
 					return it == wanted;
-				}) != nullptr;
+				}) != mData.end();
 			}
 
 			iter_type           begin() {
@@ -108,16 +108,108 @@ namespace quasar {
 				return mData.end();
 			}
 			citer_type          cend() const {
-				return mData.end();
+				return mData.cend();
 			}
 			riter_type          rend() {
-				return mData.end();
+				return mData.rend();
 			}
 			criter_type         rend() const {
-				return mData.end();
-		}
+				return mData.rend();
+			}
 			criter_type         crend() const {
-				return mData.end();
+				return mData.crend();
+			}
+
+			iter_type           iter(const value_type &v) {
+				return iter([=](const value_type &it) {
+					return it == v;
+				});
+			}
+
+			riter_type          riter(const value_type &v) {
+				return riter([=](const value_type &it) {
+					return it == v;
+				});
+			}
+
+			citer_type          iter(const value_type &v) const {
+				return iter([=](const value_type &it) {
+					return it == v;
+				});
+			}
+			citer_type          citer(const value_type &v) const {
+				return citer([=](const value_type &it) {
+					return it == v;
+				});
+			}
+
+			criter_type         criter(const value_type &v) const {
+				return criter([=](const value_type &it) {
+					return it == v;
+				});
+			}
+
+			criter_type         riter(const value_type &v) const {
+				return riter([=](const value_type &it) {
+					return it == v;
+				});
+			}
+
+			riter_type          riter(const filter_predicate &p) {
+				for (riter_type it = mData.rbegin(); it != mData.rend(); ++it) {
+					if (p(*it)) {
+						return it;
+					}
+				}
+				return mData.rend();
+			}
+
+			riter_type          riter(const filter_predicate_with_id &p) {
+				size_t id = 0;
+				for (riter_type it = mData.rbegin(); it != mData.rend(); ++it, id++) {
+					if (p(*it, id)) {
+						return it;
+					}
+				}
+				return mData.rend();
+			}
+
+			criter_type         criter(const filter_predicate_with_id &p) const {
+				size_t id = 0;
+				for (riter_type it = mData.rbegin(); it != mData.rend(); ++it, id++) {
+					if (p(*it, id)) {
+						return it;
+					}
+				}
+				return mData.rend();
+			}
+
+			criter_type         riter(const filter_predicate_with_id &p) const {
+				size_t id = 0;
+				for (riter_type it = mData.rbegin(); it != mData.rend(); ++it, id++) {
+					if (p(*it, id)) {
+						return it;
+					}
+				}
+				return mData.rend();
+			}
+
+			criter_type         criter(const filter_predicate &p) const {
+				for (criter_type it = mData.crbegin(); it != mData.crend(); ++it) {
+					if (p(*it)) {
+						return it;
+					}
+				}
+				return mData.rend();
+			}
+
+			criter_type         riter(const filter_predicate &p) const {
+				for (criter_type it = mData.crbegin(); it != mData.crend(); ++it) {
+					if (p(*it)) {
+						return it;
+					}
+				}
+				return mData.rend();
 			}
 
 			iter_type           iter(const filter_predicate &p) {
@@ -198,13 +290,13 @@ namespace quasar {
 			 *
 			 * @return			The element found or null
 			 */
-			const Value         *find(cfilter_predicate p) const noexcept {
+			const citer_type        find(cfilter_predicate p) const noexcept {
 				for (citer_type it = mData.begin(); it != mData.end(); ++it) {
 					if (p(*it)) {
-						return &*it;
+						return it;
 					}
 				}
-				return nullptr;
+				return mData.end();
 			}
 
 
@@ -216,14 +308,14 @@ namespace quasar {
 			 *
 			 * @return			The element found or null
 			 */
-			const Value         *find(cfilter_predicate_with_id p) const noexcept {
+			const citer_type        find(cfilter_predicate_with_id p) const noexcept {
 				size_t id = 0;
 				for (citer_type it = mData.begin(); it != mData.end(); ++it, ++id) {
 					if (p(id, *it)) {
-						return &*it;
+						return it;
 					}
 				}
-				return nullptr;
+				return mData.cend();
 			}
 
 
@@ -235,13 +327,13 @@ namespace quasar {
 			 *
 			 * @return			The element found or null
 			 */
-			Value               *find(cfilter_predicate p) noexcept {
+			iter_type               find(cfilter_predicate p) noexcept {
 				for (iter_type it = mData.begin(); it != mData.end(); ++it) {
 					if (p(*it)) {
-						return &*it;
+						return it;
 					}
 				}
-				return nullptr;
+				return mData.end();
 			}
 
 
@@ -253,14 +345,14 @@ namespace quasar {
 			 *
 			 * @return			The element found or null
 			 */
-			Value               *find(cfilter_predicate_with_id p) noexcept {
+			iter_type               find(cfilter_predicate_with_id p) noexcept {
 				size_t id = 0;
 				for (iter_type it = mData.begin(); it != mData.end(); ++it, ++id) {
 					if (p(id, *it)) {
-						return &*it;
+						return it;
 					}
 				}
-				return nullptr;
+				return mData.end();
 			}
 
 			/**
@@ -272,13 +364,13 @@ namespace quasar {
 			 *
 			 * @return			The element found or null
 			 */
-			const Value         *rfind(cfilter_predicate p) const noexcept {
+			const criter_type   rfind(cfilter_predicate p) const noexcept {
 				for (criter_type it = mData.rbegin(); it != mData.rend(); ++it) {
 					if (p(*it)) {
-						return &*it;
+						return it;
 					}
 				}
-				return nullptr;
+				return mData.rend();
 			}
 
 			/**
@@ -290,14 +382,14 @@ namespace quasar {
 			 *
 			 * @return			The element found or null
 			 */
-			const Value         *rfind(cfilter_predicate_with_id p) const noexcept {
+			const criter_type   rfind(cfilter_predicate_with_id p) const noexcept {
 				size_t id = 0;
 				for (criter_type it = mData.rbegin(); it != mData.rend(); ++it, ++id) {
 					if (p(id, *it)) {
-						return &*it;
+						return it;
 					}
 				}
-				return nullptr;
+				return mData.rend();
 			}
 
 			/**
@@ -309,13 +401,13 @@ namespace quasar {
 			 *
 			 * @return			The element found or null
 			 */
-			Value               *rfind(cfilter_predicate p) noexcept {
+			riter_type          rfind(cfilter_predicate p) noexcept {
 				for (riter_type it = mData.rbegin(); it != mData.rend(); ++it) {
 					if (p(*it)) {
-						return &*it;
+						return it;
 					}
 				}
-				return nullptr;
+				return mData.rend();
 			}
 
 			/**
@@ -327,14 +419,14 @@ namespace quasar {
 			 *
 			 * @return			The element found or null
 			 */
-			Value               *rfind(cfilter_predicate_with_id p) noexcept {
+			riter_type          rfind(cfilter_predicate_with_id p) noexcept {
 				size_t id = 0;
 				for (riter_type it = mData.rbegin(); it != mData.rend(); ++it, ++id) {
 					if (p(id, *it)) {
 						return *it;
 					}
 				}
-				return nullptr;
+				return mData.rend();
 			}
 
 			/**

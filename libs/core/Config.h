@@ -72,14 +72,22 @@ namespace quasar {
 			const child_store_type      &getChildren() const noexcept { return mChildren; }
 			child_store_type            &getChildren() noexcept { return mChildren; }
 			const ConfigNode            *getChild(const String &name) const noexcept {
-				return mChildren.find([=](const ConfigNode &n) {
+				auto it = mChildren.find([&](const ConfigNode &n) {
 					return n.getName() == name;
 				});
+				if (it != mChildren.end()) {
+					return &*it;
+				}
+				return nullptr;
 			}
 			ConfigNode                  *getChild(const String &name) noexcept {
-				return mChildren.find([=](const ConfigNode &n) {
+				auto it = mChildren.find([&](const ConfigNode &n) {
 					return n.getName() == name;
 				});
+				if (it != mChildren.end()) {
+					return &*it;
+				}
+				return nullptr;
 			}
 			bool                        hasChild(const String &name) noexcept {
 				return getChild(name) != nullptr;

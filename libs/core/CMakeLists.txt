@@ -18,7 +18,11 @@ add_library(quasarfx-core
         ResourcePriority.cxx ResourcePriority.h
         Config.cxx Config.h
         Lexer.cxx Lexer.h
-        Either.cxx Either.h)
+        Either.cxx Either.h
+        Token.cxx Token.h
+        TokenList.cxx TokenList.h
+        Parser.cxx Parser.h
+)
 
 target_link_libraries(quasarfx-core stdc++fs)
 

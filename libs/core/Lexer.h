@@ -14,35 +14,6 @@
 
 namespace quasar {
 	namespace core {
-		template<typename CharT>
-		class BasicTokenList: public Collection<BasicToken<CharT>> {
-		public:
-			using base_type         = Collection<BasicToken<CharT>>;
-			using value_type        = typename base_type::value_type;
-
-			BasicTokenList() = default;
-			BasicTokenList(const BasicTokenList &rhs) = default;
-			~BasicTokenList() = default;
-
-			BasicTokenList          &operator=(const BasicTokenList &rhs) = default;
-
-			void                    add(const value_type &v) override {
-				value_type new_token;
-				new_token.setParent(this);
-				base_type::add(new_token);
-			}
-			void                    add(value_type &&v) override {
-				v.setParent(this);
-				base_type::add(v);
-			}
-
-		};
-
-		extern template class BasicTokenList<char>;
-		extern template class BasicTokenList<wchar_t>;
-
-		using TokenList             = BasicTokenList<Char>;
-
 		/**
 		 * @brief Allow easy text splitting into tokens
 		 * @tparam CharT			Type of character to handle
@@ -124,26 +95,6 @@ namespace quasar {
 		extern template class BasicLexer<wchar_t, BasicToken<wchar_t>>;
 
 		using Lexer                 = BasicLexer<Char>;
-
-		template<typename CharT, typename TokenT, typename ResultT>
-		class BasicParser {
-		public:
-			using lexer_type        = BasicLexer<CharT, TokenT>;
-
-			using token_type        = typename lexer_type::token_type;
-			using token_list        = typename lexer_type::result_type;
-
-			using result_type       = ResultT;
-
-		public:
-			BasicParser() = default;
-			BasicParser(const BasicParser &rhs) = default;
-			virtual                 ~BasicParser() = default;
-
-			BasicParser             &operator=(const BasicParser &rhs) = default;
-
-			virtual void            parse(const token_list &tokens, result_type &into) = 0;
-		};
 
 		template<typename CharT>
 		class BasicWordSplitToken: public BasicToken<CharT> {

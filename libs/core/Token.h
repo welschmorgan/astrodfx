@@ -31,11 +31,13 @@ namespace quasar {
 			using stream_type       = std::basic_istream<CharT>;
 			using string_type       = std::basic_string<char_type>;
 			using self_type         = BasicToken<CharT>;
+			using list_type         = BasicTokenList<CharT>;
 			using id_type           = long;
 
 		protected:
 			stream_type             *mStream;
 			id_type                 mType;
+			id_type                 mId;
 			unsigned int            mFlags;
 			string_type             mTrigger;
 			string_type             mText;
@@ -44,53 +46,59 @@ namespace quasar {
 
 		public:
 			BasicToken()
-					: mStream(nullptr)
-					, mType(0)
-					, mFlags(TF_NONE)
-					, mTrigger()
-					, mText()
-					, mOffset(0)
-					, mParent(nullptr)
+				: mStream(nullptr)
+				, mType(0)
+				, mId(-1)
+				, mFlags(TF_NONE)
+				, mTrigger()
+				, mText()
+				, mOffset(0)
+				, mParent(nullptr)
 			{}
 
 			BasicToken(stream_type *stream, id_type type, const string_type &trigger, const string_type &text, std::streamoff offset, unsigned int flags = TF_NONE)
-					: mStream(stream)
-					, mType(type)
-					, mFlags(flags)
-					, mTrigger()
-					, mText(text)
-					, mOffset(offset)
-					, mParent(nullptr)
+				: mStream(stream)
+				, mType(type)
+				, mId(-1)
+				, mFlags(flags)
+				, mTrigger()
+				, mText(text)
+				, mOffset(offset)
+				, mParent(nullptr)
 			{
 				setTrigger(trigger);
 			}
 
 			BasicToken(id_type type, const string_type &trigger, unsigned int flags = TF_NONE)
-					: mStream(nullptr)
-					, mType(type)
-					, mFlags(flags)
-					, mTrigger()
-					, mText()
-					, mOffset()
-					, mParent(nullptr)
+				: mStream(nullptr)
+				, mType(type)
+				, mId(-1)
+				, mFlags(flags)
+				, mTrigger()
+				, mText()
+				, mOffset()
+				, mParent(nullptr)
 			{
 				setTrigger(trigger);
 			}
 
 			BasicToken(const BasicToken &rhs)
-					: mStream(rhs.mStream)
-					, mType(rhs.mType)
-					, mFlags(rhs.mFlags)
-					, mTrigger(rhs.mTrigger)
-					, mText(rhs.mText)
-					, mOffset(rhs.mOffset)
-					, mParent(rhs.mParent)
+				: mStream(rhs.mStream)
+				, mType(rhs.mType)
+				, mId(-1)
+				, mFlags(rhs.mFlags)
+				, mTrigger(rhs.mTrigger)
+				, mText(rhs.mText)
+				, mOffset(rhs.mOffset)
+				, mParent(rhs.mParent)
 			{}
 
 			virtual ~BasicToken() noexcept = default;
 
 			BasicToken              &operator=(const BasicToken &rhs) {
 				mStream = rhs.mStream;
+				mType = rhs.mType;
+				mId = rhs.mId;
 				mFlags = rhs.mFlags;
 				mTrigger = rhs.mTrigger;
 				mText = rhs.mText;
@@ -100,7 +108,7 @@ namespace quasar {
 			}
 
 			bool                    operator==(const BasicToken &rhs) const noexcept {
-				return mStream == rhs.mStream && mTrigger == rhs.mTrigger && mText == rhs.mText && mOffset == rhs.mOffset && mType == rhs.mType;
+				return mId == rhs.mId && mStream == rhs.mStream && mTrigger == rhs.mTrigger && mText == rhs.mText && mOffset == rhs.mOffset && mType == rhs.mType;
 			}
 
 			bool                    operator!=(const BasicToken &rhs) const noexcept {
@@ -110,6 +118,9 @@ namespace quasar {
 			unsigned int            getFlags() const noexcept { return mFlags; }
 			bool                    isRegex() const noexcept { return getFlags() & TF_REGEX; }
 			bool                    shouldAggregate() const noexcept { return getFlags() & TF_AGGREGATE; }
+
+			id_type                 getId() const noexcept { return mId; }
+			self_type               setId(const id_type id) noexcept { mId = id; return *this; }
 
 			const string_type       &getTrigger() const noexcept { return mTrigger; }
 			BasicToken              &setTrigger(const string_type &t) noexcept {
@@ -133,9 +144,13 @@ namespace quasar {
 			const stream_type       *getStream() const noexcept { return mStream; }
 			BasicToken              &setStream(stream_type *t) noexcept { mStream = t; return *this; }
 
-			BasicTokenList<CharT>       *getParent() noexcept { return mParent; }
-			const BasicTokenList<CharT> *getParent() const noexcept { return mParent; }
-			BasicToken                  &setParent(BasicTokenList<CharT> *p) noexcept { mParent = p; return *this; }
+			list_type               *getParent() noexcept { return mParent; }
+			const list_type         *getParent() const noexcept { return mParent; }
+			BasicToken              &setParent(list_type *p) noexcept { mParent = p; return *this; }
+
+			list_type               takePreviousUntil(const list_type &stoppers, bool including = false);
+			list_type               takeNextUntil(const list_type &stoppers, bool including = false);
+
 		};
 
 		extern template class BasicToken<char>;

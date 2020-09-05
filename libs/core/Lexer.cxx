@@ -6,9 +6,6 @@
 
 namespace quasar {
 	namespace core {
-		template class BasicTokenList<char>;
-		template class BasicTokenList<wchar_t>;
-
 		template<> const BasicWordSplitToken<char> BasicWordSplitToken<char>::Word(0, "\\w", TF_REGEX | TF_AGGREGATE);
 		template<> const BasicWordSplitToken<char> BasicWordSplitToken<char>::NonWord(1, "\\W", TF_REGEX | TF_AGGREGATE);
 
