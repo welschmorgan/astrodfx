@@ -151,6 +151,12 @@ namespace quasar {
 			list_type               takePreviousUntil(const list_type &stoppers, bool including = false);
 			list_type               takeNextUntil(const list_type &stoppers, bool including = false);
 
+			const self_type         *getPreviousSibling(const self_type &type) const;
+			self_type               *getPreviousSibling(const self_type &type);
+
+			const self_type         *getNextSibling(const self_type &type) const;
+			self_type               *getNextSibling(const self_type &type);
+
 		};
 
 		extern template class BasicToken<char>;

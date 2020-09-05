@@ -65,3 +65,34 @@ TEST_CASE("Token takePreviousUntil works") {
 	REQUIRE(taken.at(1) == type3);
 	REQUIRE(taken.at(2) == type2);
 }
+
+TEST_CASE("Token getPreviousSibling works") {
+	const Token type0(0, "0");
+	const Token type1(1, "1");
+	const Token type2(2, "2");
+	const Token type3(3, "3");
+	const Token type4(4, "4");
+	TokenList tokens({
+		type0, type1, type2, type3, type4
+	});
+	// take without including stopper
+	auto got = tokens->back().getPreviousSibling(type2);
+	REQUIRE(got != nullptr);
+	REQUIRE(got == &tokens.at(2));
+}
+
+
+TEST_CASE("Token getPreviousSibling works") {
+	const Token type0(0, "0");
+	const Token type1(1, "1");
+	const Token type2(2, "2");
+	const Token type3(3, "3");
+	const Token type4(4, "4");
+	TokenList tokens({
+	    type0, type1, type2, type3, type4
+	});
+	// take without including stopper
+	auto got = tokens->front().getNextSibling(type2);
+	REQUIRE(got != nullptr);
+	REQUIRE(got == &tokens.at(2));
+}
