@@ -18,6 +18,8 @@ add_library(quasarfx-formats
         ini/IniSerializer.cxx ini/IniSerializer.h
         ini/IniFile.cxx ini/IniFile.h
         tests/TestIniSerializer.cxx
+        ini/IniTokens.cxx ini/IniTokens.h
+        ini/IniLexer.cxx ini/IniLexer.h
 )
 
 target_include_directories(quasarfx-formats PRIVATE ${SDL2_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/libs ${CMAKE_SOURCE_DIR}/libs/core ${CMAKE_CURRENT_SOURCE_DIR}/include)
