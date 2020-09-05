@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.1...3.16)
 
 add_library(quasarfx-core
         ${QUASAR_BUILD_LIBS_TYPE}
-        String.h
+        String.cxx String.h
         Platform.h
         Engine.cxx Engine.h
         Window.cxx Window.h

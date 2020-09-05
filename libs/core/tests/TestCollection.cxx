@@ -5,15 +5,30 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include <core/Collection.h>
+#include <core/String.h>
 #include "doctest.h"
 
 using quasar::core::Collection;
+using quasar::core::Map;
+using quasar::core::String;
 
 TEST_CASE("Collection<vector>'s take works") {
 	auto collec = Collection<int>({1, 3, 6});
 	auto filtered = collec.take(2);
-	REQUIRE(filtered.size() == 1);
-	REQUIRE(filtered->at(0) == 6);
+	REQUIRE(collec.size() == 1);
+	REQUIRE(filtered.size() == 2);
+	REQUIRE(collec->at(0) == 6);
+	REQUIRE(filtered->at(0) == 1);
+}
+
+TEST_CASE("Collection<map>'s take(keys) works") {
+	auto collec = Map<String, int>({{"key1", 1}, {"key2", 3}, {"key3", 6}});
+	auto filtered = collec.take(std::vector<String>{"key1", "key3"});
+	REQUIRE(collec.size() == 1);
+	REQUIRE(filtered.size() == 2);
+	REQUIRE(collec->at("key2") == 3);
+	REQUIRE(filtered->at("key1") == 1);
+	REQUIRE(filtered->at("key3") == 6);
 }
 
 TEST_CASE("Collection<vector> can be searched") {

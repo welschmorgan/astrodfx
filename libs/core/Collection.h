@@ -84,10 +84,16 @@ namespace quasar {
 			iter_type           begin() {
 				return mData.begin();
 			}
+			citer_type          begin() const {
+				return mData.begin();
+			}
 			citer_type          cbegin() const {
 				return mData.cbegin();
 			}
 			riter_type          rbegin() {
+				return mData.rbegin();
+			}
+			criter_type         rbegin() const {
 				return mData.rbegin();
 			}
 			criter_type         crbegin() const {
@@ -98,12 +104,18 @@ namespace quasar {
 			iter_type           end() {
 				return mData.end();
 			}
+			citer_type          end() const {
+				return mData.end();
+			}
 			citer_type          cend() const {
 				return mData.end();
 			}
 			riter_type          rend() {
 				return mData.end();
 			}
+			criter_type         rend() const {
+				return mData.end();
+		}
 			criter_type         crend() const {
 				return mData.end();
 			}
@@ -563,6 +575,20 @@ namespace quasar {
 
 			Collection          &operator=(const Collection &rhs) = default;
 
+			value_type          &operator[](size_t pos) {
+				return base_type::mData[pos];
+			}
+			const value_type    &operator[](size_t pos) const {
+				return base_type::mData[pos];
+			}
+
+			value_type          &at(size_t pos) {
+				return base_type::mData.at(pos);
+			}
+			const value_type    &at(size_t pos) const {
+				return base_type::mData.at(pos);
+			}
+
 			self_type           take(size_t n) {
 				self_type       ret;
 				while (n--) {
@@ -572,8 +598,8 @@ namespace quasar {
 				return ret;
 			}
 
-			void                add(value_type &&v) { base_type::mData.push_back(v); }
-			void                add(const value_type &v) { base_type::mData.push_back(v); }
+			virtual void        add(value_type &&v) { base_type::mData.push_back(v); }
+			virtual void        add(const value_type &v) { base_type::mData.push_back(v); }
 		};
 
 		template<typename Value>
@@ -596,17 +622,31 @@ namespace quasar {
 
 			Collection          &operator=(const Collection &rhs) = default;
 
-			void                add(item_type &&v) {
-				auto it = base_type::mData.insert(v);
-				if (!it.second) {
-					throw std::runtime_error("Failed to insert pair!");
-				}
+			value_type          &operator[](const key_type pos) {
+				return base_type::mData[pos];
 			}
-			void                add(const item_type &v) {
-				auto it = base_type::mData.insert(v);
-				if (!it.second) {
-					throw std::runtime_error("Failed to insert pair!");
+
+			const value_type    &operator[](const key_type pos) const {
+				return base_type::mData[pos];
+			}
+
+			value_type          &at(const key_type pos) {
+				return base_type::mData.at(pos);
+			}
+
+			const value_type    &at(const key_type pos) const {
+				return base_type::mData.at(pos);
+			}
+
+			template<template<class, class> class Container = std::vector>
+			self_type           take(const Container<key_type, std::allocator<key_type>> &keys) {
+				self_type       ret;
+				for (auto it = keys.begin(); it != keys.end(); it++) {
+					auto found = base_type::mData.find(*it);
+					ret.put(found->first, found->second);
+					base_type::mData.erase(found);
 				}
+				return ret;
 			}
 
 			self_type           take(size_t n) {
@@ -618,12 +658,25 @@ namespace quasar {
 				return ret;
 			}
 
-			self_type           &put(const key_type &k, const value_type &v) {
+			virtual void        add(item_type &&v) {
+				auto it = base_type::mData.insert(v);
+				if (!it.second) {
+					throw std::runtime_error("Failed to insert pair!");
+				}
+			}
+			virtual void        add(const item_type &v) {
+				auto it = base_type::mData.insert(v);
+				if (!it.second) {
+					throw std::runtime_error("Failed to insert pair!");
+				}
+			}
+
+			virtual self_type   &put(const key_type &k, const value_type &v) {
 				add(std::make_pair(k, v));
 				return *this;
 			}
 
-			self_type           &put(const key_type &k, value_type &&v) {
+			virtual self_type   &put(const key_type &k, value_type &&v) {
 				add(std::make_pair(k, v));
 				return *this;
 			}
