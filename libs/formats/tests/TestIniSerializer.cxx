@@ -22,8 +22,8 @@ TEST_CASE("IniSerializer parses stream containing no section") {
 	ss << "my-value2 = 'test'" << endl;
 	ss << "my.value=42" << endl;
 	ser.read(ss, cfg);
-	REQUIRE(cfg.getStore()->at("my.value") == "42");
-	REQUIRE(cfg.getStore()->at("my-value2") == "'test'");
+	REQUIRE(cfg.getProperty("my.value") == "42");
+	REQUIRE(cfg.getProperty("my-value2") == "'test'");
 }
 
 TEST_CASE("IniSerializer parses stream containing a single section") {
@@ -35,8 +35,8 @@ TEST_CASE("IniSerializer parses stream containing a single section") {
 	ss << "my-value2 = 'test'" << endl;
 	ss << "my.value=42" << endl;
 	ser.read(ss, cfg);
-	REQUIRE(cfg.getStore()->at("general::my.value") == "42");
-	REQUIRE(cfg.getStore()->at("general::my-value2") == "'test'");
+	REQUIRE(cfg.getChild("general")->getProperty("my.value") == "42");
+	REQUIRE(cfg.getChild("general")->getProperty("my-value2") == "'test'");
 }
 
 TEST_CASE("IniSerializer parses stream containing multiple sections") {
@@ -51,10 +51,10 @@ TEST_CASE("IniSerializer parses stream containing multiple sections") {
 	ss << "my.value3=43" << endl;
 	ss << "my-value4 = 'test'" << endl;
 	ser.read(ss, cfg);
-	REQUIRE(cfg.getStore()->at("section1::my.value") == "42");
-	REQUIRE(cfg.getStore()->at("section1::my-value2") == "'test'");
-	REQUIRE(cfg.getStore()->at("section2::my.value3") == "43");
-	REQUIRE(cfg.getStore()->at("section2::my-value4") == "'test'");
+	REQUIRE(cfg.getChild("section1")->getProperty("my.value") == "42");
+	REQUIRE(cfg.getChild("section1")->getProperty("my-value2") == "'test'");
+	REQUIRE(cfg.getChild("section2")->getProperty("my.value3") == "43");
+	REQUIRE(cfg.getChild("section2")->getProperty("my-value4") == "'test'");
 }
 
 TEST_CASE("IniSerializer writes stream containing no section") {
@@ -62,8 +62,8 @@ TEST_CASE("IniSerializer writes stream containing no section") {
 	Config cfg;
 	StringStream ss;
 
-	cfg.getStore().put("value1", "42");
-	cfg.getStore().put("value2", "84");
+	cfg.getProperties().put("value1", "42");
+	cfg.getProperties().put("value2", "84");
 	ser.write(ss, cfg);
 
 	auto result = ss.str();
@@ -75,8 +75,8 @@ TEST_CASE("IniSerializer writes stream containing a single section") {
 	Config cfg;
 	StringStream ss;
 
-	cfg.getStore().put("general::value1", "42");
-	cfg.getStore().put("general::value2", "84");
+	cfg.getProperties().put("general::value1", "42");
+	cfg.getProperties().put("general::value2", "84");
 	ser.write(ss, cfg);
 
 	auto result = ss.str();
@@ -88,10 +88,10 @@ TEST_CASE("IniSerializer writes stream containing multiple section") {
 	Config cfg;
 	StringStream ss;
 
-	cfg.getStore().put("section1::value1", "42");
-	cfg.getStore().put("section1::value2", "42");
-	cfg.getStore().put("section2::value1", "84");
-	cfg.getStore().put("section2::value2", "84");
+	cfg.getProperties().put("section1::value1", "42");
+	cfg.getProperties().put("section1::value2", "42");
+	cfg.getProperties().put("section2::value1", "84");
+	cfg.getProperties().put("section2::value2", "84");
 	ser.write(ss, cfg);
 
 	auto result = ss.str();

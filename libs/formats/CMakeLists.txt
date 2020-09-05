@@ -4,8 +4,17 @@ find_package(SDL2 REQUIRED)
 
 add_library(quasarfx-formats
         ${QUASAR_BUILD_LIBS_TYPE}
+        # text
         text/Text.cxx text/Text.h
         text/TextFactory.cxx text/TextFactory.h
+
+        # json
+        json/JsonFile.cxx json/JsonFile.h
+        json/JsonValueType.cxx json/JsonValueType.h
+        json/JsonValue.cxx json/JsonValue.h
+        json/JsonSerializer.cxx json/JsonSerializer.h
+
+        # ini
         ini/IniSerializer.cxx ini/IniSerializer.h
         ini/IniFile.cxx ini/IniFile.h
         tests/TestIniSerializer.cxx
