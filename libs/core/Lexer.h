@@ -20,6 +20,9 @@ namespace quasar {
 												// be aggregated into 1 token
 		};
 
+		template<typename CharT>
+		class BasicTokenList;
+
 		/**
 		 * @brief Represent a token (separator/symbol) in a text
 		 * @tparam CharT		Type of characters to handle
@@ -40,6 +43,7 @@ namespace quasar {
 			string_type             mTrigger;
 			string_type             mText;
 			std::streamoff          mOffset;
+			BasicTokenList<CharT>   *mParent;
 
 		public:
 			BasicToken()
@@ -49,6 +53,7 @@ namespace quasar {
 				, mTrigger()
 				, mText()
 				, mOffset(0)
+				, mParent(nullptr)
 			{}
 
 			BasicToken(stream_type *stream, id_type type, const string_type &trigger, const string_type &text, std::streamoff offset, unsigned int flags = TF_NONE)
@@ -58,6 +63,7 @@ namespace quasar {
 					, mTrigger()
 					, mText(text)
 					, mOffset(offset)
+					, mParent(nullptr)
 			{
 				setTrigger(trigger);
 			}
@@ -69,6 +75,7 @@ namespace quasar {
 					, mTrigger()
 					, mText()
 					, mOffset()
+					, mParent(nullptr)
 			{
 				setTrigger(trigger);
 			}
@@ -80,6 +87,7 @@ namespace quasar {
 				, mTrigger(rhs.mTrigger)
 				, mText(rhs.mText)
 				, mOffset(rhs.mOffset)
+				, mParent(rhs.mParent)
 			{}
 
 			virtual ~BasicToken() noexcept = default;
@@ -90,6 +98,7 @@ namespace quasar {
 				mTrigger = rhs.mTrigger;
 				mText = rhs.mText;
 				mOffset = rhs.mOffset;
+				mParent = rhs.mParent;
 				return *this;
 			}
 
@@ -126,7 +135,41 @@ namespace quasar {
 			stream_type             *getStream() noexcept { return mStream; }
 			const stream_type       *getStream() const noexcept { return mStream; }
 			BasicToken              &setStream(stream_type *t) noexcept { mStream = t; return *this; }
+
+			BasicTokenList<CharT>       *getParent() noexcept { return mParent; }
+			const BasicTokenList<CharT> *getParent() const noexcept { return mParent; }
+			BasicToken                  &setParent(BasicTokenList<CharT> *p) noexcept { mParent = p; return *this; }
 		};
+
+		extern template class BasicToken<char>;
+		extern template class BasicToken<wchar_t>;
+
+		template<typename CharT>
+		class BasicTokenList: public Collection<BasicToken<CharT>> {
+		public:
+			using base_type         = Collection<BasicToken<CharT>>;
+			using value_type        = typename base_type::value_type;
+
+			BasicTokenList() = default;
+			BasicTokenList(const BasicTokenList &rhs) = default;
+			~BasicTokenList() = default;
+
+			BasicTokenList          &operator=(const BasicTokenList &rhs) = default;
+
+			void                    add(const value_type &v) override {
+				value_type new_token;
+				new_token.setParent(this);
+				base_type::add(new_token);
+			}
+			void                    add(value_type &&v) override {
+				v.setParent(this);
+				base_type::add(v);
+			}
+
+		};
+
+		extern template class BasicTokenList<char>;
+		extern template class BasicTokenList<wchar_t>;
 
 		/**
 		 * @brief Allow easy text splitting into tokens
@@ -140,7 +183,7 @@ namespace quasar {
 			using string_type       = std::basic_string<char_type>;
 			using token_type        = TokenT;
 			using stream_type       = std::basic_istream<CharT>;
-			using token_list        = std::list<token_type>;
+			using token_list        = std::vector<token_type>;
 			using result_type       = Collection<token_type>;
 			using self_type         = BasicLexer<CharT, TokenT>;
 
@@ -169,42 +212,7 @@ namespace quasar {
 				return res;
 			}
 
-			virtual void            analyse(stream_type &is, result_type &res) {
-				char                buf[1024] = {0};
-				char                *pBuf;
-				ssize_t             numRead = 0;
-				std::streamoff      offset = 0;
-				while ((numRead = is.readsome(buf, 1024)) > 0) {
-					// read stream block by block
-					buf[numRead] = 0;
-					pBuf = &buf[0];
-					while (pBuf && *pBuf) {
-						// process each char
-						for (auto it = mSeparators.begin(); it != mSeparators.end(); it++) {
-							// for each separators, try and match it
-							if (!it->isRegex()) {
-								// check trigger found at start of text
-								if (strstr(pBuf, it->getTrigger().data()) == pBuf) {
-									// register token
-									addResult(res, it, is, it->getTrigger(), offset);
-									break;
-								}
-							} else {
-								// check regex matches start of text
-								string_type sub(pBuf);
-								std::smatch matches;
-								if (std::regex_search(sub, matches, getRegex(it->getTrigger()))) {
-									// register token
-									addResult(res, it, is, matches[0].str(), offset);
-									break;
-								}
-							}
-						}
-						pBuf++;
-						offset++;
-					}
-				}
-			}
+			virtual void            analyse(stream_type &is, result_type &res);
 
 			const token_list        &getSeparators() const noexcept { return mSeparators; }
 			token_list              &getSeparators() noexcept { return mSeparators; }
@@ -232,7 +240,17 @@ namespace quasar {
 					res.add(new_tok);
 				}
 			}
+
+			char_type               *find_str(const char_type *needle, const char_type *haystack);
 		};
+
+		template<> char *BasicLexer<char, BasicToken<char>>::find_str(const char *needle, const char *haystack);
+
+		template<> wchar_t *BasicLexer<wchar_t, BasicToken<wchar_t>>::find_str(const wchar_t *needle, const wchar_t *haystack);
+
+		extern template class BasicLexer<char, BasicToken<char>>;
+		extern template class BasicLexer<wchar_t, BasicToken<wchar_t>>;
+
 
 		template<typename CharT, typename TokenT, typename ResultT>
 		class BasicParser {
