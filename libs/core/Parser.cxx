@@ -6,7 +6,7 @@
 
 namespace quasar {
 	namespace core {
-		template class BasicParser<char>;
-		template class BasicParser<wchar_t>;
+		template class BasicSyntaxError<char>;
+		template class BasicSyntaxError<wchar_t>;
 	}
 }

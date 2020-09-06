@@ -82,7 +82,7 @@ TEST_CASE("Token getPreviousSibling works") {
 }
 
 
-TEST_CASE("Token getPreviousSibling works") {
+TEST_CASE("Token getNextSibling works") {
 	const Token type0(0, "0");
 	const Token type1(1, "1");
 	const Token type2(2, "2");
@@ -95,4 +95,38 @@ TEST_CASE("Token getPreviousSibling works") {
 	auto got = tokens->front().getNextSibling(type2);
 	REQUIRE(got != nullptr);
 	REQUIRE(got == &tokens.at(2));
+}
+
+TEST_CASE("Token getPreviousSiblings works") {
+	const Token type0(0, "0");
+	const Token type1(1, "1");
+	const Token type2(2, "2");
+	const Token type3(3, "3");
+	const Token type4(4, "4");
+	TokenList tokens({
+        type0, type1, type2, type3, type4
+	});
+	// take without including stopper
+	auto got = tokens->at(2).getPreviousSiblings({type0});
+	REQUIRE(got.size() == 1);
+	REQUIRE(got.at(0).getType() == type0.getType());
+	REQUIRE(got.at(0).getId() == type0.getId());
+	REQUIRE(got.at(0).getTrigger() == type0.getTrigger());
+}
+
+TEST_CASE("Token getNextSiblings works") {
+	const Token type0(0, "0");
+	const Token type1(1, "1");
+	const Token type2(2, "2");
+	const Token type3(3, "3");
+	const Token type4(4, "4");
+	TokenList tokens({
+        type0, type1, type2, type3, type4
+	});
+	// take without including stopper
+	auto got = tokens->at(2).getNextSiblings({type4});
+	REQUIRE(got.size() == 1);
+	REQUIRE(got.at(0).getType() == type4.getType());
+	REQUIRE(got.at(0).getId() == type4.getId());
+	REQUIRE(got.at(0).getTrigger() == type4.getTrigger());
 }

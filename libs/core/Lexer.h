@@ -72,13 +72,15 @@ namespace quasar {
 				return regex_it->second;
 			}
 
-			void                    addResult(result_type &res, typename token_list::const_iterator sep, stream_type &stream, const string_type &text, std::streamoff offset) {
+			void                    addResult(result_type &res, typename token_list::const_iterator sep, stream_type &stream, const string_type &text, std::streamoff offset, unsigned long line, unsigned short col) {
 				if (!res->empty() && sep->shouldAggregate() && res->back().getType() == sep->getType()) {
 					res->back().setText(res->back().getText() + text);
 				} else {
 					token_type new_tok(*sep);
 					new_tok.setStream(&stream);
 					new_tok.setText(text);
+					new_tok.setLine(line);
+					new_tok.setColumn(col);
 					new_tok.setOffset(offset);
 					res.add(new_tok);
 				}
@@ -94,7 +96,7 @@ namespace quasar {
 		extern template class BasicLexer<char, BasicToken<char>>;
 		extern template class BasicLexer<wchar_t, BasicToken<wchar_t>>;
 
-		using Lexer                 = BasicLexer<Char>;
+		using Lexer                 = BasicLexer<Char, BasicToken<char>>;
 
 		template<typename CharT>
 		class BasicWordSplitToken: public BasicToken<CharT> {

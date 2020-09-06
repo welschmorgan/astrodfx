@@ -1,4 +1,4 @@
-//
+ //
 // Created by darkboss on 9/5/20.
 //
 
@@ -6,13 +6,74 @@
 #define QUASARFX_PARSER_H
 
 #include "Lexer.h"
+#include "Location.h"
+#include "Exception.h"
 
 namespace quasar {
 	namespace core {
 		template<typename CharT>
-		using BasicParserNode       = BasicToken<CharT>;
+		class BasicSyntaxError: public BasicException<CharT> {
+		public:
+			using script_location_type  = BasicScriptLocation<CharT>;
+			using source_location_type  = BasicSourceLocation<CharT>;
+			using base_type             = BasicException<CharT>;
+			using string_type           = typename base_type::string_type;
+			using builder_type          = typename base_type::builder_type;
 
-		template<typename CharT, typename LexerT = BasicLexer<CharT, BasicToken<CharT>>, typename NodeT = BasicParserNode<CharT>>
+		protected:
+			script_location_type        mScriptLoc;
+
+			static std::string          build(const string_type &msg, const script_location_type &script_loc, const source_location_type &source_loc = source_location_type()) {
+				builder_type builder;
+				builder << "[Syntax Error] " << std::string(msg.begin(), msg.end());
+				if (script_loc.hasFile()) {
+					builder << " in file " << std::string(script_loc.getFile().begin(), script_loc.getFile().end());
+				}
+				if (script_loc.hasLine()) {
+					builder << " at line " << script_loc.getLine();
+				}
+				if (script_loc.hasColumn()) {
+					builder << ", column " << script_loc.getColumn();
+				}
+				if (script_loc.hasOffset()) {
+					builder << " (offset: " << script_loc.getOffset() << ")";
+				}
+				return builder.str();
+			}
+
+		public:
+			BasicSyntaxError(const std::basic_string<char> &msg, const script_location_type &script_loc, const source_location_type &source_loc = source_location_type())
+				: base_type()
+				, mScriptLoc(script_loc)
+			{
+				base_type::mMessage = string_type(msg.begin(), msg.end());
+				base_type::mFullMessage = build(string_type(msg.begin(), msg.end()), script_loc, source_loc);
+				base_type::mLocation = source_loc;
+			}
+			BasicSyntaxError(const std::basic_string<wchar_t> &msg, const script_location_type &script_loc, const source_location_type &source_loc = source_location_type())
+				: base_type()
+				, mScriptLoc(script_loc)
+			{
+				base_type::mMessage = string_type(msg.begin(), msg.end());
+				base_type::mFullMessage = build(string_type(msg.begin(), msg.end()), script_loc, source_loc);
+				base_type::mLocation = source_loc;
+			}
+			BasicSyntaxError(const BasicSyntaxError &rhs) = default;
+			virtual ~BasicSyntaxError() = default;
+
+			BasicSyntaxError                 &operator=(const BasicSyntaxError &rhs) = default;
+
+			const script_location_type  &getScriptLocation() const noexcept {
+				return mScriptLoc;
+			}
+		};
+
+		extern template class BasicSyntaxError<char>;
+		extern template class BasicSyntaxError<wchar_t>;
+
+		using SyntaxError = BasicSyntaxError<Char>;
+
+		template<typename CharT, typename ResultT, typename LexerT = BasicLexer<CharT, BasicToken<CharT>>>
 		class BasicParser {
 		public:
 			using lexer_type        = LexerT;
@@ -20,8 +81,7 @@ namespace quasar {
 			using token_type        = typename lexer_type::token_type;
 			using token_list        = typename lexer_type::result_type;
 
-			using node_type         = NodeT;
-			using result_type       = Collection<node_type>;
+			using result_type       = ResultT;
 
 		public:
 			BasicParser() = default;
@@ -40,10 +100,8 @@ namespace quasar {
 			virtual void            parse(const token_list &tokens, result_type &into) = 0;
 		};
 
-		extern template class       BasicParser<char>;
-		extern template class       BasicParser<wchar_t>;
-
-		using Parser                = BasicParser<char>;
+		template<typename ResultT, typename LexerT = BasicLexer<Char, BasicToken<Char>>>
+		using Parser                = BasicParser<Char, ResultT, LexerT>;
 	}
 }
 

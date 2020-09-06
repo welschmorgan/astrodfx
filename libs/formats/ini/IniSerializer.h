@@ -47,7 +47,7 @@ namespace quasar {
 				}
 				while (std::getline(is, line)) {
 					// for each lines in input stream
-					line = core::trim(line);
+					line.trim();
 					removeComments(line);
 					if (!line.empty()) {
 						// process line
@@ -124,7 +124,7 @@ namespace quasar {
 			void readSectionName(core::String &line, IniFile &ini) {
 				line.erase(line.begin());
 				line.erase(--line.end());
-				ini.sections.push_back(IniSection(core::trim(line)));
+				ini.sections.push_back(IniSection(line.trim()));
 			}
 
 			void readProperty(core::String &line, IniFile &ini) {
@@ -138,8 +138,8 @@ namespace quasar {
 					// no value ??
 					key = line;
 				}
-				key = core::trim(key);
-				val = core::trim(val);
+				key = key.trim();
+				val = val.trim();
 				ini.sections.back().values[key] = val;
 			}
 

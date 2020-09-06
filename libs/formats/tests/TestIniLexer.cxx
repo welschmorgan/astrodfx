@@ -12,7 +12,6 @@
 using quasar::core::Token;
 using quasar::core::Lexer;
 using quasar::formats::IniLexer;
-using quasar::formats::IniTokens;
 using quasar::core::TF_REGEX;
 using quasar::core::TF_AGGREGATE;
 
@@ -37,9 +36,9 @@ TEST_CASE("IniLexer can parse file") {
 	lex.analyse(ss, tokens);
 
 	REQUIRE(tokens.size() == 4);
-	checkToken(tokens, 0, IniTokens::SectionOpen, 0);
-	checkToken(tokens, 1, IniTokens::SectionClose, 8);
-	checkToken(tokens, 2, IniTokens::NewLine, 9);
-	checkToken(tokens, 3, IniTokens::ValueAssign, 14);
+	checkToken(tokens, 0, IniLexer::SectionOpen, 0);
+	checkToken(tokens, 1, IniLexer::SectionClose, 8);
+	checkToken(tokens, 2, IniLexer::NewLine, 9);
+	checkToken(tokens, 3, IniLexer::ValueAssign, 14);
 }
 

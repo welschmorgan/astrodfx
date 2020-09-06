@@ -21,6 +21,8 @@ namespace quasar {
 		void                    BasicLexer<CharT, TokenT>::analyse(stream_type &is, result_type &res) {
 			char_type           buf[1024] = {0};
 			char_type           *pBuf;
+			unsigned long       line = 1;
+			unsigned short      column = 1;
 			ssize_t             numRead = 0;
 			std::streamoff      offset = 0;
 			while ((numRead = is.readsome(buf, 1024)) > 0) {
@@ -35,7 +37,7 @@ namespace quasar {
 							// check trigger found at start of text
 							if (this->find_str(it->getTrigger().data(), pBuf) == pBuf) {
 								// register token
-								addResult(res, it, is, it->getTrigger(), offset);
+								addResult(res, it, is, it->getTrigger(), offset, line, column);
 								break;
 							}
 						} else {
@@ -44,10 +46,16 @@ namespace quasar {
 							std::match_results<const char_type *> matches;
 							if (std::regex_search(pBuf, matches, getRegex(it->getTrigger()))) {
 								// register token
-								addResult(res, it, is, matches[0].str(), offset);
+								addResult(res, it, is, matches[0].str(), offset, line, column);
 								break;
 							}
 						}
+					}
+					if (*pBuf == '\n') {
+						line++;
+						column = 1;
+					} else {
+						column++;
 					}
 					pBuf++;
 					offset++;

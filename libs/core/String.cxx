@@ -3,43 +3,48 @@
 //
 
 # include "String.h"
+# include "Charsets.h"
 
 namespace quasar {
 	namespace core {
-		const String Whitespaces = String(" \t\r\v\b\n");
-
-		String &ltrim(String &s, const String &charset) {
-			while (!s.empty() && charset.find(*s.begin()) != String::npos) {
-				s.erase(s.begin());
+		template<typename CharT>
+		BasicString<CharT> &BasicString<CharT>::ltrim(const BasicString<CharT> &charset) {
+			while (!base_type::empty() && charset.find(*base_type::begin()) != BasicString<CharT>::npos) {
+				base_type::erase(base_type::begin());
 			}
-			return s;
+			return *this;
 		}
 
-		String &rtrim(String &s, const String &charset) {
-			auto it = --s.end();
-			while (!s.empty() && it != s.end() && charset.find(*it) != String::npos) {
-				it = s.erase(it);
+		template<typename CharT> BasicString<CharT> &BasicString<CharT>::rtrim(const BasicString<CharT> &charset) {
+			auto it = --base_type::end();
+			while (!base_type::empty() && it != base_type::end() && charset.find(*it) != BasicString<CharT>::npos) {
+				it = base_type::erase(it);
 			}
-			return s;
+			return *this;
 		}
 
-		String &trim(String &s, const String &charset) {
-			return ltrim(rtrim(s, charset), charset);
+		template<typename CharT> BasicString<CharT> &BasicString<CharT>::trim(const BasicString<CharT> &charset) {
+			rtrim(charset);
+			ltrim(charset);
+			return *this;
 		}
 
-		String ltrimmed(const String &s, const String &charset) {
-			String ret(s);
-			return ltrim(ret);
+		template<typename CharT> BasicString<CharT> BasicString<CharT>::ltrimmed(const BasicString<CharT> &charset) const {
+			BasicString<CharT> ret(*this);
+			return ret.ltrim();
 		}
 
-		String rtrimmed(const String &s, const String &charset) {
-			String ret(s);
-			return rtrim(ret);
+		template<typename CharT> BasicString<CharT> BasicString<CharT>::rtrimmed(const BasicString<CharT> &charset) const {
+			BasicString<CharT> ret(*this);
+			return ret.rtrim();
 		}
 
-		String trimmed(const String &s, const String &charset) {
-			String ret(s);
-			return trim(ret);
+		template<typename CharT> BasicString<CharT> BasicString<CharT>::trimmed(const BasicString<CharT> &charset) const {
+			BasicString<CharT> ret(*this);
+			return ret.trim();
 		}
+
+		template class BasicString<char>;
+		template class BasicString<wchar_t>;
 	}
 }

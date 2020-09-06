@@ -6,6 +6,7 @@
 #define QUASARFX_TOKEN_H
 
 # include "String.h"
+#include "Location.h"
 
 namespace quasar {
 	namespace core {
@@ -33,6 +34,10 @@ namespace quasar {
 			using self_type         = BasicToken<CharT>;
 			using list_type         = BasicTokenList<CharT>;
 			using id_type           = long;
+			using location_type     = BasicScriptLocation<CharT>;
+			using line_id_type      = typename location_type::line_id_type;
+			using column_id_type    = typename location_type::column_id_type;
+			using offset_type       = typename location_type::offset_type;
 
 		protected:
 			stream_type             *mStream;
@@ -41,7 +46,10 @@ namespace quasar {
 			unsigned int            mFlags;
 			string_type             mTrigger;
 			string_type             mText;
-			std::streamoff          mOffset;
+			offset_type             mOffset;
+			string_type             mPath;
+			line_id_type            mLine;
+			column_id_type          mColumn;
 			BasicTokenList<CharT>   *mParent;
 
 		public:
@@ -53,10 +61,13 @@ namespace quasar {
 				, mTrigger()
 				, mText()
 				, mOffset(0)
+				, mPath()
+				, mLine(0)
+				, mColumn(0)
 				, mParent(nullptr)
 			{}
 
-			BasicToken(stream_type *stream, id_type type, const string_type &trigger, const string_type &text, std::streamoff offset, unsigned int flags = TF_NONE)
+			BasicToken(stream_type *stream, id_type type, const string_type &trigger, const string_type &text, offset_type offset, const string_type &path = string_type(), line_id_type line = line_id_type(), column_id_type column = column_id_type(), unsigned int flags = TF_NONE)
 				: mStream(stream)
 				, mType(type)
 				, mId(-1)
@@ -64,6 +75,9 @@ namespace quasar {
 				, mTrigger()
 				, mText(text)
 				, mOffset(offset)
+				, mPath(path)
+				, mLine(line)
+				, mColumn(column)
 				, mParent(nullptr)
 			{
 				setTrigger(trigger);
@@ -77,6 +91,9 @@ namespace quasar {
 				, mTrigger()
 				, mText()
 				, mOffset()
+				, mPath()
+				, mLine(0)
+				, mColumn(0)
 				, mParent(nullptr)
 			{
 				setTrigger(trigger);
@@ -90,6 +107,9 @@ namespace quasar {
 				, mTrigger(rhs.mTrigger)
 				, mText(rhs.mText)
 				, mOffset(rhs.mOffset)
+				, mPath(rhs.mPath)
+				, mLine(rhs.mLine)
+				, mColumn(rhs.mColumn)
 				, mParent(rhs.mParent)
 			{}
 
@@ -103,12 +123,15 @@ namespace quasar {
 				mTrigger = rhs.mTrigger;
 				mText = rhs.mText;
 				mOffset = rhs.mOffset;
+				mPath = rhs.mPath;
+				mLine = rhs.mLine;
+				mColumn = rhs.mColumn;
 				mParent = rhs.mParent;
 				return *this;
 			}
 
 			bool                    operator==(const BasicToken &rhs) const noexcept {
-				return mId == rhs.mId && mStream == rhs.mStream && mTrigger == rhs.mTrigger && mText == rhs.mText && mOffset == rhs.mOffset && mType == rhs.mType;
+				return mId == rhs.mId && mStream == rhs.mStream && mTrigger == rhs.mTrigger && mText == rhs.mText && mOffset == rhs.mOffset && mType == rhs.mType && mLine == rhs.mLine && mPath == rhs.mPath;
 			}
 
 			bool                    operator!=(const BasicToken &rhs) const noexcept {
@@ -134,11 +157,24 @@ namespace quasar {
 			const string_type       &getText() const noexcept { return mText; }
 			BasicToken              &setText(const string_type &t) noexcept { mText = t; return *this; }
 
+			const string_type       &getPath() const noexcept { return mPath; }
+			BasicToken              &setPath(const string_type &t) noexcept { mPath = t; return *this; }
+
+			line_id_type            getLine() const noexcept { return mLine; }
+			BasicToken              &setLine(line_id_type t) noexcept { mLine = t; return *this; }
+
+			column_id_type          getColumn() const noexcept { return mColumn; }
+			BasicToken              &setColumn(column_id_type t) noexcept { mColumn = t; return *this; }
+
 			id_type                 getType() const noexcept { return mType; }
 			BasicToken              &setType(id_type t) noexcept { mType = t; return *this; }
 
-			std::streamoff          getOffset() const noexcept { return mOffset; }
-			BasicToken              &setOffset(std::streamoff t) noexcept { mOffset = t; return *this; }
+			offset_type             getOffset() const noexcept { return mOffset; }
+			BasicToken              &setOffset(offset_type t) noexcept { mOffset = t; return *this; }
+
+			location_type           getLocation() const {
+				return location_type(getPath(), getLine(), getColumn(), getOffset());
+			}
 
 			stream_type             *getStream() noexcept { return mStream; }
 			const stream_type       *getStream() const noexcept { return mStream; }
@@ -157,6 +193,8 @@ namespace quasar {
 			const self_type         *getNextSibling(const self_type &type) const;
 			self_type               *getNextSibling(const self_type &type);
 
+			list_type               getPreviousSiblings(const list_type &types) const;
+			list_type               getNextSiblings(const list_type &types) const;
 		};
 
 		extern template class BasicToken<char>;

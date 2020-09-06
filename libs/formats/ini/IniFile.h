@@ -9,38 +9,50 @@
 
 namespace quasar {
 	namespace formats {
-		struct IniSection {
-			using store_type = std::map<core::String, core::String>;
+		template<typename CharT>
+		struct BasicIniSection {
+			using string_type = core::BasicString<CharT>;
+			using store_type = std::map<string_type, string_type>;
 
-			IniSection(const core::String &name_ = core::String()): name(name_), values() {}
-			IniSection(const IniSection &rhs) = default;
-			~IniSection() = default;
+			BasicIniSection(const string_type &name_ = string_type(), const store_type &values_ = store_type()): name(name_), values(values_) {}
+			BasicIniSection(const BasicIniSection &rhs) = default;
+			~BasicIniSection() = default;
 
-			IniSection             &operator=(const IniSection &rhs) = default;
+			BasicIniSection     &operator=(const BasicIniSection &rhs) = default;
 
-			core::String        name;
+			string_type         name;
 			store_type          values;
 		};
 
-		struct IniFile {
-			using store_type = std::list<IniSection>;
+		extern template class BasicIniSection<char>;
+		extern template class BasicIniSection<wchar_t>;
 
-			core::String        name;
+		using IniSection = BasicIniSection<Char>;
+
+		template<typename CharT>
+		struct BasicIniFile {
+			using section_type  = BasicIniSection<CharT>;
+			using store_type    = std::list<section_type>;
+			using string_type   = core::BasicString<CharT>;
+
+			string_type         name;
 			store_type          sections;
-			IniSection          *defaultSection;
+			section_type        *defaultSection;
 
-			IniFile(const core::String &name_ = core::String(), const core::String &defaultSectionName = core::String())
-				: name(name_), sections(), defaultSection(nullptr)
+			BasicIniFile(const string_type &name_ = string_type(), const string_type &defaultSectionName = string_type(), const store_type &sections_ = store_type())
+				: name(name_), sections(sections_), defaultSection(nullptr)
 			{
-				sections.push_back(IniSection(defaultSectionName));
-				defaultSection = &sections.back();
+				if (findSection(defaultSectionName) == sections.end()) {
+					sections.push_back(section_type(defaultSectionName));
+				}
+				defaultSection = &*findSection(defaultSectionName);
 			}
-			IniFile(const IniFile &rhs) = default;
-			~IniFile() = default;
+			BasicIniFile(const BasicIniFile &rhs) = default;
+			~BasicIniFile() = default;
 
-			IniFile             &operator=(const IniFile &rhs) = default;
+			BasicIniFile                                &operator=(const BasicIniFile &rhs) = default;
 
-			store_type::iterator                findSection(const core::String &name) {
+			typename store_type::iterator               findSection(const string_type &name) {
 				for (auto it = sections.begin(); it != sections.end(); it++) {
 					if (it->name == name) {
 						return it;
@@ -49,7 +61,7 @@ namespace quasar {
 				return sections.end();
 			}
 
-			const store_type::const_iterator    findSection(const core::String &name) const {
+			const typename store_type::const_iterator    findSection(const string_type &name) const {
 				for (auto it = sections.cbegin(); it != sections.cend(); it++) {
 					if (it->name == name) {
 						return it;
@@ -59,6 +71,10 @@ namespace quasar {
 			}
 		};
 
+		extern template class BasicIniFile<char>;
+		extern template class BasicIniFile<wchar_t>;
+
+		using IniFile = BasicIniFile<Char>;
 	}
 }
 

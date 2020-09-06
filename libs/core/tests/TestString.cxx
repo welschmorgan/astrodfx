@@ -8,8 +8,7 @@
 #include "doctest.h"
 
 using quasar::core::String;
-using quasar::core::trimmed;
 
 TEST_CASE("String can be trimmed") {
-	REQUIRE(trimmed(String("  helo\tl\t")) == String("helo\tl"));
+	REQUIRE(String("  helo\tl\t").trimmed() == String("helo\tl"));
 }
