@@ -9,17 +9,16 @@ add_library(quasarfx-formats
         text/TextFactory.cxx text/TextFactory.h
 
         # json
-        json/JsonFile.cxx json/JsonFile.h
-        json/JsonValueType.cxx json/JsonValueType.h
-        json/JsonValue.cxx json/JsonValue.h
+        json/JsonLexer.cxx json/JsonLexer.h
+        json/JsonParser.cxx json/JsonParser.h
+        json/JsonGenerator.cxx json/JsonGenerator.h
         json/JsonSerializer.cxx json/JsonSerializer.h
 
         # ini
         ini/IniSerializer.cxx ini/IniSerializer.h
         ini/IniLexer.cxx ini/IniLexer.h
         ini/IniParser.cxx ini/IniParser.h
-        ini/IniGenerator.cxx ini/IniGenerator.h
-)
+        ini/IniGenerator.cxx ini/IniGenerator.h)
 
 target_include_directories(quasarfx-formats PRIVATE ${SDL2_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/libs ${CMAKE_SOURCE_DIR}/libs/core ${CMAKE_CURRENT_SOURCE_DIR}/include)
 

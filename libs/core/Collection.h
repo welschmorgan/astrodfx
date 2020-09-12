@@ -764,14 +764,22 @@ namespace quasar {
 			}
 
 			virtual self_type   &put(const key_type &k, const value_type &v) {
-				auto pair = std::make_pair(k, v);
-				this->add(pair);
+				auto found = base_type::mData.find(k);
+				if (found == base_type::mData.end()) {
+					add(std::make_pair(k, v));
+				} else {
+					found->second = v;
+				}
 				return *this;
 			}
 
 			virtual self_type   &put(const key_type &k, value_type &&v) {
-				auto pair = std::make_pair(k, v);
-				this->add(pair);
+				auto found = base_type::mData.find(k);
+				if (found == base_type::mData.end()) {
+					add(std::make_pair(k, v));
+				} else {
+					found->second = v;
+				}
 				return *this;
 			}
 

@@ -83,8 +83,23 @@ namespace quasar {
 
 			using result_type       = ResultT;
 
+			using parse_fn_type     = std::function<void(const token_list *, typename token_list::citer_type &)>;
+			using parse_fn_map      = std::map<typename token_type::id_type, parse_fn_type>;
+
+		protected:
+			result_type             mResult;
+			parse_fn_map            mFuncs;
+
 		public:
 			BasicParser() = default;
+			explicit BasicParser(const std::initializer_list<typename parse_fn_map::value_type> &parse_fns)
+				: mResult()
+				, mFuncs(parse_fns)
+			{}
+			explicit BasicParser(const parse_fn_map &parse_fns)
+				: mResult()
+				, mFuncs(parse_fns)
+			{}
 			BasicParser(const BasicParser &rhs) = default;
 			virtual                 ~BasicParser() = default;
 
@@ -97,7 +112,24 @@ namespace quasar {
 				return res;
 			}
 
-			virtual void            parse(const token_list &tokens, result_type &into) = 0;
+			virtual void            reset() {
+				mResult = result_type();
+			}
+
+			virtual void            parse(const token_list &tokens, result_type &into) {
+				auto it = tokens.begin();
+				reset();
+				while (it != tokens.end()) {
+					auto parse_fn = mFuncs.find(it->getType());
+					if (parse_fn != mFuncs.end()) {
+						parse_fn->second(&tokens, it);
+					} else {
+						throw std::runtime_error("missing parser_fn for token '" + it->getTrigger() + "'");
+					}
+					it++;
+				}
+				into = mResult;
+			}
 		};
 
 		template<typename ResultT, typename LexerT = BasicLexer<Char, BasicToken<Char>>>

@@ -62,29 +62,22 @@ namespace quasar {
 
 			IniParser      &operator=(const IniParser &rhs) = default;
 
-			void                reset() {
+			void                reset() override {
+				base_type::reset();
 				mInComment = false;
 				mInSection = false;
 				mInQuote = false;
 				mProp = typename prop_store_type::iter_type();
 				mAccu.clear();
-				mResult = nullptr;
 			}
 
 			void                parse(const token_list &tokens, result_type &into) override {
-				auto it = tokens.begin();
-				reset();
-				mResult = &into;
-				while (it != tokens.end()) {
-					auto parse_fn = mFuncs.find(it->getType());
-					if (parse_fn != mFuncs.end()) {
-						parse_fn->second(*it, it);
+				base_type::parse(tokens, into);
+				if (!tokens.empty()) {
+					auto it = tokens.end() - 1;
+					if (it->getType() != lexer_type::NewLine.getType()) {
+						parseNewLine(*it, it);
 					}
-					it++;
-				}
-				auto last = --it;
-				if (last != tokens.end() && last->getType() != lexer_type::NewLine.getType()) {
-					parseNewLine(*last, last);
 				}
 			}
 

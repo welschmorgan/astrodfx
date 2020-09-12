@@ -161,20 +161,26 @@ namespace quasar {
 
 		ConfigNode::prop_store_type &ConfigNode::getProperties() noexcept { return mProps; }
 
-		const String &ConfigNode::getProperty(const String &name) const {
+		const String *ConfigNode::getProperty(const String &name, bool except) const {
 			auto prop = mProps->find(name);
 			if (prop == mProps.end()) {
-				throw std::runtime_error("Unknown property '" + name + "' in config node '" + mName + "'");
+				if (except) {
+					throw std::runtime_error("Unknown property '" + name + "' in config node '" + mName + "'");
+				}
+				return nullptr;
 			}
-			return prop->second;
+			return &prop->second;
 		}
 
-		String &ConfigNode::getProperty(const String &name) {
+		String *ConfigNode::getProperty(const String &name, bool except) {
 			auto prop = mProps->find(name);
 			if (prop == mProps.end()) {
-				throw std::runtime_error("Unknown property '" + name + "' in config node '" + mName + "'");
+				if (except) {
+					throw std::runtime_error("Unknown property '" + name + "' in config node '" + mName + "'");
+				}
+				return nullptr;
 			}
-			return prop->second;
+			return &prop->second;
 		}
 
 		bool ConfigNode::hasProperty(const String &name) noexcept {

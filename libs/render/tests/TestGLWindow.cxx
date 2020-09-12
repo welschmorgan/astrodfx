@@ -10,7 +10,7 @@
 #include <iostream>
 
 TEST_CASE ("initialize should instanciate SDL_Window") {
-	auto win = std::make_shared<quasar::render::GLWindow>("test");
+	auto win = std::make_shared<quasar::render::GLWindow>(nullptr, "test");
 	win->initialize();
 	REQUIRE(win->getName() == "test");
 	REQUIRE(win->getSDLRenderer() != nullptr);
@@ -19,7 +19,7 @@ TEST_CASE ("initialize should instanciate SDL_Window") {
 }
 
 TEST_CASE ("shutdown should destroy SDL_Window") {
-	auto win = std::make_shared<quasar::render::GLWindow>("test");
+	auto win = std::make_shared<quasar::render::GLWindow>(nullptr, "test");
 	win->initialize();
 	win->shutdown();
 	REQUIRE(win->getName() == "test");

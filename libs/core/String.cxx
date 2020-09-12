@@ -31,17 +31,17 @@ namespace quasar {
 
 		template<typename CharT> BasicString<CharT> BasicString<CharT>::ltrimmed(const BasicString<CharT> &charset) const {
 			BasicString<CharT> ret(*this);
-			return ret.ltrim();
+			return ret.ltrim(charset);
 		}
 
 		template<typename CharT> BasicString<CharT> BasicString<CharT>::rtrimmed(const BasicString<CharT> &charset) const {
 			BasicString<CharT> ret(*this);
-			return ret.rtrim();
+			return ret.rtrim(charset);
 		}
 
 		template<typename CharT> BasicString<CharT> BasicString<CharT>::trimmed(const BasicString<CharT> &charset) const {
 			BasicString<CharT> ret(*this);
-			return ret.trim();
+			return ret.trim(charset);
 		}
 	}
 }

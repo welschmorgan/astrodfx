@@ -58,8 +58,8 @@ namespace quasar {
 			ConfigNode                  &setProperty(const String &name, const String &value);
 			const prop_store_type       &getProperties() const noexcept;
 			prop_store_type             &getProperties() noexcept;
-			const String                &getProperty(const String &name) const;
-			String                      &getProperty(const String &name);
+			const String                *getProperty(const String &name, bool except = true) const;
+			String                      *getProperty(const String &name, bool except = true);
 			bool                        hasProperty(const String &name) noexcept;
 			bool                        removeProperty(const String &name, String *out = nullptr);
 
