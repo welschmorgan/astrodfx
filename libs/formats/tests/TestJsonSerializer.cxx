@@ -8,7 +8,7 @@
 #include "doctest.h"
 
 using quasar::formats::JsonSerializer;
-using quasar::core::Config;
+using quasar::core::ConfigNode;
 using quasar::core::StringStream;
 using quasar::core::ConfigNodeSerializer;
 

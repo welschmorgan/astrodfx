@@ -61,6 +61,11 @@ namespace quasar {
 					offset++;
 				}
 			}
+			for (auto &token: res) {
+				if ((token.getFlags() & TF_TRIM)) {
+					token.setText(token.getText().trimmed());
+				}
+			}
 		}
 
 		template class BasicLexer<char, BasicToken<char>>;

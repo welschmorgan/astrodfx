@@ -14,7 +14,7 @@
 namespace quasar {
 	namespace formats {
 		template<typename IStreamT = core::IStream, typename OStreamT = core::OStream>
-		class JsonSerializer : public core::Serializer<core::Config, IStreamT, OStreamT> {
+		class JsonSerializer : public core::Serializer<core::ConfigNode, IStreamT, OStreamT> {
 		protected:
 			JsonValue::string_type              mAccu;
 			JsonValue::string_type              mNextLabel;
@@ -23,7 +23,7 @@ namespace quasar {
 			bool                                mInQuote;
 
 		public:
-			using base_type     = core::Serializer<core::Config, IStreamT, OStreamT>;
+			using base_type     = core::Serializer<core::ConfigNode, IStreamT, OStreamT>;
 			using self_type     = JsonSerializer<IStreamT, OStreamT>;
 
 			using value_type    = typename base_type::value_type;
@@ -67,7 +67,7 @@ namespace quasar {
 
 		private:
 			void            validate(const JsonValue *node, core::ConfigNode *into) {
-				if (!core::trim(mAccu).empty()) {
+				if (!mAccu.trim().empty()) {
 					throw std::runtime_error("Unprocessed data in accumulator at json parsing exit: " + mAccu);
 				}
 				if (node->type() != JsonValueType::Array && node->type() != JsonValueType::Object) {
@@ -79,7 +79,6 @@ namespace quasar {
 
 			void            parse(const char *buf) {
 				const char *pCur = buf;
-				std::cout << "parse: " << core::trimmed(buf) << std::endl;
 				while (pCur && *pCur) {
 					switch (*pCur) {
 						case ':':
@@ -145,7 +144,7 @@ namespace quasar {
 			}
 
 			void    closeObject() {
-				if (!core::trimmed(mAccu).empty()) {
+				if (!mAccu.trimmed().empty()) {
 					addPropertyOrValue();
 				}
 				if (!mCurrentNode->parent()) {
@@ -182,7 +181,7 @@ namespace quasar {
 			}
 
 			void    closeArray() {
-				if (!core::trimmed(mAccu).empty()) {
+				if (!mAccu.trimmed().empty()) {
 					addPropertyOrValue();
 				}
 				if (!mCurrentNode->parent()) {
@@ -197,7 +196,7 @@ namespace quasar {
 				if (mCurrentNode->type() != JsonValueType::Object && mCurrentNode->type() != JsonValueType::Array) {
 					throw std::runtime_error("unsupported json node type for property or value creation: " + mCurrentNode->type().name());
 				}
-				if (!core::trimmed(mAccu).empty()) {
+				if (!mAccu.trimmed().empty()) {
 					if (mCurrentNode->type() == JsonValueType::Object) {
 						std::cout << "\tadd property: " << mNextLabel << " = " << mAccu << std::endl;
 						JsonValue new_val;

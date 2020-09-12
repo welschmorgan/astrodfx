@@ -23,7 +23,7 @@ namespace quasar {
 		class BasicLexer {
 		public:
 			using char_type         = CharT;
-			using string_type       = std::basic_string<char_type>;
+			using string_type       = BasicString<char_type>;
 			using token_type        = TokenT;
 			using stream_type       = std::basic_istream<CharT>;
 			using token_list        = std::vector<token_type>;
@@ -73,6 +73,7 @@ namespace quasar {
 			}
 
 			void                    addResult(result_type &res, typename token_list::const_iterator sep, stream_type &stream, const string_type &text, std::streamoff offset, unsigned long line, unsigned short col) {
+//				std::cout << "lexer: " << std::string(text.begin(), text.end()) << " - offset: " << offset << " - line: " << line << ": " << col << std::endl;
 				if (!res->empty() && sep->shouldAggregate() && res->back().getType() == sep->getType()) {
 					res->back().setText(res->back().getText() + text);
 				} else {

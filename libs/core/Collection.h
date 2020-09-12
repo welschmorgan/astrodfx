@@ -121,36 +121,36 @@ namespace quasar {
 			}
 
 			iter_type           iter(const value_type &v) {
-				return iter([=](const value_type &it) {
+				return iter([&](const value_type &it) {
 					return it == v;
 				});
 			}
 
 			riter_type          riter(const value_type &v) {
-				return riter([=](const value_type &it) {
+				return riter([&](const value_type &it) {
 					return it == v;
 				});
 			}
 
 			citer_type          iter(const value_type &v) const {
-				return iter([=](const value_type &it) {
+				return iter([&](const value_type &it) {
 					return it == v;
 				});
 			}
 			citer_type          citer(const value_type &v) const {
-				return citer([=](const value_type &it) {
+				return citer([&](const value_type &it) {
 					return it == v;
 				});
 			}
 
 			criter_type         criter(const value_type &v) const {
-				return criter([=](const value_type &it) {
+				return criter([&](const value_type &it) {
 					return it == v;
 				});
 			}
 
 			criter_type         riter(const value_type &v) const {
-				return riter([=](const value_type &it) {
+				return riter([&](const value_type &it) {
 					return it == v;
 				});
 			}
@@ -165,8 +165,8 @@ namespace quasar {
 			}
 
 			riter_type          riter(const filter_predicate_with_id &p) {
-				size_t id = 0;
-				for (riter_type it = mData.rbegin(); it != mData.rend(); ++it, id++) {
+				size_t id = mData.size() - 1;
+				for (riter_type it = mData.rbegin(); it != mData.rend(); ++it, id--) {
 					if (p(*it, id)) {
 						return it;
 					}
@@ -175,8 +175,8 @@ namespace quasar {
 			}
 
 			criter_type         criter(const filter_predicate_with_id &p) const {
-				size_t id = 0;
-				for (riter_type it = mData.rbegin(); it != mData.rend(); ++it, id++) {
+				size_t id = mData.size() - 1;
+				for (riter_type it = mData.rbegin(); it != mData.rend(); ++it, id--) {
 					if (p(*it, id)) {
 						return it;
 					}
@@ -185,8 +185,8 @@ namespace quasar {
 			}
 
 			criter_type         riter(const filter_predicate_with_id &p) const {
-				size_t id = 0;
-				for (riter_type it = mData.rbegin(); it != mData.rend(); ++it, id++) {
+				size_t id = mData.size() - 1;
+				for (riter_type it = mData.rbegin(); it != mData.rend(); ++it, id--) {
 					if (p(*it, id)) {
 						return it;
 					}
@@ -764,12 +764,14 @@ namespace quasar {
 			}
 
 			virtual self_type   &put(const key_type &k, const value_type &v) {
-				add(std::make_pair(k, v));
+				auto pair = std::make_pair(k, v);
+				this->add(pair);
 				return *this;
 			}
 
 			virtual self_type   &put(const key_type &k, value_type &&v) {
-				add(std::make_pair(k, v));
+				auto pair = std::make_pair(k, v);
+				this->add(pair);
 				return *this;
 			}
 

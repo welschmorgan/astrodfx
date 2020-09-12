@@ -2,8 +2,8 @@
 // Created by darkboss on 9/5/20.
 //
 
-#ifndef QUASARFX_PARSER_H
-#define QUASARFX_PARSER_H
+#ifndef QUASARFX_GENERATOR_H
+#define QUASARFX_GENERATOR_H
 
 #include "Lexer.h"
 #include "Location.h"

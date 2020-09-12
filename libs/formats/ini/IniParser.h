@@ -8,18 +8,17 @@
 #include <core/Parser.h>
 #include <core/Exception.h>
 #include <core/String.h>
+#include <core/Config.h>
 #include "IniLexer.h"
-#include "IniFile.h"
 
 namespace quasar {
 	namespace formats {
-		template<typename CharT>
-		class BasicIniParser
-			: public core::BasicParser<CharT, BasicIniFile<CharT>, BasicIniLexer<CharT>> {
+		class IniParser
+			: public core::BasicParser<Char, core::ConfigNode, IniLexer> {
 		public:
-			using lexer_type        = BasicIniLexer<CharT>;
-			using self_type         = BasicIniParser<CharT>;
-			using base_type         = core::BasicParser<CharT, BasicIniFile<CharT>, lexer_type>;
+			using lexer_type        = IniLexer;
+			using self_type         = IniParser;
+			using base_type         = core::BasicParser<Char, core::ConfigNode, lexer_type>;
 			using token_type        = typename base_type::token_type;
 			using id_type           = typename token_type::id_type;
 			using token_list        = typename base_type::token_list;
@@ -28,20 +27,20 @@ namespace quasar {
 			using parse_fn_type     = std::function<void(const token_type &, typename token_list::citer_type &)>;
 			using parse_map_type    = std::map<id_type, parse_fn_type>;
 
-			using section_type      = BasicIniSection<CharT>;
-			using prop_store_type   = typename section_type::store_type;
+			using section_type      = core::ConfigNode;
+			using prop_store_type   = typename section_type::prop_store_type;
 
 		protected:
 			bool                                mInComment;
 			bool                                mInSection;
 			bool                                mInQuote;
-			typename prop_store_type::iterator  mProp;
-			core::BasicString<CharT>            mAccu;
+			typename prop_store_type::iter_type mProp;
+			core::BasicString<Char>             mAccu;
 			result_type                         *mResult;
 			parse_map_type                      mFuncs;
 
 		public:
-			BasicIniParser()
+			IniParser()
 				: mInComment(false)
 				, mInSection(false)
 				, mInQuote(false)
@@ -58,16 +57,16 @@ namespace quasar {
 				})
 			{
 			}
-			BasicIniParser(const BasicIniParser &rhs) = default;
-			virtual ~BasicIniParser() = default;
+			IniParser(const IniParser &rhs) = default;
+			virtual ~IniParser() = default;
 
-			BasicIniParser      &operator=(const BasicIniParser &rhs) = default;
+			IniParser      &operator=(const IniParser &rhs) = default;
 
 			void                reset() {
 				mInComment = false;
 				mInSection = false;
 				mInQuote = false;
-				mProp = typename prop_store_type::iterator();
+				mProp = typename prop_store_type::iter_type();
 				mAccu.clear();
 				mResult = nullptr;
 			}
@@ -109,16 +108,27 @@ namespace quasar {
 			}
 
 			void parseAssign(const token_type &token, typename token_list::citer_type &it) {
-				auto *section = &mResult->sections.back();
+				section_type *section = nullptr;
+				if (!mResult->hasChildren()) {
+					section = mResult;
+				} else {
+					section = &mResult->getChildren()->back();
+				}
 				mAccu.trim();
 				if (mAccu.empty()) {
 					throwEmptyPropertyName(token);
 				}
-				auto inserted = section->values.insert(std::make_pair(mAccu, core::BasicString<CharT>()));
-				if (inserted.second) {
-					mProp = inserted.first;
+				auto found = section->getProperties()->find(mAccu);
+				if (found == section->getProperties()->end()) {
+					auto inserted = section->getProperties()->insert(
+							std::make_pair(mAccu, core::BasicString<Char>()));
+					if (inserted.second) {
+						mProp = inserted.first;
+					} else {
+						throwPropertyInsertionFailed(token);
+					}
 				} else {
-					throwPropertyInsertionFailed(token);
+					mProp = found;
 				}
 				mAccu.clear();
 			}
@@ -127,7 +137,7 @@ namespace quasar {
 				if (!mInQuote) {
 					if (mInSection) {
 						mAccu.trim();
-						mResult->sections.push_back(section_type(mAccu));
+						mResult->createChild(mAccu);
 						mAccu.clear();
 					} else {
 						throwMissingSectionStartToken(token);
@@ -145,13 +155,13 @@ namespace quasar {
 			void parseNewLine(const token_type &token, typename token_list::citer_type &it) {
 				mAccu.trim();
 				if (!mInComment && !mAccu.empty()) {
-					if (mProp != typename prop_store_type::iterator()) {
+					if (mProp != typename prop_store_type::iter_type()) {
 						mProp->second = mAccu;
 					} else {
 						throwPropertyMissingKey(token);
 					}
 				}
-				mProp = typename prop_store_type::iterator();
+				mProp = typename prop_store_type::iter_type();
 				mInSection = false;
 				mInQuote   = false;
 				mInComment = false;
@@ -164,26 +174,6 @@ namespace quasar {
 				}
 			}
 		};
-
-		template<> void BasicIniParser<char>::throwEmptyPropertyName(const token_type &token);
-		template<> void BasicIniParser<char>::throwPropertyInsertionFailed(const token_type &token);
-		template<> void BasicIniParser<char>::throwSectionNotOnOwnLine(const token_type &token);
-		template<> void BasicIniParser<char>::throwUnexpectedSectionOpenToken(const token_type &token);
-		template<> void BasicIniParser<char>::throwMissingSectionStartToken(const token_type &token);
-		template<> void BasicIniParser<char>::throwPropertyMissingKey(const token_type &token);
-
-
-		template<> void BasicIniParser<wchar_t>::throwEmptyPropertyName(const token_type &token);
-		template<> void BasicIniParser<wchar_t>::throwPropertyInsertionFailed(const token_type &token);
-		template<> void BasicIniParser<wchar_t>::throwSectionNotOnOwnLine(const token_type &token);
-		template<> void BasicIniParser<wchar_t>::throwUnexpectedSectionOpenToken(const token_type &token);
-		template<> void BasicIniParser<wchar_t>::throwMissingSectionStartToken(const token_type &token);
-		template<> void BasicIniParser<wchar_t>::throwPropertyMissingKey(const token_type &token);
-
-		extern template class BasicIniParser<char>;
-		extern template class BasicIniParser<wchar_t>;
-
-		using IniParser = BasicIniParser<Char>;
 	}
 }
 

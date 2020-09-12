@@ -15,12 +15,14 @@ using quasar::formats::IniLexer;
 using quasar::core::TF_REGEX;
 using quasar::core::TF_AGGREGATE;
 
-void checkToken(IniLexer::result_type &list, size_t id, const IniLexer::token_type &expected, const std::streamoff offset) {
+void checkToken(IniLexer::result_type &list, size_t id, const IniLexer::token_type &expected, const std::streamoff offset, long line, short column, const quasar::core::String &text) {
 	auto const& actual = list.at(id);
-	REQUIRE(actual.getType() == expected.getType());
-	REQUIRE(actual.getText() == expected.getTrigger());
-	REQUIRE(actual.getTrigger() == expected.getTrigger());
-	REQUIRE(actual.getOffset() == offset);
+	CHECK(actual.getType() == expected.getType());
+	CHECK(actual.getText() == text);
+	CHECK(actual.getTrigger() == expected.getTrigger());
+	CHECK(actual.getOffset() == offset);
+	CHECK(actual.getLocation().getLine() == line);
+	CHECK(actual.getLocation().getColumn() == column);
 }
 
 TEST_CASE("IniLexer can parse file") {
@@ -35,10 +37,13 @@ TEST_CASE("IniLexer can parse file") {
 	ss << "key = val";
 	lex.analyse(ss, tokens);
 
-	REQUIRE(tokens.size() == 4);
-	checkToken(tokens, 0, IniLexer::SectionOpen, 0);
-	checkToken(tokens, 1, IniLexer::SectionClose, 8);
-	checkToken(tokens, 2, IniLexer::NewLine, 9);
-	checkToken(tokens, 3, IniLexer::ValueAssign, 14);
+	CHECK(tokens.size() == 7);
+	checkToken(tokens, 0, IniLexer::SectionOpen, 0, 1, 1, "[");
+	checkToken(tokens, 1, IniLexer::Text, 1, 1, 2, "general");
+	checkToken(tokens, 2, IniLexer::SectionClose, 8, 1, 9, "]");
+	checkToken(tokens, 3, IniLexer::NewLine, 9, 1, 10, "\n");
+	checkToken(tokens, 4, IniLexer::Text, 10, 2, 1, "key");
+	checkToken(tokens, 5, IniLexer::ValueAssign, 14, 2, 5, "=");
+	checkToken(tokens, 6, IniLexer::Text, 15, 2, 6, "val");
 }
 

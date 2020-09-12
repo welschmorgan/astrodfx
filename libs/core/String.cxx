@@ -43,7 +43,40 @@ namespace quasar {
 			BasicString<CharT> ret(*this);
 			return ret.trim();
 		}
+	}
+}
 
+std::basic_ostream<char>     &operator<<(std::basic_ostream<char> &os, const quasar::core::BasicString<char> &s) {
+	if (os) {
+		os << *s;
+	}
+	return os;
+}
+
+std::basic_istream<char>     &operator>>(std::basic_istream<char> &is, quasar::core::BasicString<char> &s) {
+	if (is) {
+		is >> *s;
+	}
+	return is;
+}
+
+std::basic_ostream<wchar_t>     &operator<<(std::basic_ostream<wchar_t> &os, const quasar::core::BasicString<wchar_t> &s) {
+	if (os) {
+		os << *s;
+	}
+	return os;
+}
+
+std::basic_istream<wchar_t>     &operator>>(std::basic_istream<wchar_t> &is, quasar::core::BasicString<wchar_t> &s) {
+	if (is) {
+		is >> *s;
+	}
+	return is;
+}
+
+
+namespace quasar{
+	namespace core {
 		template class BasicString<char>;
 		template class BasicString<wchar_t>;
 	}

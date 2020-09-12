@@ -88,9 +88,6 @@ namespace quasar {
 			BasicString<CharT> trimmed(const BasicString<CharT> &charset = BasicCharsets<CharT>::Whitespaces) const;
 		};
 
-		extern template class BasicString<char>;
-		extern template class BasicString<wchar_t>;
-
 		using String        = BasicString<Char>;
 		using StringList    = std::list<String>;
 		using StringVector  = std::vector<String>;
@@ -103,6 +100,19 @@ namespace quasar {
 		using IOStream      = std::basic_iostream<String::value_type>;
 
 		using StringStream  = std::basic_stringstream<String::value_type>;
+	}
+}
+
+extern std::basic_ostream<char>     &operator<<(std::basic_ostream<char> &os, const quasar::core::BasicString<char> &s);
+extern std::basic_istream<char>     &operator>>(std::basic_istream<char> &is, quasar::core::BasicString<char> &s);
+
+extern std::basic_ostream<wchar_t>     &operator<<(std::basic_ostream<wchar_t> &os, const quasar::core::BasicString<wchar_t> &s);
+extern std::basic_istream<wchar_t>     &operator>>(std::basic_istream<wchar_t> &is, quasar::core::BasicString<wchar_t> &s);
+
+namespace quasar {
+	namespace core {
+		extern template class BasicString<char>;
+		extern template class BasicString<wchar_t>;
 	}
 }
 

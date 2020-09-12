@@ -12,7 +12,7 @@ namespace quasar {
 		template<> const core::BasicToken<char> BasicIniLexer<char>::Comment(3, "[#;]", core::TF_REGEX);
 		template<> const core::BasicToken<char> BasicIniLexer<char>::NewLine(4, "\n", core::TF_NONE);
 		// catch all token -- needs to be last
-		template<> const core::BasicToken<char> BasicIniLexer<char>::Text(5, ".", core::TF_AGGREGATE | core::TF_REGEX);
+		template<> const core::BasicToken<char> BasicIniLexer<char>::Text(5, ".", core::TF_AGGREGATE | core::TF_REGEX | core::TF_TRIM);
 
 		template<> const std::vector<core::BasicToken<char>> BasicIniLexer<char>::All({
 		   SectionOpen,
@@ -30,7 +30,7 @@ namespace quasar {
 		template<> const core::BasicToken<wchar_t> BasicIniLexer<wchar_t>::Comment(3, L"[#;]", core::TF_REGEX);
 		template<> const core::BasicToken<wchar_t> BasicIniLexer<wchar_t>::NewLine(4, L"\n", core::TF_NONE);
 		// catch all token -- needs to be last
-		template<> const core::BasicToken<wchar_t> BasicIniLexer<wchar_t>::Text(5, L".", core::TF_AGGREGATE | core::TF_REGEX);
+		template<> const core::BasicToken<wchar_t> BasicIniLexer<wchar_t>::Text(5, L".", core::TF_AGGREGATE | core::TF_REGEX | core::TF_TRIM);
 
 		template<> const std::vector<core::BasicToken<wchar_t>> BasicIniLexer<wchar_t>::All({
 	         SectionOpen,

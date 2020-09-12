@@ -66,9 +66,9 @@ namespace quasar {
 			}
 			void                dealloc() {
 				if (mType == JsonValueType::Number) {
-					n.~basic_string();
+					n.~BasicString();
 				} else if (mType == JsonValueType::String) {
-					s.~basic_string();
+					s.~BasicString();
 				} else if (mType == JsonValueType::Object) {
 					o.~map();
 				} else if (mType == JsonValueType::Array) {
@@ -213,11 +213,10 @@ namespace quasar {
 					node.setValue(s);
 				} else if (mType == JsonValueType::Object) {
 					for (auto it = o.begin(); it != o.end(); it++) {
-						auto &childNode = node.createChild(it->first);
-						auto newNode = it->second.toNode();
-						childNode = newNode;
-						childNode.setName(it->first);
-						childNode.setParent(&node);
+						auto *childNode = node.createChild(it->first);
+						*childNode = it->second.toNode();
+						childNode->setName(it->first);
+						childNode->setParent(&node);
 					}
 				} else if (mType == JsonValueType::Array) {
 					size_t id = 0;
@@ -225,11 +224,10 @@ namespace quasar {
 					for (auto it = a.begin(); it != a.end(); it++) {
 						ss.clear();
 						ss.str("");
-						auto &childNode = node.createChild(ss.str());
-						auto newNode = it->toNode();
-						childNode = newNode;
-						childNode.setName(ss.str());
-						childNode.setParent(&node);
+						auto *childNode = node.createChild(ss.str());
+						*childNode = it->toNode();
+						childNode->setName(ss.str());
+						childNode->setParent(&node);
 						id++;
 					}
 				} else {

@@ -16,8 +16,6 @@ add_library(quasarfx-formats
 
         # ini
         ini/IniSerializer.cxx ini/IniSerializer.h
-        ini/IniFile.cxx ini/IniFile.h
-        tests/TestIniSerializer.cxx
         ini/IniLexer.cxx ini/IniLexer.h
         ini/IniParser.cxx ini/IniParser.h
         ini/IniGenerator.cxx ini/IniGenerator.h

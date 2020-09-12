@@ -14,8 +14,9 @@ namespace quasar {
 		enum TokenFlags {
 			TF_NONE        = 0,                 // Simple trigger, no flags
 			TF_REGEX       = 1 << 1,            // Trigger is a regex
-			TF_AGGREGATE   = 1 << 2             // Multiple consecutive triggers should
-			// be aggregated into 1 token
+			TF_TRIM        = 1 << 2,            // Trim value after lexing
+			TF_AGGREGATE   = 1 << 3             // Multiple consecutive triggers should
+												// be aggregated into 1 token
 		};
 
 		template<typename CharT>
@@ -30,7 +31,7 @@ namespace quasar {
 		public:
 			using char_type         = CharT;
 			using stream_type       = std::basic_istream<CharT>;
-			using string_type       = std::basic_string<char_type>;
+			using string_type       = BasicString<char_type>;
 			using self_type         = BasicToken<CharT>;
 			using list_type         = BasicTokenList<CharT>;
 			using id_type           = long;
