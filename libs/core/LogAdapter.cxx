@@ -7,11 +7,12 @@
 namespace quasar {
 	namespace core {
 		const String            LogAdapter::DefaultFormat("[{yyyy}/{m}/{d} {h}:{i}:{s}] [{c}] {l} - {M}");
+		const String            LogAdapter::DefaultColoredFormat("[{yyyy}/{m}/{d} {h}:{i}:{s}] [{c}] {lC} - {M}");
 		const LogFlushDelay     LogAdapter::DefaultFlushDelay(1, 0);
 
 		LogAdapter::LogAdapter(const String &name)
 			: mName(name)
-			, mFormat(DefaultFormat)
+			, mFormat(DefaultColoredFormat)
 			, mFlushDelay()
 			, mLastFlushTime(std::chrono::system_clock::now())
 			, mLines()

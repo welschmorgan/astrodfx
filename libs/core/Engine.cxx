@@ -20,6 +20,8 @@ namespace quasar {
 		{
 			mLogManager->createAdapter<ConsoleLogAdapter>();
 			mDefaultLogger = mLogManager->createLogger("engine");
+
+			mDefaultLogger->info("Engine constructed");
 		}
 
 		Engine::~Engine() noexcept {
@@ -82,6 +84,7 @@ namespace quasar {
 		}
 
 		void Engine::shutdown() {
+			mDefaultLogger->info("shutting down...");
 			if (mInitialized) {
 				if (mRenderer) {
 					mRenderer->shutdown();

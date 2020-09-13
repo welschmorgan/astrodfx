@@ -46,7 +46,9 @@ namespace quasar {
 			: LogAdapter("file")
 			, mStream(path, std::ios::out | std::ios::app)
 			, mPath(path)
-		{}
+		{
+			mFormat = DefaultColoredFormat;
+		}
 
 		OFStream *FileLogAdapter::getStream() { return &mStream; }
 

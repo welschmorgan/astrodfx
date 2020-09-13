@@ -36,6 +36,7 @@ namespace quasar {
 			using time_point            = std::chrono::system_clock::time_point;
 
 			static const String         DefaultFormat;
+			static const String         DefaultColoredFormat;
 			static const LogFlushDelay  DefaultFlushDelay;
 		protected:
 			String                      mName;
