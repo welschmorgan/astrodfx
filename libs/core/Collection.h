@@ -13,6 +13,7 @@
 
 #include <functional>
 #include <map>
+#include "String.h"
 
 namespace quasar {
 	namespace core {
@@ -58,6 +59,21 @@ namespace quasar {
 			BasicCollection          &operator=(const std::initializer_list<Value> &rhs) {
 				mData = rhs.mData;
 				return *this;
+			}
+
+			bool                operator==(const self_type &rhs) const {
+				auto lit = mData.begin();
+				auto rit = rhs.mData.begin();
+				for (; lit != mData.end() && rit != rhs.mData.end(); rit++, lit++) {
+					if (*lit != *rit) {
+						return false;
+					}
+				}
+				return lit == mData.end() && rit == rhs.mData.end();
+			}
+
+			bool                operator!=(const self_type &rhs) const {
+				return !(*this == rhs);
 			}
 
 			container_type      &&operator*() noexcept { return mData; }
@@ -693,6 +709,56 @@ namespace quasar {
 			virtual void        add(value_type &&v) { base_type::mData.push_back(v); }
 			virtual void        add(const value_type &v) { base_type::mData.push_back(v); }
 		};
+/*
+
+		template<typename T, typename C> std::basic_ostream<char>        &operator<<(std::basic_ostream<char> &os, const Collection<T, C> &s) {
+			if (os) {
+				os << "[";
+				for (auto it = s.begin(); it != s.end(); it++) {
+					if (it != s.begin()) {
+						os << ", ";
+					}
+					os << *it;
+				}
+				os << "]";
+			}
+			return os;
+		}
+		template<typename T, typename C> std::basic_istream<char>        &operator>>(std::basic_istream<char> &is, Collection<T, C> &s) {
+			s.clear();
+			BasicString<char> header(255, 0), body(255, 0);
+			is.getline(header.data(), 255, '[');
+			is.getline(body.data(), 255, ']');
+			for (auto const& part: body.split(",")) {
+				s.add(part);
+			}
+			return is;
+		}
+
+		template<typename T, typename C> std::basic_ostream<wchar_t>     &operator<<(std::basic_ostream<wchar_t> &os, const Collection<T, C> &s) {
+			if (os) {
+				os << L"[";
+				for (auto it = s.begin(); it != s.end(); it++) {
+					if (it != s.begin()) {
+						os << L", ";
+					}
+					os << *it;
+				}
+				os << L"]";
+			}
+			return os;
+		}
+		template<typename T, typename C> std::basic_istream<wchar_t>     &operator>>(std::basic_istream<wchar_t> &is, Collection<T, C> &s) {
+			s.clear();
+			BasicString<wchar_t> header(255, 0), body(255, 0);
+			is.getline(header.data(), 255, L'[');
+			is.getline(body.data(), 255, L']');
+			for (auto const& part: body.split(L",")) {
+				s.add(part);
+			}
+			return is;
+		}
+*/
 
 		template<typename Value>
 		class Collection<Value, std::map<typename Value::first_type, typename Value::second_type>>
@@ -802,6 +868,17 @@ namespace quasar {
 
 		template<typename K, typename V>
 		using Map = Collection<std::pair<K, V>, std::map<K, V>>;
+
+		template<typename V>
+		using StringMap = Map<String, V>;
+
+		using PropertyMap = StringMap<String>;
+
+		using StringVector = Vector<String>;
+		using StringList = List<String>;
+		using StringQueue = Queue<String>;
+		using StringDeque = Deque<String>;
+		using StringStack = Stack<String>;
 	}
 }
 

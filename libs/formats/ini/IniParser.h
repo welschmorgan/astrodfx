@@ -24,9 +24,6 @@ namespace quasar {
 			using token_list        = typename base_type::token_list;
 			using result_type       = typename base_type::result_type;
 
-			using parse_fn_type     = std::function<void(const token_type &, typename token_list::citer_type &)>;
-			using parse_map_type    = std::map<id_type, parse_fn_type>;
-
 			using section_type      = core::ConfigNode;
 			using prop_store_type   = typename section_type::prop_store_type;
 
@@ -36,25 +33,22 @@ namespace quasar {
 			bool                                mInQuote;
 			typename prop_store_type::iter_type mProp;
 			core::BasicString<Char>             mAccu;
-			result_type                         *mResult;
-			parse_map_type                      mFuncs;
 
 		public:
 			IniParser()
-				: mInComment(false)
+				: base_type({
+				    {lexer_type::SectionOpen.getType(), std::bind(&self_type::parseSectionOpen, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::SectionClose.getType(), std::bind(&self_type::parseSectionClose, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::Comment.getType(), std::bind(&self_type::parseComment, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::NewLine.getType(), std::bind(&self_type::parseNewLine, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::ValueAssign.getType(), std::bind(&self_type::parseAssign, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::Text.getType(), std::bind(&self_type::parseText, this, std::placeholders::_1, std::placeholders::_2)},
+				})
+				, mInComment(false)
 				, mInSection(false)
 				, mInQuote(false)
 				, mProp()
 				, mAccu()
-				, mResult(nullptr)
-				, mFuncs({
-			         {lexer_type::SectionOpen.getType(), std::bind(&self_type::parseSectionOpen, this, std::placeholders::_1, std::placeholders::_2)},
-			         {lexer_type::SectionClose.getType(), std::bind(&self_type::parseSectionClose, this, std::placeholders::_1, std::placeholders::_2)},
-			         {lexer_type::Comment.getType(), std::bind(&self_type::parseComment, this, std::placeholders::_1, std::placeholders::_2)},
-			         {lexer_type::NewLine.getType(), std::bind(&self_type::parseNewLine, this, std::placeholders::_1, std::placeholders::_2)},
-			         {lexer_type::ValueAssign.getType(), std::bind(&self_type::parseAssign, this, std::placeholders::_1, std::placeholders::_2)},
-			         {lexer_type::Text.getType(), std::bind(&self_type::parseText, this, std::placeholders::_1, std::placeholders::_2)},
-				})
 			{
 			}
 			IniParser(const IniParser &rhs) = default;
@@ -76,9 +70,10 @@ namespace quasar {
 				if (!tokens.empty()) {
 					auto it = tokens.end() - 1;
 					if (it->getType() != lexer_type::NewLine.getType()) {
-						parseNewLine(*it, it);
+						parseNewLine(&tokens, it);
 					}
 				}
+				into = mResult;
 			}
 
 			void throwEmptyPropertyName(const token_type &token);
@@ -88,28 +83,28 @@ namespace quasar {
 			void throwMissingSectionStartToken(const token_type &token);
 			void throwPropertyMissingKey(const token_type &token);
 
-			void parseSectionOpen(const token_type &token, typename token_list::citer_type &it) {
+			void parseSectionOpen(const token_list *token, typename token_list::citer_type &it) {
 				if (!mInQuote) {
 					if (!mAccu.empty()) {
-						throwSectionNotOnOwnLine(token);
+						throwSectionNotOnOwnLine(*it);
 					}
 					if (mInSection) {
-						throwUnexpectedSectionOpenToken(token);
+						throwUnexpectedSectionOpenToken(*it);
 					}
 					mInSection = true;
 				}
 			}
 
-			void parseAssign(const token_type &token, typename token_list::citer_type &it) {
+			void parseAssign(const token_list *token, typename token_list::citer_type &it) {
 				section_type *section = nullptr;
-				if (!mResult->hasChildren()) {
-					section = mResult;
+				if (!mResult.hasChildren()) {
+					section = &mResult;
 				} else {
-					section = &mResult->getChildren()->back();
+					section = mResult.getLastChild();
 				}
 				mAccu.trim();
 				if (mAccu.empty()) {
-					throwEmptyPropertyName(token);
+					throwEmptyPropertyName(*it);
 				}
 				auto found = section->getProperties()->find(mAccu);
 				if (found == section->getProperties()->end()) {
@@ -118,7 +113,7 @@ namespace quasar {
 					if (inserted.second) {
 						mProp = inserted.first;
 					} else {
-						throwPropertyInsertionFailed(token);
+						throwPropertyInsertionFailed(*it);
 					}
 				} else {
 					mProp = found;
@@ -126,32 +121,32 @@ namespace quasar {
 				mAccu.clear();
 			}
 
-			void parseSectionClose(const token_type &token, typename token_list::citer_type &it) {
+			void parseSectionClose(const token_list *token, typename token_list::citer_type &it) {
 				if (!mInQuote) {
 					if (mInSection) {
 						mAccu.trim();
-						mResult->createChild(mAccu);
+						mResult.createChild(mAccu);
 						mAccu.clear();
 					} else {
-						throwMissingSectionStartToken(token);
+						throwMissingSectionStartToken(*it);
 					}
 					mInSection = false;
 				}
 			}
 
-			void parseComment(const token_type &token, typename token_list::citer_type &it) {
+			void parseComment(const token_list *token, typename token_list::citer_type &it) {
 				if (!mInQuote) {
 					mInComment = true;
 				}
 			}
 
-			void parseNewLine(const token_type &token, typename token_list::citer_type &it) {
+			void parseNewLine(const token_list *token, typename token_list::citer_type &it) {
 				mAccu.trim();
 				if (!mInComment && !mAccu.empty()) {
 					if (mProp != typename prop_store_type::iter_type()) {
 						mProp->second = mAccu;
 					} else {
-						throwPropertyMissingKey(token);
+						throwPropertyMissingKey(*it);
 					}
 				}
 				mProp = typename prop_store_type::iter_type();
@@ -161,7 +156,7 @@ namespace quasar {
 				mAccu.clear();
 			}
 
-			void parseText(const token_type &token, typename token_list::citer_type &it) {
+			void parseText(const token_list *token, typename token_list::citer_type &it) {
 				if (!mInComment) {
 					mAccu += it->getText();
 				}

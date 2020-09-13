@@ -18,9 +18,11 @@ add_library(quasarfx-formats
         ini/IniSerializer.cxx ini/IniSerializer.h
         ini/IniLexer.cxx ini/IniLexer.h
         ini/IniParser.cxx ini/IniParser.h
-        ini/IniGenerator.cxx ini/IniGenerator.h)
+        ini/IniGenerator.cxx ini/IniGenerator.h
+        ini/IniFactory.cxx ini/IniFactory.h
+)
 
-target_include_directories(quasarfx-formats PRIVATE ${SDL2_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/libs ${CMAKE_SOURCE_DIR}/libs/core ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(quasarfx-formats PRIVATE ${CMAKE_BINARY_DIR}/libs/core/include ${SDL2_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/libs ${CMAKE_SOURCE_DIR}/libs/core ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(quasarfx-formats
                         PRIVATE quasarfx-core

@@ -34,7 +34,7 @@ namespace quasar {
 		protected:
 			void                        _generate(const value_type *root, const value_type *node, stream_type &to) {
 				if (node != root && node != root->getFirstChild()) {
-					to << std::endl;
+					to << std::endl << std::endl;
 				}
 				if (!node->getName().empty()) {
 					to << "[" << node->getName() << "]" << std::endl;
@@ -44,6 +44,9 @@ namespace quasar {
 						to << std::endl;
 					}
 					to << prop->first << " = " << prop->second;
+				}
+				if (node->getProperties().size() == 1 && node == root) {
+					to << std::endl << std::endl;
 				}
 				for (auto child = node->getChildren().begin(); child != node->getChildren().end(); child++) {
 					_generate(root, &*child, to);

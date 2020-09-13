@@ -8,21 +8,17 @@
 #include <formats/ini/IniGenerator.h>
 
 using quasar::formats::IniGenerator;
-using quasar::formats::IniFile;
-using quasar::formats::IniSection;
+using quasar::core::ConfigNode;
 
 TEST_CASE("IniGenerator can generate valid ini file") {
 	IniGenerator    g;
-	IniFile         f("test", "", IniFile::store_type({
-		IniSection("general", IniSection::store_type({
-			{"key1", "value1"},
-			{"key2", "value2"}
-		})),
-		IniSection("tmp", IniSection::store_type({
-			{"key3", "value3"}
-		}))
-	}));
-	f.defaultSection->values["defKey"] = "defVal";
+	ConfigNode      f;
+	auto general = f.createChild("general");
+	general->setProperty("key1", "value1");
+	general->setProperty("key2", "value2");
+	auto tmp = f.createChild("tmp");
+	tmp->setProperty("key3", "value3");
+	f.setProperty("defKey", "defVal");
 	auto generated = g.generate(f);
 	REQUIRE(generated == "defKey = defVal\n\n[general]\nkey1 = value1\nkey2 = value2\n\n[tmp]\nkey3 = value3");
 }

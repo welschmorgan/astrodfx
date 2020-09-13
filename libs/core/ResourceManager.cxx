@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "ResourceManager.h"
+#include <fstream>
 
 namespace quasar {
 	namespace core {
@@ -58,11 +59,14 @@ namespace quasar {
 			return mResources.back();
 		}
 
-		SharedResource ResourceManager::getResourceByName(const String &name) const {
+		SharedResource ResourceManager::getResourceByName(const String &name, bool except) const {
 			for (auto r: mResources) {
 				if (r->getName() == name) {
 					return r;
 				}
+			}
+			if (except) {
+				throw MissingResourceError(name, QUASAR_SOURCE_LOCATION);
 			}
 			return SharedResource();
 		}
@@ -107,17 +111,29 @@ namespace quasar {
 		SharedResource ResourceManager::loadResource(const Path &path, String name, const StringMap<String> &properties) {
 			PathExt ext = path.ext();
 			size_t pos = -1;
+			auto found = getResourceByName(name, false);
+			if (found) {
+				return found;
+			}
 			auto facs = getFactoriesByExtension(ext);
 			StringVector tried;
 			if (name.empty()) {
 				name = path.base();
 			}
+			SharedIOStream stream;
+			try {
+				stream = SharedIOStream(
+					new std::fstream(path.absolute(), std::ios::in | std::ios::out | std::ios::binary)
+				);
+			} catch (std::exception &ex) {
+				throw std::runtime_error(std::string(path.begin(), path.end()) + ": failed open stream, " + ex.what());
+			}
 			for (auto fac: facs) {
 				try {
 //					std::cout << "try loading with " << fac->getName() << std::endl;
-					auto res = fac->create(name, path.absolute(), properties);
+					auto res = fac->create(name, path.absolute(), properties, stream);
 					if (res->getStage() < ResourceStage::Created) {
-						res->create(properties);
+						res->create();
 					}
 					if (res->getStage() < ResourceStage::Loaded) {
 						res->load();
@@ -136,10 +152,10 @@ namespace quasar {
 			auto facs = getFactoriesByType(t);
 			for (auto fac: facs) {
 				try {
-					auto res = fac->create(name, "", properties);
+					auto res = fac->create(name, "", properties, SharedIOStream());
 					auto &ret = this->addResource(res);
 					if (ret->getStage() < ResourceStage::Created) {
-						ret->create(properties);
+						ret->create();
 					}
 					return ret;
 				} catch (std::exception &ex) {
@@ -171,20 +187,27 @@ namespace quasar {
 			return mLocations.includes(path);
 		}
 
-		void ResourceManager::discoverResources() {
-			for (auto it = mLocations->begin(); it != mLocations->end(); it++) {
-				std::cout << *it << ": discovering location..." << std::endl;
-				if (it->exists()) {
-					auto entries = it->readDir(true);
-					for (auto &entry: entries) {
-						try {
-							loadResource(entry);
-						} catch (std::exception &ex) {
-							std::cerr << "\t" << ex.what() << std::endl;
+		void ResourceManager::discoverResources(unsigned options) {
+			if ((options & RDO_ONCE) == 0 || !mLocationsDiscovered) {
+				for (auto it = mLocations->begin(); it != mLocations->end(); it++) {
+					std::cout << *it << ": discovering location..." << std::endl;
+					if (it->exists()) {
+						auto      entries = it->readDir((options & RDO_RECURSIVE) != 0);
+						for (auto &entry: entries) {
+							try {
+								loadResource(entry);
+							} catch (std::exception &ex) {
+								std::cerr << "\t" << ex.what() << std::endl;
+							}
 						}
 					}
 				}
+				mLocationsDiscovered = true;
 			}
+		}
+
+		bool ResourceManager::areLocationsDiscovered() const noexcept {
+			return mLocationsDiscovered;
 		}
 	}
 }

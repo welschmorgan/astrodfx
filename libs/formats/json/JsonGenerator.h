@@ -7,6 +7,7 @@
 
 #include <core/Generator.h>
 #include <core/Config.h>
+#include <locale>
 
 namespace quasar {
 	namespace formats {
@@ -19,24 +20,47 @@ namespace quasar {
 			JsonGenerator       &operator=(const JsonGenerator &rhs) = delete;
 
 			void                generate(const core::ConfigNode &item, stream_type &to) override {
-				_generate(&item, to);
+				_generate(&item, &item, to);
 			}
 
 		protected:
-			void                _generate(const core::ConfigNode *node, stream_type &to, int indent = 0) {
+			void                _generate(const core::ConfigNode *root, const core::ConfigNode *node, stream_type &to, int indent = 0) {
 				string_type     indentStr(indent, '\t');
+				std::locale     locale;
+				auto isnumber = [&](const string_type &str) -> bool {
+					for (auto const& ch: str) {
+						if (!std::isdigit(ch, locale)) {
+							return false;
+						}
+					}
+					return true;
+				};
 				to << indentStr;
-				if (!node->getName().empty()) {
-					to << node->getName() << " ";
+				if (node != root && !node->getName().empty()) {
+					to << "\"" << node->getName() << "\": ";
 				}
-				to << "{" << std::endl;
-				for (auto const&prop: node->getProperties()) {
-					to << indentStr + "\t" + prop.first << " = " << prop.second << std::endl;
+				to << "{";
+				for (auto prop = node->getProperties().begin(); prop != node->getProperties().end(); prop++) {
+					if (prop != node->getProperties().begin()) {
+						to << ",";
+					}
+					to << std::endl;
+					to << indentStr + "\t\"" + prop->first << "\": ";
+					if (isnumber(prop->second)) {
+						to << prop->second;
+					} else {
+						to << "\"" << prop->second << "\"";
+					}
 				}
-				for (auto const&child: node->getChildren()) {
-					_generate(&child, to, indent + 1);
+				for (auto child = node->getChildren().begin(); child != node->getChildren().end(); child++) {
+					if (child != node->getChildren().begin() || !node->getProperties().empty()) {
+						to << ",";
+					}
+					to << std::endl;
+					_generate(root, &*child, to, indent + 1);
 				}
-				to << indentStr << "}" << std::endl;
+				to << std::endl;
+				to << indentStr << "}";
 			}
 		};
 	}

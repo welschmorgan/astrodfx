@@ -27,7 +27,7 @@ namespace quasar {
 
 			static std::string                  build(const string_type &msg, const location_type &loc) {
 				builder_type    builder;
-				builder << std::basic_string<char>(msg.begin(), msg.end()) << " ";
+				builder << std::basic_string<char>(msg.begin(), msg.end());
 				if (loc.hasFunction()) {
 					builder << " from " << std::string(loc.getFunction().begin(), loc.getFunction().end());
 				}

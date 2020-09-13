@@ -33,27 +33,27 @@ namespace quasar {
 		}
 
 		bool PathExt::operator==(const PathExt &rhs) const noexcept {
-			return false;
+			return mValue == rhs.mValue;
 		}
 
 		bool PathExt::operator!=(const PathExt &rhs) const noexcept {
-			return false;
+			return !(*this == rhs);
 		}
 
 		bool PathExt::operator<=(const PathExt &rhs) const noexcept {
-			return false;
+			return mValue <= rhs.mValue;
 		}
 
 		bool PathExt::operator<(const PathExt &rhs) const noexcept {
-			return false;
+			return mValue < rhs.mValue;
 		}
 
 		bool PathExt::operator>=(const PathExt &rhs) const noexcept {
-			return false;
+			return mValue >= rhs.mValue;
 		}
 
 		bool PathExt::operator>(const PathExt &rhs) const noexcept {
-			return false;
+			return mValue > rhs.mValue;
 		}
 
 		const String &PathExt::str() const noexcept {
@@ -278,6 +278,22 @@ namespace quasar {
 				ret += Separator;
 			}
 			return Path(ret + p.mData);
+		}
+
+		String &Path::operator*() {
+			return mData;
+		}
+
+		const String &Path::operator*() const {
+			return mData;
+		}
+
+		String *Path::operator->() {
+			return &mData;
+		}
+
+		const String *Path::operator->() const {
+			return &mData;
 		}
 	}
 }

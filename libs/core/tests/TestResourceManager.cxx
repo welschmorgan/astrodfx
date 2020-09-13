@@ -21,6 +21,9 @@ using quasar::core::ResourceStage;
 using quasar::core::ResourceManager;
 using quasar::core::String;
 using quasar::core::Path;
+using quasar::core::IStream;
+using quasar::core::SharedIOStream;
+using quasar::core::OStream;
 using quasar::core::StringMap;
 
 class MockResourceFactory: public ResourceFactory {
@@ -28,10 +31,14 @@ public:
 	MockResourceFactory(const String &name = "Mock", ResourcePriority prio = ResourcePriority::None): ResourceFactory(name, ResourceType::Text, prio) {}
 	virtual ~MockResourceFactory() {}
 
-	virtual SharedResource  create(const String &name, const String &path, const StringMap<String> &props = StringMap<String>()) {
-		return std::make_shared<Resource>(this, "test", "tmp:///test", mType);
+	virtual SharedResource  create(const String &name, const String &path, const StringMap<String> &props, const SharedIOStream &stream) override {
+		return std::make_shared<Resource>(this, "test", "tmp:///test", mType, props, stream);
 	}
-	virtual void            destroy(Resource &res) {
+	virtual void            load(Resource &res, IStream &from) override {
+	}
+	virtual void            save(Resource &res, OStream &to) override {
+	}
+	virtual void            destroy(Resource &res) override {
 		res.destroy();
 	}
 };

@@ -26,7 +26,6 @@ TEST_CASE("JsonParser can parse file") {
 		Token(nullptr, JsonLexer::ObjectClose.getType(), JsonLexer::ObjectClose.getTrigger(), "}", 10, "", 3, 1, TF_NONE),
 	});
 	ConfigNode cfg = p.parse(tokens);
-	auto key = cfg.getProperty("a");
-	REQUIRE(key != nullptr);
-	REQUIRE(*key == "42");
+	REQUIRE(cfg.hasProperty("a"));
+	REQUIRE(cfg.getProperty("a") == "42");
 }

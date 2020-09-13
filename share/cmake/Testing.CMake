@@ -14,7 +14,7 @@ function(describe_test module name sources include_dirs link_libs)
 
     #message("name: ${CAP_NAME} - module: ${CAP_MODULE} - pretty: ${PRETTY_TEST_NAME}")
     add_executable(${TEST_NAME} ${sources})
-    target_include_directories(${TEST_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libs ${CMAKE_SOURCE_DIR}/libs/${module} ${include_dirs})
+    target_include_directories(${TEST_NAME} PRIVATE ${CMAKE_BINARY_DIR}/libs/core/include ${CMAKE_BINARY_DIR}/libs/${module}/include ${CMAKE_SOURCE_DIR}/libs ${CMAKE_SOURCE_DIR}/libs/${module} ${include_dirs})
     target_link_libraries(${TEST_NAME} quasarfx-${module} ${link_libs})
     add_test(NAME ${PRETTY_TEST_NAME} COMMAND ${TEST_NAME})
 endfunction()

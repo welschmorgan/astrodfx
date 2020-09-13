@@ -7,21 +7,25 @@
 
 namespace quasar {
 	namespace core {
-		Resource::Resource(ResourceFactory *factory, const String &name, const String &path, const ResourceType &type)
-			: mFactory(factory)
-			, mName(name)
+		Resource::Resource(ResourceFactory *factory, const String &name, const String &path, const ResourceType &type, const PropertyMap &props, const SharedIOStream &stream)
+			: mName(name)
 			, mPath(path)
 			, mStage(ResourceStage::None)
 			, mType(type)
+			, mFactory(factory)
+			, mStream(stream)
+			, mProperties(props)
 		{}
 
 		Resource::Resource()
-			: mFactory(nullptr)
-			, mName()
+			: mName()
 			, mPath()
 			, mStage(ResourceStage::None)
 			, mType(ResourceType::None)
-		{}
+			, mFactory(nullptr)
+			, mStream()
+			, mProperties()
+	{}
 
 		Resource::~Resource() noexcept {
 			try {
@@ -55,7 +59,7 @@ namespace quasar {
 			mType = type;
 		}
 
-		void Resource::create(const StringMap<String> &properties) {
+		void Resource::create() {
 			if (mStage == ResourceStage::None) {
 				mStage = ResourceStage::Created;
 			}
@@ -64,9 +68,17 @@ namespace quasar {
 		void Resource::load() {
 			create();
 			if (mStage == ResourceStage::Created) {
+				if (mFactory && mStream) {
+					mFactory->load(*this, *mStream);
+				}
 				mStage = ResourceStage::Loaded;
 			}
+		}
 
+		void Resource::save() {
+			if (mFactory && mStream) {
+				mFactory->save(*this, *mStream);
+			}
 		}
 
 		void Resource::unload() {
@@ -78,6 +90,9 @@ namespace quasar {
 		void Resource::destroy() {
 			unload();
 			if (mStage == ResourceStage::Unloaded) {
+				if (mFactory) {
+					mFactory->destroy(*this);
+				}
 				mStage = ResourceStage::Destroyed;
 			}
 		}
@@ -100,6 +115,22 @@ namespace quasar {
 
 		void Resource::setStage(const ResourceStage &stage) noexcept {
 			mStage = stage;
+		}
+
+		SharedIOStream Resource::getStream() const noexcept {
+			return mStream;
+		}
+
+		void Resource::setStream(SharedIOStream stream) noexcept {
+			mStream = stream;
+		}
+
+		PropertyMap Resource::getProperties() const noexcept {
+			return mProperties;
+		}
+
+		void Resource::setProperties(const PropertyMap &props) noexcept {
+			mProperties = props;
 		}
 	}
 }

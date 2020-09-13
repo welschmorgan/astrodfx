@@ -5,10 +5,13 @@
 #ifndef QUASARFX_CHARSETS_H
 # define QUASARFX_CHARSETS_H
 
-# include "String.h"
+//# include "String.h"
 
 namespace quasar {
 	namespace core {
+		template<typename CharT>
+		class BasicString;
+
 		template<typename CharT>
 		class BasicCharsets {
 		public:
@@ -32,7 +35,11 @@ namespace quasar {
 		extern template class           BasicCharsets<char>;
 		extern template class           BasicCharsets<wchar_t>;
 
-		using Charsets                  = BasicCharsets<Char>;
+#ifdef UNICODE
+		using Charsets                  = BasicCharsets<wchar_t>;
+#else
+		using Charsets                  = BasicCharsets<char>;
+#endif
 	}
 }
 

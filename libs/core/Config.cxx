@@ -27,11 +27,11 @@ namespace quasar {
 		template<> void                     ConfigNode::setValue(const std::nullptr_t &value) noexcept { mValue = "null"; }
 
 		ConfigNode::ConfigNode(ConfigNode *parent, const String &name)
-				: mParent(parent)
-				, mChildren()
-				, mProps()
-				, mName(name)
-				, mValue()
+			: mParent(parent)
+			, mChildren()
+			, mProps()
+			, mName(name)
+			, mValue()
 		{}
 
 		ConfigNode::ConfigNode(const ConfigNode &rhs) {
@@ -78,24 +78,27 @@ namespace quasar {
 			return !mChildren.empty();
 		}
 		ConfigNode *ConfigNode::createChild(const String &name) {
-			ConfigNode              *child = getChild(name);
-			if (!child) {
+			child_iter_type child = findChild(name);
+			if (child == mChildren.end()) {
 				mChildren.add(ConfigNode(this, name));
-				child = &mChildren->back();
+				child = mChildren.end() - 1;
 			}
-			return child;
+			return &*child;
 		}
 
 		const ConfigNode::child_store_type &ConfigNode::getChildren() const noexcept { return mChildren; }
 
 		ConfigNode::child_store_type &ConfigNode::getChildren() noexcept { return mChildren; }
 
-		const ConfigNode *ConfigNode::getChild(const String &name) const noexcept {
+		const ConfigNode *ConfigNode::getChild(const String &name, bool except) const noexcept(false) {
 			auto it = mChildren.find([&](const ConfigNode &n) {
 				return n.getName() == name;
 			});
 			if (it != mChildren.end()) {
 				return &*it;
+			}
+			if (except) {
+				throw std::runtime_error("missing child '" + std::string(name.begin(), name.end()) + "' in ConfigNode '" + std::string(mName.begin(), mName.end()) + "'");
 			}
 			return nullptr;
 		}
@@ -125,12 +128,15 @@ namespace quasar {
 			return nullptr;
 		}
 
-		ConfigNode *ConfigNode::getChild(const String &name) noexcept {
+		ConfigNode *ConfigNode::getChild(const String &name, bool except) noexcept(false) {
 			auto it = mChildren.find([&](const ConfigNode &n) {
 				return n.getName() == name;
 			});
 			if (it != mChildren.end()) {
 				return &*it;
+			}
+			if (except) {
+				throw std::runtime_error("missing child '" + std::string(name.begin(), name.end()) + "' in ConfigNode '" + std::string(mName.begin(), mName.end()) + "'");
 			}
 			return nullptr;
 		}
@@ -152,36 +158,9 @@ namespace quasar {
 			return false;
 		}
 
-		ConfigNode &ConfigNode::setProperty(const String &name, const String &value) {
-			mProps.put(name, value);
-			return *this;
-		}
-
 		const ConfigNode::prop_store_type &ConfigNode::getProperties() const noexcept { return mProps; }
 
 		ConfigNode::prop_store_type &ConfigNode::getProperties() noexcept { return mProps; }
-
-		const String *ConfigNode::getProperty(const String &name, bool except) const {
-			auto prop = mProps->find(name);
-			if (prop == mProps.end()) {
-				if (except) {
-					throw std::runtime_error("Unknown property '" + name + "' in config node '" + mName + "'");
-				}
-				return nullptr;
-			}
-			return &prop->second;
-		}
-
-		String *ConfigNode::getProperty(const String &name, bool except) {
-			auto prop = mProps->find(name);
-			if (prop == mProps.end()) {
-				if (except) {
-					throw std::runtime_error("Unknown property '" + name + "' in config node '" + mName + "'");
-				}
-				return nullptr;
-			}
-			return &prop->second;
-		}
 
 		bool ConfigNode::hasProperty(const String &name) noexcept {
 			auto prop = mProps->find(name);
@@ -199,56 +178,61 @@ namespace quasar {
 			return true;
 		}
 
+		ConfigNode::child_iter_type ConfigNode::findChild(const String &name) {
+			for (auto it = mChildren.begin(); it != mChildren.end(); it++) {
+				if (it->getName() == name) {
+					return it;
+				}
+			}
+			return mChildren.end();
+		}
+
+		ConfigNode::child_citer_type ConfigNode::findChild(const String &name) const {
+			for (auto it = mChildren.begin(); it != mChildren.end(); it++) {
+				if (it->getName() == name) {
+					return it;
+				}
+			}
+			return mChildren.end();
+		}
+
+
+		ConfigNode::child_riter_type ConfigNode::rfindChild(const String &name) {
+			for (auto it = mChildren.rbegin(); it != mChildren.rend(); it++) {
+				if (it->getName() == name) {
+					return it;
+				}
+			}
+			return mChildren.rend();
+		}
+
+		ConfigNode::child_criter_type ConfigNode::rfindChild(const String &name) const {
+			for (auto it = mChildren.crbegin(); it != mChildren.crend(); it++) {
+				if (it->getName() == name) {
+					return it;
+				}
+			}
+			return mChildren.crend();
+		}
+
 		template<typename T>
 		T ConfigNode::getValue() const noexcept { return mValue; }
-
-		void
-		ConfigNodeSerializer::dump(ConfigNodeSerializer::ostream_type &os, const ConfigNodeSerializer::value_type *node,
-		                           int indent) {
-			bool hasChildren = !node->getChildren().empty();
-			bool hasProps = !node->getProperties().empty();
-			bool hasValue = !node->getValue().empty();
-			bool isSimple = !hasProps && !hasChildren;
-			bool hasName = !node->getName().empty();
-			String indentStr = String(indent, '\t');
-			String nextIndentStr = String(indent + 1, '\t');
-
-			os << indentStr << node->getName();
-			if (hasValue) {
-				os << (hasName ? ": " : "") << node->getValue();
-			}
-			if (!isSimple) {
-				os << (hasName ? " " : "") << "{" << std::endl;
-				if (hasProps) {
-					for (auto &prop: node->getProperties()) {
-						os << nextIndentStr << prop.first << " = " << prop.second << std::endl;
-					}
-					os << std::endl;
-				}
-				for (auto &child: node->getChildren()) {
-					dump(os, &child, indent + 1);
-					os << std::endl;
-				}
-				os << indent << "}";
-			}
-		}
-
-		void ConfigNodeSerializer::write(ConfigNodeSerializer::ostream_type &os,
-		                                 const ConfigNodeSerializer::value_type &from) {
-			dump(os, &from);
-		}
 
 		ConfigFile::ConfigFile()
 				: Resource(), ConfigNode() {}
 
 		ConfigFile::ConfigFile(ResourceFactory *factory, const String &name, const String &path,
-		                       const ResourceType &type)
-				: Resource(factory, name, path, type == ResourceType::Unknown ? ResourceType::Config : type)
+		                       const ResourceType &type, const PropertyMap &props, const SharedIOStream &stream)
+				: Resource(factory, name, path, type == ResourceType::Unknown ? ResourceType::Config : type, props, stream)
 				, ConfigNode()
 		{}
 
-		void ConfigFile::setName(const String &name) {
+		void ConfigFile::setName(const String &name) noexcept {
 			Resource::setName(name);
+		}
+
+		const String &ConfigFile::getName() const noexcept {
+			return Resource::getName();
 		}
 	}
 }

@@ -1,0 +1,5 @@
+function(describe_example name sources include_dirs link_libs)
+    add_executable(quasarfx-example-${name} ${sources})
+    target_include_directories(quasarfx-example-${name} PRIVATE ${CMAKE_BINARY_DIR}/libs/core/include ${CMAKE_SOURCE_DIR}/libs ${include_dirs})
+    target_link_libraries(quasarfx-example-${name} quasarfx-core ${link_libs})
+endfunction()

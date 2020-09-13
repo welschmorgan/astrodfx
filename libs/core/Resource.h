@@ -20,14 +20,22 @@ namespace quasar {
 			ResourceStage       mStage;
 			ResourceType        mType;
 			ResourceFactory     *mFactory;
+			SharedIOStream      mStream;
+			PropertyMap         mProperties;
 
 		public:
 			Resource();
-			Resource(ResourceFactory *factory, const String &name, const String &path, const ResourceType &type = ResourceType::Unknown);
+			Resource(ResourceFactory *factory, const String &name, const String &path, const ResourceType &type = ResourceType::Unknown, const PropertyMap &properties = PropertyMap(), const SharedIOStream &stream = SharedIOStream());
 			Resource(const Resource &rhs) = delete;
 			virtual ~Resource() noexcept;
 
 			Resource                &operator=(const Resource &rhs) = delete;
+
+			PropertyMap             getProperties() const noexcept;
+			void                    setProperties(const PropertyMap &props) noexcept;
+
+			SharedIOStream          getStream() const noexcept;
+			void                    setStream(SharedIOStream stream) noexcept;
 
 			ResourceFactory         *getFactory() noexcept;
 			const ResourceFactory   *getFactory() const noexcept;
@@ -45,8 +53,9 @@ namespace quasar {
 			const ResourceType      &getType() const noexcept;
 			void                    setType(const ResourceType &type) noexcept;
 
-			virtual void            create(const StringMap<String> &properties = StringMap<String>());
+			virtual void            create();
 			virtual void            load();
+			virtual void            save();
 			virtual void            unload();
 			virtual void            destroy();
 		};

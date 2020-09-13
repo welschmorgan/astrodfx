@@ -15,6 +15,11 @@ namespace quasar {
 			using child_store_type = Vector<ConfigNode>;
 			using prop_store_type = Map<String, String>;
 
+			using child_iter_type       = typename child_store_type::iter_type;
+			using child_citer_type      = typename child_store_type::citer_type;
+			using child_riter_type      = typename child_store_type::riter_type;
+			using child_criter_type     = typename child_store_type::criter_type;
+
 		protected:
 			ConfigNode                  *mParent;
 			child_store_type            mChildren;
@@ -50,16 +55,21 @@ namespace quasar {
 			ConfigNode                  *getLastChild();
 			const child_store_type      &getChildren() const noexcept;
 			child_store_type            &getChildren() noexcept;
-			const ConfigNode            *getChild(const String &name) const noexcept;
-			ConfigNode                  *getChild(const String &name) noexcept;
+			child_iter_type             findChild(const String &name);
+			child_citer_type            findChild(const String &name) const;
+			child_riter_type            rfindChild(const String &name);
+			child_criter_type           rfindChild(const String &name) const;
+			const ConfigNode            *getChild(const String &name, bool except = true) const  noexcept(false);
+			ConfigNode                  *getChild(const String &name, bool except = true)  noexcept(false);
 			bool                        hasChild(const String &name) noexcept;
 			bool                        removeChild(const String &name, ConfigNode *out = nullptr);
 
-			ConfigNode                  &setProperty(const String &name, const String &value);
+			template<typename Type = String>
+			ConfigNode                  &setProperty(const String &name, const Type value);
 			const prop_store_type       &getProperties() const noexcept;
 			prop_store_type             &getProperties() noexcept;
-			const String                *getProperty(const String &name, bool except = true) const;
-			String                      *getProperty(const String &name, bool except = true);
+			template<typename Type = String>
+			Type                        getProperty(const String &name, bool except = true, const Type defVal = Type()) const;
 			bool                        hasProperty(const String &name) noexcept;
 			bool                        removeProperty(const String &name, String *out = nullptr);
 
@@ -67,23 +77,29 @@ namespace quasar {
 			void                        acquireChild(ConfigNode &child);
 		};
 
-		class ConfigNodeSerializer: public OSerializer<ConfigNode> {
-		public:
-			using base_type             = OSerializer<ConfigNode>;
-			using value_type            = typename base_type::value_type;
-			using ostream_type          = typename base_type::ostream_type;
+		template<typename Type>
+		ConfigNode &ConfigNode::setProperty(const String &name, const Type value) {
+			StringStream buf;
+			buf << value;
+			mProps.put(name, buf.str());
+			return *this;
+		}
 
-		public:
-			ConfigNodeSerializer() = default;
-			ConfigNodeSerializer(const ConfigNodeSerializer &rhs) = default;
-			~ConfigNodeSerializer() noexcept = default;
-
-			ConfigNodeSerializer            &operator=(const ConfigNodeSerializer &rhs) = default;
-
-			void                            dump(ostream_type &os, const value_type *node, int indent = 0);
-
-			void                            write(ostream_type &os, const value_type &from) override;
-		};
+		template<typename Type>
+		Type                        ConfigNode::getProperty(const String &name, bool except, const Type defVal) const {
+			auto prop = mProps->find(name);
+			if (prop == mProps.end()) {
+				if (except) {
+					throw std::runtime_error("Unknown property '" + name + "' in config node '" + mName + "'");
+				}
+				return defVal;
+			}
+			StringStream buf;
+			buf.str(prop->second);
+			Type ret = Type();
+			buf >> ret;
+			return ret;
+		}
 
 		class ConfigFile
 			: public Resource
@@ -94,13 +110,18 @@ namespace quasar {
 
 		public:
 			ConfigFile();
-			ConfigFile(ResourceFactory *factory, const String &name, const String &path, const ResourceType &type = ResourceType::Unknown);
+			ConfigFile(ResourceFactory *factory, const String &name, const String &path, const ResourceType &type = ResourceType::Unknown, const PropertyMap &props = PropertyMap(), const SharedIOStream &stream = SharedIOStream());
 			ConfigFile(const Resource &rhs) = delete;
 			virtual ~ConfigFile() noexcept = default;
 
 			ConfigFile          &operator=(const ConfigFile &rhs) = delete;
+			ConfigFile          &operator=(const ConfigNode &rhs) {
+				ConfigNode::operator=(rhs);
+				return *this;
+			}
 
-			void                setName(const String &name);
+			void                setName(const String &name) noexcept;
+			const String        &getName() const noexcept;
 		};
 	}
 }

@@ -20,10 +20,12 @@ public:
 
 	AnyResourceFactory                 &operator=(const AnyResourceFactory &rhs) = delete;
 
-	virtual SharedResource              create(const String &name, const String &path, const StringMap<String> &properties) {
-		return SharedResource(new quasar::formats::Text(this, name, path, AnyResourceType));
+	virtual SharedResource              create(const String &name, const String &path, const StringMap<String> &properties, const SharedIOStream &stream) override {
+		return SharedResource(new quasar::formats::Text(this, name, path, AnyResourceType, properties, stream));
 	}
-	virtual void                        destroy(Resource &res) {
+	virtual void                        load(Resource &res, IStream &from) override {}
+	virtual void                        save(Resource &res, OStream &to) override {}
+	virtual void                        destroy(Resource &res) override {
 	}
 };
 
