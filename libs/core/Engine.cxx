@@ -18,7 +18,6 @@ namespace quasar {
 			, mRenderer()
 			, mResourceDiscoveryOptions(RDO_NONE)
 			, mResourceManager(new ResourceManager())
-			, mShouldQuit(false)
 			, mConfigFilename(configFilename)
 			, mConfig()
 		{}
@@ -83,20 +82,6 @@ namespace quasar {
 				}
 				mInitialized = false;
 			}
-		}
-
-		void Engine::run() {
-			while (!mShouldQuit) {
-				render();
-			}
-		}
-
-		void Engine::render() {
-			mRenderer->render(0.0);
-		}
-
-		SharedWindow Engine::createWindow(const String &name) {
-			return mRenderer->createWindow(name);
 		}
 
 		const EngineConfig &Engine::getConfig() const noexcept {

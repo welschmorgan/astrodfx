@@ -32,7 +32,6 @@ namespace quasar {
 			const String                &getName() const noexcept;
 			bool                        isInitialized() const noexcept;
 
-			virtual SharedWindow        createWindow(const String &name) = 0;
 			virtual bool                destroyWindow(SharedWindow &w);
 			virtual SharedWindow        &addWindow(const SharedWindow &w);
 			virtual SharedWindow        getWindow(const String &name) const;

@@ -47,10 +47,6 @@ namespace quasar {
 			mInitialized = false;
 		}
 
-		SharedWindow GLRenderer::createWindow(const std::string &name) {
-			return addWindow(std::static_pointer_cast<Window>(std::make_shared<GLWindow>(name)));
-		}
-
 		void GLRenderer::update(double dt) {
 			for (auto w: mWindows) {
 				w->update(dt);

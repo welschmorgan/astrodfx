@@ -25,8 +25,6 @@ namespace quasar {
 			void                shutdown() override;
 
 			void                update(double dt) override;
-
-			core::SharedWindow  createWindow(const std::string &name) override;
 		};
 
 		using SharedGLRenderer = std::shared_ptr<GLRenderer>;
