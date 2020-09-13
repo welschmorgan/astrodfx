@@ -17,6 +17,25 @@ TEST_CASE("String can be trimmed") {
 	REQUIRE(String("  helo\tl\t").trimmed() == String("helo\tl"));
 }
 
+TEST_CASE("String can be padded") {
+	REQUIRE(String(" a").padded(2, " ") == String(" a"));
+	REQUIRE(String("aa").padded(4, " ") == String(" aa "));
+	REQUIRE(String("aa").padded(5, " ") == String(" aa  "));
+}
+
+TEST_CASE("String can be right-padded") {
+	REQUIRE(String(" a").rpadded(2, " ") == String(" a"));
+	REQUIRE(String("aa").rpadded(4, " ") == String("aa  "));
+	REQUIRE(String("aa").rpadded(5, " ") == String("aa   "));
+}
+
+
+TEST_CASE("String can be left-padded") {
+	REQUIRE(String(" a").lpadded(2, " ") == String(" a"));
+	REQUIRE(String("aa").lpadded(4, " ") == String("  aa"));
+	REQUIRE(String("aa").lpadded(5, " ") == String("   aa"));
+}
+
 TEST_CASE("String can be split") {
 	auto actual = StringVector(String("a, b, c").split(","));
 	auto expected = StringVector({"a", "b", "c"});

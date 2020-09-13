@@ -26,11 +26,23 @@ namespace quasar {
 			BasicCharsets               &operator=(const BasicCharsets &rhs) = delete;
 
 		public:
+			static const string_type    Tab;
+			static const string_type    Space;
+			static const string_type    NewLine;
 			static const string_type    Whitespaces;
 		};
 
 		template<> const BasicString<char>      BasicCharsets<char>::Whitespaces;
 		template<> const BasicString<wchar_t>   BasicCharsets<wchar_t>::Whitespaces;
+
+		template<> const BasicString<char>      BasicCharsets<char>::Tab;
+		template<> const BasicString<wchar_t>   BasicCharsets<wchar_t>::Tab;
+
+		template<> const BasicString<char>      BasicCharsets<char>::Space;
+		template<> const BasicString<wchar_t>   BasicCharsets<wchar_t>::Space;
+
+		template<> const BasicString<char>      BasicCharsets<char>::NewLine;
+		template<> const BasicString<wchar_t>   BasicCharsets<wchar_t>::NewLine;
 
 		extern template class           BasicCharsets<char>;
 		extern template class           BasicCharsets<wchar_t>;

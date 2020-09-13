@@ -117,6 +117,66 @@ namespace quasar {
 			BasicString<CharT> ltrimmed(const BasicString<CharT> &charset = BasicCharsets<CharT>::Whitespaces) const;
 			BasicString<CharT> rtrimmed(const BasicString<CharT> &charset = BasicCharsets<CharT>::Whitespaces) const;
 			BasicString<CharT> trimmed(const BasicString<CharT> &charset = BasicCharsets<CharT>::Whitespaces) const;
+
+			self_type           &rpad(size_t num, const BasicString<CharT> &charset = BasicCharsets<CharT>::Space) {
+				if (base_type::size() < num) {
+					size_t diff = num - base_type::size();
+					size_t j = 0;
+					for (size_t i = 0; i < diff; i++, j++) {
+						*this += self_type(1, charset.at(j % charset.size()));
+					}
+				}
+				return *this;
+			}
+
+			self_type           &lpad(size_t num, const BasicString<CharT> &charset = BasicCharsets<CharT>::Space) {
+				if (base_type::size() < num) {
+					size_t diff = num - base_type::size();
+					size_t j = 0;
+					for (size_t i = 0; i < diff; i++, j++) {
+						*this = self_type(1, charset.at(j % charset.size())) + *this;
+					}
+				}
+				return *this;
+			}
+
+			self_type           &pad(size_t num, const BasicString<CharT> &charset = BasicCharsets<CharT>::Space) {
+				size_t lnum = 0, rnum = 0;
+				if (base_type::size() < num) {
+					lnum = (num - base_type::size()) / 2;
+					rnum = (num - base_type::size()) / 2;
+					if ((rnum + lnum + base_type::size()) < num) {
+						rnum++;
+					}
+					size_t j = 0;
+					for (size_t i = 0; i < lnum; i++, j++) {
+						*this = self_type(1, charset.at(j % charset.size())) + *this;
+					}
+					j = 0;
+					for (size_t i = 0; i < rnum; i++, j++) {
+						*this = *this + self_type(1, charset.at(j % charset.size()));
+					}
+				}
+				return *this;
+			}
+
+			self_type           rpadded(size_t num, const BasicString<CharT> &charset = BasicCharsets<CharT>::Space) {
+				self_type       ret(*this);
+				ret.rpad(num, charset);
+				return ret;
+			}
+
+			self_type           lpadded(size_t num, const BasicString<CharT> &charset = BasicCharsets<CharT>::Space) {
+				self_type       ret(*this);
+				ret.lpad(num, charset);
+				return ret;
+			}
+
+			self_type           padded(size_t num, const BasicString<CharT> &charset = BasicCharsets<CharT>::Space) {
+				self_type       ret(*this);
+				ret.pad(num, charset);
+				return ret;
+			}
 		};
 
 		using String        = BasicString<Char>;
