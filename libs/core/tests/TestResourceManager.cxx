@@ -4,15 +4,16 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include <libs/core/Resource.h>
-#include <libs/core/ResourceFactory.h>
-#include <libs/core/ResourceType.h>
-#include <libs/core/String.h>
-#include <libs/core/ResourceManager.h>
+#include <core/Resource.h>
+#include <core/ResourceFactory.h>
+#include <core/ResourceType.h>
+#include <core/String.h>
+#include <core/ResourceManager.h>
 #include "doctest.h"
 
 using quasar::core::SharedResource;
 using quasar::core::Resource;
+using quasar::core::ResourcePriority;
 using quasar::core::ResourceFactory;
 using quasar::core::SharedResourceFactoryList;
 using quasar::core::ResourceType;
@@ -20,30 +21,37 @@ using quasar::core::ResourceStage;
 using quasar::core::ResourceManager;
 using quasar::core::String;
 using quasar::core::Path;
+using quasar::core::IStream;
+using quasar::core::SharedIOStream;
+using quasar::core::OStream;
 using quasar::core::StringMap;
 
 class MockResourceFactory: public ResourceFactory {
 public:
-	MockResourceFactory(const String &name = "Mock", priority_type prio = 0): ResourceFactory(name, ResourceType::Text, prio) {}
+	MockResourceFactory(const String &name = "Mock", ResourcePriority prio = ResourcePriority::None): ResourceFactory(name, ResourceType::Text, prio) {}
 	virtual ~MockResourceFactory() {}
 
-	virtual SharedResource  create(const String &name, const String &path, const StringMap<String> &props = StringMap<String>()) {
-		return std::make_shared<Resource>(this, "test", "tmp:///test", mType);
+	virtual SharedResource  create(const String &name, const String &path, const StringMap<String> &props, const SharedIOStream &stream) override {
+		return std::make_shared<Resource>(this, "test", "tmp:///test", mType, props, stream);
 	}
-	virtual void            destroy(Resource &res) {
+	virtual void            load(Resource &res, IStream &from) override {
+	}
+	virtual void            save(Resource &res, OStream &to) override {
+	}
+	virtual void            destroy(Resource &res) override {
 		res.destroy();
 	}
 };
 
 class MockResourceFactory2: public MockResourceFactory {
 public:
-	MockResourceFactory2(): MockResourceFactory("Mock(prio = 2)", 2) {}
+	MockResourceFactory2(): MockResourceFactory("Mock(prio = 2)", ResourcePriority::Second) {}
 	virtual ~MockResourceFactory2() {}
 };
 
 class MockResourceFactory3: public MockResourceFactory {
 public:
-	MockResourceFactory3(): MockResourceFactory("Mock(prio = 3)", 3) {}
+	MockResourceFactory3(): MockResourceFactory("Mock(prio = 3)", ResourcePriority::Third) {}
 	virtual ~MockResourceFactory3() {}
 };
 

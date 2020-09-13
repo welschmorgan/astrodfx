@@ -10,6 +10,7 @@
 #include <core/String.h>
 #include <SDL2/SDL_video.h>
 #include <SDL2/SDL_render.h>
+#include <core/Viewport.h>
 
 namespace quasar {
 	namespace render {

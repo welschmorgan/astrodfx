@@ -4,6 +4,10 @@ if(QUASAR_BUILD_CORE)
     add_subdirectory(core)
 endif()
 
+if(QUASAR_BUILD_MATH)
+    add_subdirectory(math)
+endif()
+
 if(QUASAR_BUILD_RENDER)
     add_subdirectory(render)
 endif ()

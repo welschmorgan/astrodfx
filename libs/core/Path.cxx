@@ -33,27 +33,27 @@ namespace quasar {
 		}
 
 		bool PathExt::operator==(const PathExt &rhs) const noexcept {
-			return false;
+			return mValue == rhs.mValue;
 		}
 
 		bool PathExt::operator!=(const PathExt &rhs) const noexcept {
-			return false;
+			return !(*this == rhs);
 		}
 
 		bool PathExt::operator<=(const PathExt &rhs) const noexcept {
-			return false;
+			return mValue <= rhs.mValue;
 		}
 
 		bool PathExt::operator<(const PathExt &rhs) const noexcept {
-			return false;
+			return mValue < rhs.mValue;
 		}
 
 		bool PathExt::operator>=(const PathExt &rhs) const noexcept {
-			return false;
+			return mValue >= rhs.mValue;
 		}
 
 		bool PathExt::operator>(const PathExt &rhs) const noexcept {
-			return false;
+			return mValue > rhs.mValue;
 		}
 
 		const String &PathExt::str() const noexcept {
@@ -146,7 +146,7 @@ namespace quasar {
 		}
 
 		bool Path::isDir() const noexcept {
-			return std::filesystem::is_directory(mData);
+			return std::filesystem::is_directory(*mData);
 		}
 
 		bool Path::isFile() const noexcept {
@@ -154,19 +154,19 @@ namespace quasar {
 		}
 
 		bool Path::isEmpty() const noexcept {
-			return std::filesystem::is_empty(mData);
+			return std::filesystem::is_empty(*mData);
 		}
 
 		static void _readDir(String data, bool recurs, std::vector<Path> &res, bool (*filter)(const String &)) noexcept(false) {
-			if (!std::filesystem::is_directory(data)) {
+			if (!std::filesystem::is_directory(*data)) {
 				throw std::runtime_error(data + ": cannot read dir, not a directory!");
 			}
-			for (auto &p: std::filesystem::directory_iterator(data)) {
-				if (filter == nullptr || filter(p.path())) {
-					res.emplace_back(p.path());
+			for (auto &p: std::filesystem::directory_iterator(*data)) {
+				if (filter == nullptr || filter(p.path().string())) {
+					res.emplace_back(String(p.path()));
 				}
 				if (p.is_directory()) {
-					_readDir(p.path(), recurs, res, filter);
+					_readDir(p.path().string(), recurs, res, filter);
 				}
 			}
 		}
@@ -188,19 +188,19 @@ namespace quasar {
 		}
 
 		bool Path::removeAll() {
-			return std::filesystem::remove_all(mData);
+			return std::filesystem::remove_all(*mData);
 		}
 
 		bool Path::remove() {
-			return std::filesystem::remove(mData);
+			return std::filesystem::remove(*mData);
 		}
 
 		bool Path::makeDirs() {
-			return std::filesystem::create_directories(mData);
+			return std::filesystem::create_directories(*mData);
 		}
 
 		bool Path::makeDir() {
-			return std::filesystem::create_directory(mData);
+			return std::filesystem::create_directory(*mData);
 		}
 
 		bool Path::operator==(const Path &rhs) const noexcept {
@@ -228,7 +228,7 @@ namespace quasar {
 		}
 
 		bool Path::exists() const noexcept {
-			return std::filesystem::exists(mData);
+			return std::filesystem::exists(*mData);
 		}
 
 		Path Path::operator+(const Path &rhs) const {
@@ -278,6 +278,22 @@ namespace quasar {
 				ret += Separator;
 			}
 			return Path(ret + p.mData);
+		}
+
+		String &Path::operator*() {
+			return mData;
+		}
+
+		const String &Path::operator*() const {
+			return mData;
+		}
+
+		String *Path::operator->() {
+			return &mData;
+		}
+
+		const String *Path::operator->() const {
+			return &mData;
 		}
 	}
 }

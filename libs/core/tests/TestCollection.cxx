@@ -5,28 +5,62 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include <core/Collection.h>
+#include <core/String.h>
 #include "doctest.h"
 
 using quasar::core::Collection;
+using quasar::core::Map;
+using quasar::core::String;
+
+TEST_CASE("Collection iter works") {
+	auto collec = Collection<int>({1, 3, 6});
+	REQUIRE(collec.iter(1) == collec->begin());
+	REQUIRE(collec.iter(6) == --collec->end());
+}
+
+TEST_CASE("Collection riter works") {
+	auto collec = Collection<int>({1, 3, 6});
+	REQUIRE(collec.riter(1) == --collec->rend());
+	REQUIRE(collec.riter(6) == collec->rbegin());
+}
+
+TEST_CASE("Collection<vector>'s take works") {
+	auto collec = Collection<int>({1, 3, 6});
+	auto filtered = collec.take(2);
+	REQUIRE(collec.size() == 1);
+	REQUIRE(filtered.size() == 2);
+	REQUIRE(collec->at(0) == 6);
+	REQUIRE(filtered->at(0) == 1);
+}
+
+TEST_CASE("Collection<map>'s take(keys) works") {
+	auto collec = Map<String, int>({{"key1", 1}, {"key2", 3}, {"key3", 6}});
+	auto filtered = collec.take(std::vector<String>{"key1", "key3"});
+	REQUIRE(collec.size() == 1);
+	REQUIRE(filtered.size() == 2);
+	REQUIRE(collec->at("key2") == 3);
+	REQUIRE(filtered->at("key1") == 1);
+	REQUIRE(filtered->at("key3") == 6);
+}
 
 TEST_CASE("Collection<vector> can be searched") {
 	auto collec = Collection<int>({1, 3, 6});
-	auto filtered = collec.find([](const int &i) {
+	auto found = collec.find([](const int &i) {
 		return i == 3;
 	});
-			REQUIRE(filtered != nullptr);
-			REQUIRE(*filtered == 3);
+	REQUIRE(found != collec.end());
+	REQUIRE(*found == 3);
 }
 
 TEST_CASE("Collection<vector> can be searched (reverse)") {
 	auto const collec = Collection<int>({1, 3, 6});
 	int num_iters = 0;
-	auto filtered = collec.rfind([&num_iters](const int &i) {
+	auto found = collec.rfind([&num_iters](const int &i) {
 		num_iters++;
 		return i == 6;
 	});
-	REQUIRE(filtered != nullptr);
-	REQUIRE(*filtered == 6);
+	REQUIRE(found != collec.rend());
+	REQUIRE(*found == 6);
 	REQUIRE(num_iters == 1);
 }
 

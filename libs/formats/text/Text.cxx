@@ -8,8 +8,8 @@ namespace quasar {
 	namespace formats {
 
 		Text::Text(ResourceFactory *factory, const String &name, const String &path,
-		                           const ResourceType &type)
-			: Resource(factory, name, path, type)
+		                           const ResourceType &type, const PropertyMap &props, const SharedIOStream &stream)
+			: Resource(factory, name, path, type, props, stream)
 		{}
 
 		Text::Text()

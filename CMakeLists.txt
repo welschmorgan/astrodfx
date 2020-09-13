@@ -25,6 +25,7 @@ endif ()
 
 option(QUASAR_BUILD_CORE "Enable building core library" ON)
 option(QUASAR_BUILD_FORMATS "Enable building formats library" ON)
+option(QUASAR_BUILD_MATH "Enable building math library" ON)
 option(QUASAR_BUILD_RENDER "Enable building rendering library" ON)
 option(QUASAR_BUILD_EXAMPLES "Enable building examples" ON)
 option(QUASAR_BUILD_UNIT_TESTS "Enable building unit tests" ON)

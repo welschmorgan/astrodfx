@@ -9,6 +9,7 @@
 #include "String.h"
 #include "ResourceType.h"
 #include "ResourcePriority.h"
+#include "Serializer.h"
 
 namespace quasar {
 	namespace core {
@@ -16,7 +17,6 @@ namespace quasar {
 		using SharedResource = std::shared_ptr<Resource>;
 
 		class ResourceFactory {
-
 		protected:
 			bool                                mInitialized;
 			String                              mName;
@@ -35,7 +35,9 @@ namespace quasar {
 			virtual void                        initialize();
 			virtual void                        shutdown();
 
-			virtual SharedResource              create(const String &name, const String &path, const StringMap<String> &properties) = 0;
+			virtual SharedResource              create(const String &name, const String &path, const StringMap<String> &properties, const SharedIOStream &stream) = 0;
+			virtual void                        load(Resource &res, IStream &from) = 0;
+			virtual void                        save(Resource &res, OStream &to) = 0;
 			virtual void                        destroy(Resource &res) = 0;
 		};
 

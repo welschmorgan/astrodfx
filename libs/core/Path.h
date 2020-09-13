@@ -46,7 +46,12 @@ namespace quasar {
 
 		class Path {
 		public:
-			static const String Separator;
+			using iterator              = String::iterator;
+			using const_iterator        = String::const_iterator;
+			using reverse_iterator      = String::reverse_iterator;
+			using const_reverse_iterator= String::const_reverse_iterator;
+
+			static const String         Separator;
 
 		protected:
 			String          mData;
@@ -60,6 +65,12 @@ namespace quasar {
 			Path            &operator=(const Path &rhs) = default;
 			Path            &operator=(const String &rhs);
 			Path            &operator=(const String::value_type *rhs);
+
+			String          &operator*();
+			const String    &operator*() const;
+
+			String          *operator->();
+			const String    *operator->() const;
 
 			Path            operator+(const Path &rhs) const;
 			String          operator+(const String &rhs) const;
@@ -102,6 +113,23 @@ namespace quasar {
 
 			bool            makeDir();
 			bool            makeDirs();
+
+
+			iterator                    begin() { return mData.begin(); }
+			const_iterator              begin() const { return mData.begin(); }
+			const_iterator              cbegin() const { return mData.begin(); }
+
+			iterator                    end() { return mData.end(); }
+			const_iterator              end() const { return mData.end(); }
+			const_iterator              cend() const { return mData.end(); }
+
+			reverse_iterator            rbegin() { return mData.rbegin(); }
+			const_reverse_iterator      rbegin() const { return mData.rbegin(); }
+			const_reverse_iterator      crbegin() const { return mData.crbegin(); }
+
+			reverse_iterator            rend() { return mData.rend(); }
+			const_reverse_iterator      rend() const { return mData.rend(); }
+			const_reverse_iterator      crend() const { return mData.crend(); }
 		};
 
 		using PathVector = std::vector<Path>;
