@@ -265,7 +265,7 @@ namespace quasar {
 		};
 
 		template<typename T, unsigned short Dims>
-		class Vec;
+		class Vec: public VecBase<T, Dims> {};
 
 		template<typename T>
 		class Vec<T, 2>: public VecBase<T, 2> {

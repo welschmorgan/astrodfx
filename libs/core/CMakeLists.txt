@@ -27,7 +27,7 @@ add_library(quasarfx-core
         Generator.cxx Generator.h
         Location.cxx Location.h
         Exception.cxx Exception.h
-        Charsets.cxx Charsets.h Color.cxx Color.h)
+        Charsets.cxx Charsets.h Color.cxx Color.h Logger.cxx Logger.h)
 
 target_link_libraries(quasarfx-core stdc++fs)
 
