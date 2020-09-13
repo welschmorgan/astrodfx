@@ -67,6 +67,7 @@ namespace quasar {
 			void                            flush();
 		};
 
+		using SharedLogManager              = std::shared_ptr<LogManager>;
 	}
 }
 

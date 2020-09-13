@@ -10,11 +10,12 @@ namespace quasar {
 		const LogFlushDelay     LogAdapter::DefaultFlushDelay(1, 0);
 
 		LogAdapter::LogAdapter(const String &name)
-				: mName(name)
-				, mFormat(DefaultFormat)
-				, mFlushDelay()
-				, mLastFlushTime(std::chrono::system_clock::now())
-				, mLines() {}
+			: mName(name)
+			, mFormat(DefaultFormat)
+			, mFlushDelay()
+			, mLastFlushTime(std::chrono::system_clock::now())
+			, mLines()
+		{}
 
 		const String &LogAdapter::getName() const noexcept { return mName; }
 

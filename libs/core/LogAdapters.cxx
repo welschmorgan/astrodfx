@@ -6,8 +6,10 @@
 
 namespace quasar {
 	namespace core {
+		const String MemoryLogAdapter::Name = "memory";
+
 		MemoryLogAdapter::MemoryLogAdapter(quasar::core::OStream *os)
-			: LogAdapter("memory"), mStream(os) {}
+			: LogAdapter(Name), mStream(os) {}
 
 		OStream *MemoryLogAdapter::getStream() { return mStream; }
 
@@ -24,6 +26,8 @@ namespace quasar {
 			mLines.clear();
 		}
 
+		const String ConsoleLogAdapter::Name = "console";
+
 		ConsoleLogAdapter::ConsoleLogAdapter()
 				: MemoryLogAdapter(&std::cout) { mName = "console"; }
 
@@ -36,8 +40,13 @@ namespace quasar {
 			mLines.clear();
 		}
 
+		const String FileLogAdapter::Name = "file";
+
 		FileLogAdapter::FileLogAdapter(const String &path)
-				: LogAdapter("file"), mStream(path, std::ios::out | std::ios::app) {}
+			: LogAdapter("file")
+			, mStream(path, std::ios::out | std::ios::app)
+			, mPath(path)
+		{}
 
 		OFStream *FileLogAdapter::getStream() { return &mStream; }
 
@@ -45,11 +54,16 @@ namespace quasar {
 
 		void FileLogAdapter::flush() {
 			LogAdapter::flush();
-			for (auto const& line: mLines) {
-				mStream << line << std::endl;
+			if (!mLines.empty()) {
+				if (!mStream.is_open()) {
+					throw std::runtime_error(std::string(mPath.begin(), mPath.end()) + ": failed to open stream");
+				}
+				for (auto const &line: mLines) {
+					mStream << line << std::endl;
+				}
+				mStream.flush();
+				mLines.clear();
 			}
-			mStream.flush();
-			mLines.clear();
 		}
 	}
 }

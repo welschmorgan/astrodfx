@@ -4,23 +4,23 @@
 
 #include <iostream>
 #include "Engine.h"
+#include "LogAdapters.h"
 
 namespace quasar {
 	namespace core {
-
-		EngineConfig &EngineConfig::operator=(const ConfigNode &cfg) {
-			ConfigNode::operator=(cfg);
-			return *this;
-		}
-
 		Engine::Engine(const String &configFilename)
 			: mInitialized(false)
 			, mRenderer()
+			, mLogManager(new LogManager())
+			, mDefaultLogger()
 			, mResourceDiscoveryOptions(RDO_NONE)
 			, mResourceManager(new ResourceManager())
 			, mConfigFilename(configFilename)
 			, mConfig()
-		{}
+		{
+			mLogManager->createAdapter<ConsoleLogAdapter>();
+			mDefaultLogger = mLogManager->createLogger("engine");
+		}
 
 		Engine::~Engine() noexcept {
 			try {
@@ -28,6 +28,11 @@ namespace quasar {
 			} catch (std::runtime_error &ex) {
 				std::cerr << "Engine failed to shutdown properly: " << ex.what() << std::endl;
 			}
+		}
+
+		EngineConfig &EngineConfig::operator=(const ConfigNode &cfg) {
+			ConfigNode::operator=(cfg);
+			return *this;
 		}
 
 		bool Engine::isInitialized() const noexcept {
@@ -65,12 +70,13 @@ namespace quasar {
 			if (mInitialized) {
 				throw std::runtime_error("Quasar-engine already initialized");
 			}
-			if (mRenderer) {
-				mRenderer->initialize();
-			}
 			mResourceManager->discoverResources();
 			if (!mConfigFilename.empty()) {
 				loadConfig();
+			}
+			mLogManager->createAdapter<FileLogAdapter>("engine.log");
+			if (mRenderer) {
+				mRenderer->initialize();
 			}
 			mInitialized = true;
 		}
@@ -109,6 +115,18 @@ namespace quasar {
 
 		const String &Engine::getConfigFilename() const noexcept {
 			return mConfigFilename;
+		}
+
+		SharedLogManager Engine::getLogManager() const noexcept {
+			return mLogManager;
+		}
+
+		void Engine::setLogManager(const SharedLogManager &m) noexcept {
+			mLogManager = m;
+		}
+
+		SharedLogger Engine::getDefaultLogger() const noexcept {
+			return mDefaultLogger;
 		}
 	}
 }

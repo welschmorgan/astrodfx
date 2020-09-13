@@ -15,7 +15,10 @@ namespace quasar {
 		class MemoryLogAdapter: public LogAdapter {
 		protected:
 			OStream                 *mStream;
+
 		public:
+			static const String     Name;
+
 			MemoryLogAdapter(OStream *os = nullptr);
 			MemoryLogAdapter(const MemoryLogAdapter &rhs) = default;
 			virtual ~MemoryLogAdapter() = default;
@@ -31,6 +34,8 @@ namespace quasar {
 
 		class ConsoleLogAdapter: public MemoryLogAdapter {
 		public:
+			static const String     Name;
+
 			ConsoleLogAdapter();
 			ConsoleLogAdapter(const ConsoleLogAdapter &rhs) = default;
 			virtual ~ConsoleLogAdapter() = default;
@@ -43,12 +48,19 @@ namespace quasar {
 		class FileLogAdapter: public LogAdapter {
 		protected:
 			OFStream                mStream;
+			String                  mPath;
+
 		public:
+			static const String     Name;
+
 			FileLogAdapter(const String &path);
 			FileLogAdapter(const FileLogAdapter &rhs) = delete;
 			virtual ~FileLogAdapter() = default;
 
 			FileLogAdapter          &operator=(const FileLogAdapter &rhs) = delete;
+
+			const String            &getPath() const noexcept { return mPath; }
+			void                    setPath(const String &path) noexcept { mPath = path; }
 
 			OFStream                *getStream();
 			const OStream           *getStream() const;
