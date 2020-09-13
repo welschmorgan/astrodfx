@@ -39,7 +39,6 @@ public:
 	virtual void            save(Resource &res, OStream &to) override {
 	}
 	virtual void            destroy(Resource &res) override {
-		res.destroy();
 	}
 };
 

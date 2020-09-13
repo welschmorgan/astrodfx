@@ -88,7 +88,9 @@ namespace quasar {
 		}
 
 		void Resource::destroy() {
-			unload();
+			if (mStage != ResourceStage::Unloaded) {
+				unload();
+			}
 			if (mStage == ResourceStage::Unloaded) {
 				if (mFactory) {
 					mFactory->destroy(*this);

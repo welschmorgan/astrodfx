@@ -99,5 +99,5 @@ TEST_CASE("IniSerializer writes stream containing multiple section") {
 	ser.write(ss, cfg);
 
 	auto result = ss.str();
-	REQUIRE(result == "[section1]\nvalue1 = 42\nvalue2 = 42\n[section2]\nvalue1 = 84\nvalue2 = 84");
+	REQUIRE(result == "[section1]\nvalue1 = 42\nvalue2 = 42\n\n[section2]\nvalue1 = 84\nvalue2 = 84");
 }

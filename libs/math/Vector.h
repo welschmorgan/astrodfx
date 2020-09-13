@@ -265,7 +265,7 @@ namespace quasar {
 		};
 
 		template<typename T, unsigned short Dims>
-		class Vec: public VecBase<T, Dims> {};
+		class Vec;
 
 		template<typename T>
 		class Vec<T, 2>: public VecBase<T, 2> {
@@ -295,7 +295,7 @@ namespace quasar {
 				: base_type(b)
 				, x(base_type::mData[0])
 				, y(base_type::mData[1])
-			{ *this = b; }
+			{ base_type::operator=(b); }
 			Vec(T x, T y)
 				: base_type()
 				, x(base_type::mData[0])
@@ -312,17 +312,9 @@ namespace quasar {
 			~Vec() = default;
 
 			self_type           &operator=(const self_type &rhs) {
-				for (unsigned short i = 0; i < base_type::Dimensions; i++) {
-					base_type::mData[i] = rhs.mData[i];
-				}
+				base_type::operator=(rhs);
 				return *this;
 			}
-
-//			self_type           &operator=(const base_type &rhs) {
-//				x = rhs.mData[0];
-//				y = rhs.mData[1];
-//				return *this;
-//			}
 
 			T                   cross(const self_type &rhs) {
 				return base_type::mData[0] * rhs.mData[1] - base_type::mData[1] * rhs.mData[0];
@@ -370,7 +362,7 @@ namespace quasar {
 				, x(base_type::mData[0])
 				, y(base_type::mData[1])
 				, z(base_type::mData[2])
-			{ *this = b; }
+			{ base_type::operator=(b); }
 
 			Vec(const self_type &rhs)
 				: base_type()
@@ -381,18 +373,9 @@ namespace quasar {
 			~Vec() = default;
 
 			self_type           &operator=(const self_type &rhs) {
-				for (unsigned short i = 0; i < base_type::Dimensions; i++) {
-					base_type::mData[i] = rhs.mData[i];
-				}
+				base_type::operator=(rhs);
 				return *this;
 			}
-
-//			self_type           &operator=(const base_type &rhs) {
-//				x = rhs.mData[0];
-//				y = rhs.mData[1];
-//				z = rhs.mData[2];
-//				return *this;
-//			}
 
 			self_type           cross(const self_type &rhs) {
 				return self_type(
@@ -451,7 +434,7 @@ namespace quasar {
 				, y(base_type::mData[1])
 				, z(base_type::mData[2])
 				, w(base_type::mData[3])
-			{ *this = rhs; }
+			{ base_type::operator=(rhs); }
 			Vec(const base_type &b)
 				: base_type(b)
 				, x(base_type::mData[0])
@@ -462,19 +445,9 @@ namespace quasar {
 			~Vec() = default;
 
 			self_type           &operator=(const self_type &rhs) {
-				for (unsigned short i = 0; i < base_type::Dimensions; i++) {
-					base_type::mData[i] = rhs.mData[i];
-				}
+				base_type::operator=(rhs);
+				return *this;
 			}
-
-
-//			self_type           &operator=(const base_type &rhs) {
-//				x = rhs.mData[0];
-//				y = rhs.mData[1];
-//				z = rhs.mData[2];
-//				w = rhs.mData[3];
-//				return *this;
-//			}
 		};
 
 		template<typename T> using Vec2 = Vec<T, 2>;
