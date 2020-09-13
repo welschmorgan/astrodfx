@@ -30,11 +30,20 @@ TEST_CASE("MemoryLogAdapter should work") {
 	auto conAdp = mgr.createAdapter<ConsoleLogAdapter>();
 	auto memAdp = mgr.createAdapter<MemoryLogAdapter>(&buf);
 
+	conAdp->setFormat("{lC} {M}");
+
 	conAdp->setFlushDelay(delay);
 	memAdp->setFlushDelay(delay);
 
 	auto logger = mgr.createLogger("my-channel");
 
+	logger->debug("hello");
+	logger->trace("hello");
+	logger->info("hello");
+	logger->warn("hello");
+	logger->error("hello");
+	logger->fatal("hello");
+	
 	logger->info("test1");
 	auto data0 = buf.str();
 	REQUIRE(data0 == "");

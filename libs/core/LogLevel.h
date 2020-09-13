@@ -22,8 +22,9 @@ namespace quasar {
 		protected:
 			int             mCode;
 			String          mLabel;
+			String          mColor;
 
-			LogLevel(const int code, const String &label);
+			LogLevel(const int code, const String &label, const String &color = String());
 
 		public:
 			LogLevel(const LogLevel &rhs) = default;
@@ -31,8 +32,33 @@ namespace quasar {
 
 			LogLevel        &operator=(const LogLevel &rhs) = default;
 
+			bool            operator==(const LogLevel &rhs) const noexcept {
+				return mCode == rhs.mCode;
+			}
+
+			bool            operator!=(const LogLevel &rhs) const noexcept {
+				return !(*this == rhs);
+			}
+
+			bool            operator<(const LogLevel &rhs) const noexcept {
+				return mCode < rhs.mCode;
+			}
+
+			bool            operator<=(const LogLevel &rhs) const noexcept {
+				return mCode <= rhs.mCode;
+			}
+
+			bool            operator>(const LogLevel &rhs) const noexcept {
+				return mCode > rhs.mCode;
+			}
+
+			bool            operator>=(const LogLevel &rhs) const noexcept {
+				return mCode >= rhs.mCode;
+			}
+
 			int             getCode() const noexcept;
 			String          getLabel() const noexcept;
+			String          getColor() const noexcept;
 		};
 	}
 }
