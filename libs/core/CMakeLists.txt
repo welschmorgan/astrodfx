@@ -27,9 +27,22 @@ add_library(quasarfx-core
         Generator.cxx Generator.h
         Location.cxx Location.h
         Exception.cxx Exception.h
-        Charsets.cxx Charsets.h Color.cxx Color.h)
+        ${CMAKE_BINARY_DIR}/libs/core/include/Platform.h
+        Charsets.cxx Charsets.h
+        Color.cxx Color.h
+        Logger.cxx Logger.h
+        LogLevel.cxx LogLevel.h
+        LogEntry.cxx LogEntry.h
+        LogAdapter.cxx LogAdapter.h
+        LogManager.cxx LogManager.h
+        LogAdapters.cxx LogAdapters.h
+)
 
 target_link_libraries(quasarfx-core stdc++fs)
+
+if(QUASAR_SUPPORT_MULTITHREADING)
+    target_link_libraries(quasarfx-core pthread)
+endif()
 
 target_include_directories(quasarfx-core PRIVATE ${CMAKE_BINARY_DIR}/libs/core/include ${CMAKE_SOURCE_DIR}/libs ${CMAKE_SOURCE_DIR}/libs/core ${CMAKE_CURRENT_SOURCE_DIR}/include)
 

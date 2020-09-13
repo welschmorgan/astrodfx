@@ -10,6 +10,7 @@
 #include "ResourceManager.h"
 #include "Config.h"
 #include "Color.h"
+#include "LogManager.h"
 
 namespace quasar {
 	namespace core {
@@ -38,6 +39,8 @@ namespace quasar {
 		protected:
 			bool                    mInitialized;
 			SharedRenderer          mRenderer;
+			SharedLogManager        mLogManager;
+			SharedLogger            mDefaultLogger;
 			unsigned                mResourceDiscoveryOptions;
 			SharedResourceManager   mResourceManager;
 			String                  mConfigFilename;
@@ -49,6 +52,11 @@ namespace quasar {
 			virtual ~Engine() noexcept;
 
 			Engine                  &operator=(const Engine &rhs) = delete;
+
+			SharedLogger            getDefaultLogger() const noexcept;
+
+			SharedLogManager        getLogManager() const noexcept;
+			void                    setLogManager(const SharedLogManager &m) noexcept;
 
 			unsigned                getResourceDiscoveryOptions() const noexcept;
 			Engine                  &setResourceDiscoveryOptions(unsigned o) noexcept;
