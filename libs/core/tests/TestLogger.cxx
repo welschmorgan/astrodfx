@@ -7,14 +7,42 @@
 #include <core/Collection.h>
 #include <core/String.h>
 #include <core/Logger.h>
+#include <core/LogManager.h>
+#include <core/LogAdapters.h>
+
 #include "doctest.h"
 
 using namespace quasar::core;
 
-TEST_CASE("ConsoleLogAdapter should work") {
+# if QUASAR_PLATFORM == QUASAR_PLATFORM_LINUX
+#  include <unistd.h>
+# else
+#  include <windows.h>
+# endif
+
+TEST_CASE("MemoryLogAdapter should work") {
+	StringStream buf;
+
 	LogManager mgr;
-	auto consoleAdapter = mgr.createAdapter<ConsoleLogAdapter>();
+
+	LogFlushDelay   delay(0, 500);
+
+	auto conAdp = mgr.createAdapter<ConsoleLogAdapter>();
+	auto memAdp = mgr.createAdapter<MemoryLogAdapter>(&buf);
+
+	conAdp->setFlushDelay(delay);
+	memAdp->setFlushDelay(delay);
+
 	auto logger = mgr.createLogger("my-channel");
-	logger->trace("test");
-	consoleAdapter->flush();
+
+	logger->info("test1");
+	auto data0 = buf.str();
+	REQUIRE(data0 == "");
+
+	sleep(1);
+	mgr.checkFlush();
+
+	usleep(500);
+	auto data2 = buf.str();
+	REQUIRE(data2 != "");
 }

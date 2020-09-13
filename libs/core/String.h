@@ -125,6 +125,10 @@ namespace quasar {
 		using IStream       = std::basic_istream<String::value_type>;
 		using IOStream      = std::basic_iostream<String::value_type>;
 
+		using IFStream      = std::basic_ifstream<String::value_type>;
+		using OFStream      = std::basic_ofstream<String::value_type>;
+		using FStream       = std::basic_fstream<String::value_type>;
+
 		using StringStream  = std::basic_stringstream<String::value_type>;
 
 		using SharedOStream      = std::shared_ptr<OStream>;

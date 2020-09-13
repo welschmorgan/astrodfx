@@ -29,7 +29,13 @@ option(QUASAR_BUILD_MATH "Enable building math library" ON)
 option(QUASAR_BUILD_RENDER "Enable building rendering library" ON)
 option(QUASAR_BUILD_EXAMPLES "Enable building examples" ON)
 option(QUASAR_BUILD_UNIT_TESTS "Enable building unit tests" ON)
+option(QUASAR_SUPPORT_MULTITHREADING "Enable support for multithreading" ON)
 
+if (QUASAR_SUPPORT_MULTITHREADING)
+    set(QUASAR_SUPPORT_MULTITHREADING_C 1)
+else()
+    set(QUASAR_SUPPORT_MULTITHREADING_C 0)
+endif ()
 message("Building libs in ${QUASAR_BUILD_LIBS_TYPE} mode")
 
 # enable testing
