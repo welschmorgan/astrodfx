@@ -18,5 +18,5 @@ TEST_CASE("Engine should initialize a default logger, outputting to console") {
 	REQUIRE(eng.getDefaultLogger() != nullptr);
 	REQUIRE(eng.getDefaultLogger()->getAdapters().size() >= 1);
 	REQUIRE(eng.getDefaultLogger()->getAdapters().at(0) != nullptr);
-	REQUIRE(eng.getDefaultLogger()->getAdapters().at(0)->getName() == ConsoleLogAdapter::Name);
+	REQUIRE(eng.getDefaultLogger()->getAdapters().at(0)->getType() == ConsoleLogAdapter::Type);
 }

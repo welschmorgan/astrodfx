@@ -9,6 +9,7 @@ namespace quasar {
 		EngineConfig::EngineConfig()
 		{
 			setLogging(LoggingConfig());
+			createChild("viewport");
 			setViewportClearColor(Color4uc(0, 0, 0));
 		}
 

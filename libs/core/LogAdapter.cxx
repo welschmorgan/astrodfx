@@ -12,7 +12,7 @@ namespace quasar {
 
 		LogAdapter::LogAdapter(const String &type, const String &name, const SharedLogEntryFormatter &fmt)
 			: mType(type)
-			, mName(name)
+			, mName(name.empty() ? type : name)
 			, mFormatter(fmt ? fmt : std::make_shared<LogEntryFormatter>(DefaultColoredFormat))
 			, mFlushDelay()
 			, mLastFlushTime(std::chrono::system_clock::now())

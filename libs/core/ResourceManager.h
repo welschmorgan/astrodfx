@@ -57,6 +57,7 @@ namespace quasar {
 			const Collection<Path>              &getLocations() const noexcept;
 			void                                clearLocations() noexcept;
 			Path                                &addLocation(const Path &location) noexcept;
+			Path                                &addLocation(const String &location) noexcept;
 			Path                                getLocation(size_t n) const noexcept;
 			bool                                hasLocation(const Path &path) const noexcept;
 

@@ -58,7 +58,7 @@ namespace quasar {
 				setConfigFilename(configName);
 			}
 			auto configRes = mResourceManager->getResourceByName(getConfigFilename());
-			mConfig = dynamic_cast<ConfigFile&>(*configRes);
+			mConfig.merge(dynamic_cast<ConfigFile&>(*configRes));
 			configRes->load();
 			return mConfig;
 		}

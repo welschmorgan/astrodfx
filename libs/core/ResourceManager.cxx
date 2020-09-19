@@ -179,6 +179,10 @@ namespace quasar {
 			return mLocations->back();
 		}
 
+		Path &ResourceManager::addLocation(const String &location) noexcept {
+			return addLocation(Path(location));
+		}
+
 		Path ResourceManager::getLocation(size_t n) const noexcept {
 			return mLocations->at(n);
 		}
@@ -188,16 +192,25 @@ namespace quasar {
 		}
 
 		void ResourceManager::discoverResources(unsigned options) {
+			Vector<PathExt>  exts;
+			for (auto fac: mFactories) {
+				auto type = fac->getType();
+				for (auto ext: type.getExtensions()) {
+					exts.add(ext);
+				}
+			}
 			if ((options & RDO_ONCE) == 0 || !mLocationsDiscovered) {
 				for (auto it = mLocations->begin(); it != mLocations->end(); it++) {
 					std::cout << *it << ": discovering location..." << std::endl;
 					if (it->exists()) {
 						auto      entries = it->readDir((options & RDO_RECURSIVE) != 0);
 						for (auto &entry: entries) {
-							try {
-								loadResource(entry);
-							} catch (std::exception &ex) {
-								std::cerr << "\t" << ex.what() << std::endl;
+							if (exts.includes(entry.ext())) {
+								try {
+									loadResource(entry);
+								} catch (std::exception &ex) {
+									std::cerr << "\t" << ex.what() << std::endl;
+								}
 							}
 						}
 					}

@@ -252,7 +252,7 @@ namespace quasar {
 				mValue = with.mValue;
 			}
 			for (auto const& child: with.mChildren) {
-				addChild(child);
+				setChild(child.getName(), child);
 			}
 			for (auto const& prop: with.mProps) {
 				setProperty(prop.first, prop.second);

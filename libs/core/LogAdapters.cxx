@@ -30,7 +30,12 @@ namespace quasar {
 
 		ConsoleLogAdapter::ConsoleLogAdapter(const String &name)
 			: MemoryLogAdapter(&std::cout, name)
-		{ mType = Type; }
+		{
+			mType = Type;
+			if (name.empty()) {
+				mName = mType;
+			}
+		}
 
 		void ConsoleLogAdapter::flush() {
 			LogAdapter::flush();
