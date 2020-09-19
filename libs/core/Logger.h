@@ -15,21 +15,30 @@
 
 namespace quasar {
 	namespace core {
+		/**
+		 * Represent a way to log messages. This is the class the user is supposed
+		 * to manipulate.
+		 */
 		class Logger {
 		public:
-			using log_adapter_list  = Vector<SharedLogAdapter>;
+			using adapter           = SharedLogAdapter;
+			using adapter_list      = Vector<adapter>;
+			using entry_formatter   = SharedLogEntryFormatter;
 
 		protected:
 			String                  mName;
-			log_adapter_list        mAdapters;
+			adapter_list            mAdapters;
+
 		public:
 			Logger(const String &name = String());
 			Logger(const Logger &rhs) = default;
 			~Logger() = default;
 
+
 			Logger                  &operator=(const Logger &rhs) = default;
 
 			void                    log(const LogLevel &lvl, const String &msg);
+
 			void                    debug(const String &msg);
 			void                    trace(const String &msg);
 			void                    info(const String &msg);
@@ -41,8 +50,8 @@ namespace quasar {
 			const String            &getName() const noexcept;
 
 			bool                    hasAdapter(const String &name);
-			const log_adapter_list  &getAdapters() const noexcept;
-			void                    setAdapters(const log_adapter_list &l) noexcept;
+			const adapter_list      &getAdapters() const noexcept;
+			void                    setAdapters(const adapter_list &l) noexcept;
 			SharedLogAdapter        addAdapter(const SharedLogAdapter &a);
 			void                    clearAdapters();
 

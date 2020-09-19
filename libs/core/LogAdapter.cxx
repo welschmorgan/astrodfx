@@ -6,23 +6,19 @@
 
 namespace quasar {
 	namespace core {
+		const LogFlushDelay     LogAdapter::DefaultFlushDelay(1, 0);
 		const String            LogAdapter::DefaultFormat("[{yyyy}/{m}/{d} {h}:{i}:{s}] [{c}] {l} - {M}");
 		const String            LogAdapter::DefaultColoredFormat("[{yyyy}/{m}/{d} {h}:{i}:{s}] [{c}] {lC} - {M}");
-		const LogFlushDelay     LogAdapter::DefaultFlushDelay(1, 0);
 
-		LogAdapter::LogAdapter(const String &name)
+		LogAdapter::LogAdapter(const String &name, const SharedLogEntryFormatter &fmt)
 			: mName(name)
-			, mFormat(DefaultColoredFormat)
+			, mFormatter(fmt ? fmt : SharedLogEntryFormatter((LogEntryFormatter*)new StandardLogEntryFormatter(DefaultColoredFormat)))
 			, mFlushDelay()
 			, mLastFlushTime(std::chrono::system_clock::now())
 			, mLines()
 		{}
 
 		const String &LogAdapter::getName() const noexcept { return mName; }
-
-		const String &LogAdapter::getFormat() const noexcept { return mFormat; }
-
-		void LogAdapter::setFormat(const String &f) noexcept { mFormat = f; }
 
 		LogAdapter::time_point LogAdapter::getLastFlushTime() const noexcept { return mLastFlushTime; }
 
@@ -33,6 +29,14 @@ namespace quasar {
 			return linesTriggerFlush || delayTriggerFlush;
 		}
 
+		void LogAdapter::setFormatter(SharedLogEntryFormatter fmt) noexcept {
+			mFormatter = fmt;
+		}
+
+		SharedLogEntryFormatter LogAdapter::getFormatter() const noexcept {
+			return mFormatter;
+		}
+
 		const LogFlushDelay &LogAdapter::getFlushDelay() const noexcept { return mFlushDelay; }
 
 		void LogAdapter::setFlushDelay(const LogFlushDelay &f) noexcept { mFlushDelay = f; }
@@ -41,7 +45,39 @@ namespace quasar {
 
 		const StringVector &LogAdapter::getBufferedLines() const noexcept { return mLines; }
 
-		PropertyMap LogAdapter::getFormatVars(const LogEntry &e) const noexcept {
+		void LogAdapter::flush() {
+			mLastFlushTime = std::chrono::system_clock::now();
+		}
+
+		void LogAdapter::append(const LogEntry &e) {
+			mLines.add(mFormatter->format(e));
+			if (shouldFlushNow()) {
+				flush();
+			}
+		}
+
+		void LogAdapter::setFormat(const String &f) {
+			setFormatter(std::make_shared<StandardLogEntryFormatter>(f));
+		}
+
+		LogFlushDelay::LogFlushDelay(unsigned int lines, unsigned int milliseconds)
+			: mLines(lines)
+			, mMilliseconds(milliseconds)
+		{}
+
+		unsigned LogFlushDelay::getLines() const noexcept { return mLines; }
+
+		void LogFlushDelay::setLines(unsigned lines) noexcept { mLines = lines; }
+
+		unsigned LogFlushDelay::getMilliseconds() const noexcept { return mMilliseconds; }
+
+		void LogFlushDelay::setMilliseconds(unsigned ms) noexcept { mMilliseconds = ms; }
+
+		StandardLogEntryFormatter::StandardLogEntryFormatter(const String &formatStr)
+			: LogEntryFormatter()
+			, mFormat(formatStr) {}
+
+		PropertyMap StandardLogEntryFormatter::getFormatVars(const LogEntry &e) const noexcept {
 			String time, date, year, fullYear, month, day, hour, min, sec;
 
 			std::chrono::system_clock::time_point now    = std::chrono::system_clock::now();
@@ -85,7 +121,7 @@ namespace quasar {
 			                           });
 		}
 
-		String LogAdapter::format(const LogEntry &e) {
+		String StandardLogEntryFormatter::format(const LogEntry &e) {
 			String          ret = mFormat;
 			size_t          pos;
 			for (auto const &d: getFormatVars(e)) {
@@ -95,28 +131,5 @@ namespace quasar {
 			}
 			return ret;
 		}
-
-		void LogAdapter::flush() {
-			mLastFlushTime = std::chrono::system_clock::now();
-		}
-
-		void LogAdapter::append(const LogEntry &e) {
-			mLines.add(format(e));
-			if (shouldFlushNow()) {
-				flush();
-			}
-		}
-
-		LogFlushDelay::LogFlushDelay(unsigned int lines, unsigned int milliseconds)
-				: mLines(lines)
-				, mMilliseconds(milliseconds) {}
-
-		unsigned LogFlushDelay::getLines() const noexcept { return mLines; }
-
-		void LogFlushDelay::setLines(unsigned lines) noexcept { mLines = lines; }
-
-		unsigned LogFlushDelay::getMilliseconds() const noexcept { return mMilliseconds; }
-
-		void LogFlushDelay::setMilliseconds(unsigned ms) noexcept { mMilliseconds = ms; }
 	}
 }

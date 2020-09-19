@@ -6,8 +6,11 @@
 
 namespace quasar {
 	namespace core {
+
 		Logger::Logger(const String &name)
-				: mName(name), mAdapters() {}
+			: mName(name)
+			, mAdapters()
+		{}
 
 		void Logger::log(const LogLevel &lvl, const String &msg) {
 			for (auto const& l: mAdapters) {
@@ -38,9 +41,9 @@ namespace quasar {
 			return found != mAdapters.end();
 		}
 
-		const Logger::log_adapter_list &Logger::getAdapters() const noexcept { return mAdapters; }
+		const Logger::adapter_list &Logger::getAdapters() const noexcept { return mAdapters; }
 
-		void Logger::setAdapters(const Logger::log_adapter_list &l) noexcept { mAdapters = l; }
+		void Logger::setAdapters(const Logger::adapter_list &l) noexcept { mAdapters = l; }
 
 		SharedLogAdapter Logger::addAdapter(const SharedLogAdapter &a) { mAdapters.add(a); return mAdapters->back(); }
 

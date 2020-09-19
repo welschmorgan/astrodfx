@@ -9,7 +9,9 @@
 
 namespace quasar {
 	namespace core {
-
+		/**
+		 * Represent a log message level.
+		 */
 		class LogLevel {
 		public:
 			static const LogLevel Debug;
