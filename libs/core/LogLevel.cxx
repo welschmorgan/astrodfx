@@ -11,7 +11,7 @@ namespace quasar {
 		const LogLevel          LogLevel::Info(2, "info", "\033[1;34m");
 		const LogLevel          LogLevel::Warn(3, "warn", "\033[1;33m");
 		const LogLevel          LogLevel::Error(4, "error", "\033[1;31m");
-		const LogLevel          LogLevel::Fatal(5, "fatal", "\033[48;5;124m");
+		const LogLevel          LogLevel::Fatal(5, "fatal", "\033[1;31m");
 
 		LogLevel::LogLevel(const int code, const String &label, const String &color)
 			: mCode(code)
