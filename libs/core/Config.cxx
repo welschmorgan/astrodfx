@@ -26,12 +26,16 @@ namespace quasar {
 		template<> std::nullptr_t           ConfigNode::getValue() const noexcept { return nullptr; }
 		template<> void                     ConfigNode::setValue(const std::nullptr_t &value) noexcept { mValue = "null"; }
 
-		ConfigNode::ConfigNode(ConfigNode *parent, const String &name)
+		ConfigNode::ConfigNode(ConfigNode *parent,
+							   const String &name,
+							   const child_store_type &children,
+							   const prop_store_type &props,
+							   const String &value)
 			: mParent(parent)
-			, mChildren()
-			, mProps()
+			, mChildren(children)
+			, mProps(props)
 			, mName(name)
-			, mValue()
+			, mValue(value)
 		{}
 
 		ConfigNode::ConfigNode(const ConfigNode &rhs) {
@@ -128,6 +132,16 @@ namespace quasar {
 			return nullptr;
 		}
 
+		ConfigNode *ConfigNode::setChild(const String &name, const ConfigNode &n) noexcept(false) {
+			auto it = findChild(name);
+			if (it == mChildren.end()) {
+				createChild(name);
+				it = findChild(name);
+			}
+			*it = n;
+			return &*it;
+		}
+
 		ConfigNode *ConfigNode::getChild(const String &name, bool except) noexcept(false) {
 			auto it = mChildren.find([&](const ConfigNode &n) {
 				return n.getName() == name;
@@ -142,7 +156,7 @@ namespace quasar {
 		}
 
 		bool ConfigNode::hasChild(const String &name) noexcept {
-			return getChild(name) != nullptr;
+			return getChild(name, false) != nullptr;
 		}
 
 		bool ConfigNode::removeChild(const String &name, ConfigNode *out) {
@@ -213,6 +227,37 @@ namespace quasar {
 				}
 			}
 			return mChildren.crend();
+		}
+
+		ConfigNode *ConfigNode::addChild(const ConfigNode &n) {
+			if (hasChild(n.getName())) {
+				throw std::runtime_error("Child '" + std::string(n.getName().begin(), n.getName().end()) + "' already exists in ConfigNode '" + std::string(mName.begin(), mName.end()) + "'");
+			}
+			mChildren.add(n);
+			mChildren->back().setParent(this);
+			return &mChildren->back();
+		}
+
+		ConfigNode ConfigNode::merged(const ConfigNode &with) const {
+			ConfigNode ret(*this);
+			ret.merge(with);
+			return ret;
+		}
+
+		ConfigNode  &ConfigNode::merge(const ConfigNode &with) {
+			if (!with.mName.empty()) {
+				mName = with.mName;
+			}
+			if (!with.mValue.empty()) {
+				mValue = with.mValue;
+			}
+			for (auto const& child: with.mChildren) {
+				addChild(child);
+			}
+			for (auto const& prop: with.mProps) {
+				setProperty(prop.first, prop.second);
+			}
+			return *this;
 		}
 
 		template<typename T>

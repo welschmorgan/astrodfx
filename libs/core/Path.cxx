@@ -153,7 +153,7 @@ namespace quasar {
 			return !isDir();
 		}
 
-		bool Path::isEmpty() const noexcept {
+		bool Path::empty() const noexcept {
 			return std::filesystem::is_empty(*mData);
 		}
 

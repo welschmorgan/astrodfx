@@ -10,9 +10,10 @@ namespace quasar {
 		const String            LogAdapter::DefaultFormat("[{yyyy}/{m}/{d} {h}:{i}:{s}] [{c}] {l} - {M}");
 		const String            LogAdapter::DefaultColoredFormat("[{yyyy}/{m}/{d} {h}:{i}:{s}] [{c}] {lC} - {M}");
 
-		LogAdapter::LogAdapter(const String &name, const SharedLogEntryFormatter &fmt)
-			: mName(name)
-			, mFormatter(fmt ? fmt : SharedLogEntryFormatter((LogEntryFormatter*)new StandardLogEntryFormatter(DefaultColoredFormat)))
+		LogAdapter::LogAdapter(const String &type, const String &name, const SharedLogEntryFormatter &fmt)
+			: mType(type)
+			, mName(name)
+			, mFormatter(fmt ? fmt : std::make_shared<LogEntryFormatter>(DefaultColoredFormat))
 			, mFlushDelay()
 			, mLastFlushTime(std::chrono::system_clock::now())
 			, mLines()
@@ -56,8 +57,27 @@ namespace quasar {
 			}
 		}
 
+		String LogAdapter::getFormat() const {
+			if (mFormatter) {
+				return mFormatter->getFormat();
+			}
+			return String();
+		}
 		void LogAdapter::setFormat(const String &f) {
-			setFormatter(std::make_shared<StandardLogEntryFormatter>(f));
+			if (mFormatter) {
+				mFormatter->setFormat(f);
+			} else {
+				setFormatter(std::make_shared<LogEntryFormatter>(f));
+			}
+		}
+
+		const String &LogAdapter::getType() const noexcept {
+			return mType;
+		}
+
+		LogAdapter &LogAdapter::setName(const String &n) noexcept {
+			mName = n;
+			return *this;
 		}
 
 		LogFlushDelay::LogFlushDelay(unsigned int lines, unsigned int milliseconds)
@@ -73,11 +93,10 @@ namespace quasar {
 
 		void LogFlushDelay::setMilliseconds(unsigned ms) noexcept { mMilliseconds = ms; }
 
-		StandardLogEntryFormatter::StandardLogEntryFormatter(const String &formatStr)
-			: LogEntryFormatter()
-			, mFormat(formatStr) {}
+		LogEntryFormatter::LogEntryFormatter(const String &formatStr)
+			: mFormat(formatStr) {}
 
-		PropertyMap StandardLogEntryFormatter::getFormatVars(const LogEntry &e) const noexcept {
+		PropertyMap LogEntryFormatter::getFormatVars(const LogEntry &e) const noexcept {
 			String time, date, year, fullYear, month, day, hour, min, sec;
 
 			std::chrono::system_clock::time_point now    = std::chrono::system_clock::now();
@@ -121,7 +140,7 @@ namespace quasar {
 			                           });
 		}
 
-		String StandardLogEntryFormatter::format(const LogEntry &e) {
+		String LogEntryFormatter::format(const LogEntry &e) {
 			String          ret = mFormat;
 			size_t          pos;
 			for (auto const &d: getFormatVars(e)) {
@@ -130,6 +149,13 @@ namespace quasar {
 				}
 			}
 			return ret;
+		}
+
+		const String &LogEntryFormatter::getFormat() const noexcept {
+			return mFormat;
+		}
+		void LogEntryFormatter::setFormat(const String &f) noexcept {
+			mFormat = f;
 		}
 	}
 }

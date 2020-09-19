@@ -9,6 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include "LogAdapter.h"
+#include "Path.h"
 
 namespace quasar {
 	namespace core {
@@ -17,9 +18,9 @@ namespace quasar {
 			OStream                 *mStream;
 
 		public:
-			static const String     Name;
+			static const String     Type;
 
-			MemoryLogAdapter(OStream *os = nullptr);
+			MemoryLogAdapter(OStream *os = nullptr, const String &name = String());
 			MemoryLogAdapter(const MemoryLogAdapter &rhs) = default;
 			virtual ~MemoryLogAdapter() = default;
 
@@ -34,9 +35,9 @@ namespace quasar {
 
 		class ConsoleLogAdapter: public MemoryLogAdapter {
 		public:
-			static const String     Name;
+			static const String     Type;
 
-			ConsoleLogAdapter();
+			ConsoleLogAdapter(const String &name = String());
 			ConsoleLogAdapter(const ConsoleLogAdapter &rhs) = default;
 			virtual ~ConsoleLogAdapter() = default;
 
@@ -48,19 +49,21 @@ namespace quasar {
 		class FileLogAdapter: public LogAdapter {
 		protected:
 			OFStream                mStream;
-			String                  mPath;
+			Path                    mPath;
 
 		public:
-			static const String     Name;
+			static const String     Type;
 
-			FileLogAdapter(const String &path);
+			FileLogAdapter(const Path &path = Path(), const String &name = String());
 			FileLogAdapter(const FileLogAdapter &rhs) = delete;
 			virtual ~FileLogAdapter() = default;
 
 			FileLogAdapter          &operator=(const FileLogAdapter &rhs) = delete;
 
-			const String            &getPath() const noexcept { return mPath; }
-			void                    setPath(const String &path) noexcept { mPath = path; }
+			String                  getName() const noexcept;
+
+			const Path              &getPath() const noexcept;
+			void                    setPath(const Path &path) noexcept;
 
 			OFStream                *getStream();
 			const OStream           *getStream() const;

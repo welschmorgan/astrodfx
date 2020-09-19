@@ -6,10 +6,10 @@
 
 namespace quasar {
 	namespace core {
-		const String MemoryLogAdapter::Name = "memory";
+		const String MemoryLogAdapter::Type = "memory";
 
-		MemoryLogAdapter::MemoryLogAdapter(quasar::core::OStream *os)
-			: LogAdapter(Name), mStream(os) {}
+		MemoryLogAdapter::MemoryLogAdapter(quasar::core::OStream *os, const String &name)
+			: LogAdapter(Type, name), mStream(os) {}
 
 		OStream *MemoryLogAdapter::getStream() { return mStream; }
 
@@ -26,10 +26,11 @@ namespace quasar {
 			mLines.clear();
 		}
 
-		const String ConsoleLogAdapter::Name = "console";
+		const String ConsoleLogAdapter::Type = "console";
 
-		ConsoleLogAdapter::ConsoleLogAdapter()
-				: MemoryLogAdapter(&std::cout) { mName = "console"; }
+		ConsoleLogAdapter::ConsoleLogAdapter(const String &name)
+			: MemoryLogAdapter(&std::cout, name)
+		{ mType = Type; }
 
 		void ConsoleLogAdapter::flush() {
 			LogAdapter::flush();
@@ -40,11 +41,11 @@ namespace quasar {
 			mLines.clear();
 		}
 
-		const String FileLogAdapter::Name = "file";
+		const String FileLogAdapter::Type = "file";
 
-		FileLogAdapter::FileLogAdapter(const String &path)
-			: LogAdapter("file")
-			, mStream(path, std::ios::out | std::ios::app)
+		FileLogAdapter::FileLogAdapter(const Path &path, const String &name)
+			: LogAdapter(Type, name.empty() ? path.base() : name)
+			, mStream(path.absolute(), std::ios::out | std::ios::app)
 			, mPath(path)
 		{}
 
@@ -64,6 +65,22 @@ namespace quasar {
 				mStream.flush();
 				mLines.clear();
 			}
+		}
+
+		const Path &FileLogAdapter::getPath() const noexcept { return mPath; }
+
+		void FileLogAdapter::setPath(const Path &path) noexcept {
+			if (mName.empty()) {
+				mName = path.base();
+			}
+			mPath = path;
+		}
+
+		String FileLogAdapter::getName() const noexcept {
+			if (mName.empty()) {
+				return mPath.base();
+			}
+			return mName;
 		}
 	}
 }

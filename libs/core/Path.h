@@ -57,6 +57,7 @@ namespace quasar {
 			String          mData;
 
 		public:
+			Path() = default;
 			explicit        Path(const String &data);
 			explicit        Path(const String::value_type *data);
 			Path(const Path &rhs) = default;
@@ -99,7 +100,7 @@ namespace quasar {
 			bool            exists() const noexcept;
 			bool            isDir() const noexcept;
 			bool            isFile() const noexcept;
-			bool            isEmpty() const noexcept;
+			bool            empty() const noexcept;
 
 			Path            join(const Path &p) const noexcept;
 			Path            join(const String &p) const noexcept;

@@ -32,11 +32,6 @@ namespace quasar {
 			}
 		}
 
-		EngineConfig &EngineConfig::operator=(const ConfigNode &cfg) {
-			ConfigNode::operator=(cfg);
-			return *this;
-		}
-
 		bool Engine::isInitialized() const noexcept {
 			return mInitialized;
 		}
@@ -76,7 +71,7 @@ namespace quasar {
 			if (!mConfigFilename.empty()) {
 				loadConfig();
 			}
-			mLogManager->createAdapter<FileLogAdapter>("engine.log");
+			mLogManager->createAdapter<FileLogAdapter>(Path("engine.log"));
 			if (mRenderer) {
 				mRenderer->initialize();
 			}

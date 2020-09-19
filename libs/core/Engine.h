@@ -9,31 +9,13 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "Config.h"
-#include "Color.h"
 #include "LogManager.h"
+#include "EngineConfig.h"
 
 namespace quasar {
 	namespace core {
-		class EngineConfig: public ConfigNode {
-		public:
-			EngineConfig() = default;
-			EngineConfig(const EngineConfig &cfg) = default;
-			virtual ~EngineConfig() = default;
-
-			EngineConfig            &operator=(const EngineConfig &cfg) = default;
-			EngineConfig            &operator=(const ConfigNode &cfg);
-
-			EngineConfig            &setViewportClearColor(const Color4uc &col) {
-				getChild("viewport")->setProperty("clear_color", col);
-				return *this;
-			}
-			Color4uc                getViewportClearColor() const {
-				return getChild("viewport")->getProperty<Color4uc>("clear_color");
-			}
-		};
-
 		/**
-		 * @brief The main engine class, aggregates everything and orchestrates initialization.
+		 * The main engine class, aggregates everything and orchestrates initialization.
 		 */
 		class Engine {
 		protected:

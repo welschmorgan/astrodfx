@@ -788,6 +788,14 @@ namespace quasar {
 				return base_type::mData[pos];
 			}
 
+			bool                includesKey(const key_type k) const {
+				return base_type::mData.find(k) != base_type::mData.end();
+			}
+
+			bool                includesValue(const value_type &v) const {
+				return base_type::mData.find([&](const item_type &pair) { return pair.second == v; }) != base_type::mData.end();
+			}
+
 			value_type          &at(const key_type pos) {
 				return base_type::mData.at(pos);
 			}

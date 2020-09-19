@@ -28,7 +28,11 @@ namespace quasar {
 			String                      mValue;
 
 		public:
-			ConfigNode(ConfigNode *parent = nullptr, const String &name = String());
+			ConfigNode(ConfigNode *parent = nullptr,
+					   const String &name = String(),
+					   const child_store_type &children = child_store_type(),
+					   const prop_store_type &props = prop_store_type(),
+					   const String &value = String());
 			ConfigNode(const ConfigNode &rhs);
 			virtual ~ConfigNode() noexcept = default;
 
@@ -48,6 +52,7 @@ namespace quasar {
 			void                        setParent(ConfigNode *parent);
 
 			ConfigNode                  *createChild(const String &name);
+			ConfigNode                  *addChild(const ConfigNode &n);
 			bool                        hasChildren() const;
 			const ConfigNode            *getFirstChild() const;
 			ConfigNode                  *getFirstChild();
@@ -59,6 +64,7 @@ namespace quasar {
 			child_citer_type            findChild(const String &name) const;
 			child_riter_type            rfindChild(const String &name);
 			child_criter_type           rfindChild(const String &name) const;
+			ConfigNode                  *setChild(const String &name, const ConfigNode &n) noexcept(false);
 			const ConfigNode            *getChild(const String &name, bool except = true) const  noexcept(false);
 			ConfigNode                  *getChild(const String &name, bool except = true)  noexcept(false);
 			bool                        hasChild(const String &name) noexcept;
@@ -72,6 +78,9 @@ namespace quasar {
 			Type                        getProperty(const String &name, bool except = true, const Type defVal = Type()) const;
 			bool                        hasProperty(const String &name) noexcept;
 			bool                        removeProperty(const String &name, String *out = nullptr);
+
+			ConfigNode                  merged(const ConfigNode &with) const;
+			ConfigNode                  &merge(const ConfigNode &with);
 
 		protected:
 			void                        acquireChild(ConfigNode &child);
