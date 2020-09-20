@@ -10,15 +10,57 @@
 
 namespace quasar {
 	namespace core {
+		class ConfigNode;
+		enum DotAccessFlags {
+			DAF_CREATE_NODES,
+			DAF_NEED_PROPERTY
+		};
+
+		struct DotAccess {
+			unsigned int    flags;
+			String          path;
+			Vector<String>  parts;
+			ConfigNode      *root;
+			ConfigNode      *iter;
+
+			ConfigNode      *child;
+			String          propertyName;
+			String          *property;
+
+			DotAccess(ConfigNode *root_, const String &path_, unsigned int flags_ = 0);
+
+			DotAccess       &walk();
+		};
+
+		struct ConstDotAccess {
+			unsigned int        flags;
+			String              path;
+			Vector<String>      parts;
+			const ConfigNode    *root;
+			const ConfigNode    *iter;
+
+			const ConfigNode    *child;
+			String              propertyName;
+			const String        *property;
+
+			ConstDotAccess(const ConfigNode *root_, const String &path_, unsigned int flags_ = 0);
+
+			ConstDotAccess  &walk();
+		};
+
 		class ConfigNode {
 		public:
 			using child_store_type = Vector<ConfigNode>;
-			using prop_store_type = Map<String, String>;
-
 			using child_iter_type       = typename child_store_type::iter_type;
 			using child_citer_type      = typename child_store_type::citer_type;
 			using child_riter_type      = typename child_store_type::riter_type;
 			using child_criter_type     = typename child_store_type::criter_type;
+
+			using prop_store_type = Map<String, String>;
+			using prop_iter_type        = typename prop_store_type::iter_type;
+			using prop_citer_type       = typename prop_store_type::citer_type;
+			using prop_riter_type       = typename prop_store_type::riter_type;
+			using prop_criter_type      = typename prop_store_type::criter_type;
 
 		protected:
 			ConfigNode                  *mParent;
@@ -42,7 +84,8 @@ namespace quasar {
 			void                        setName(const String &name) noexcept;
 
 			template<typename T = String>
-			T                           getValue() const noexcept;
+			T                           getValue() const noexcept(false);
+			String                      getPath() const;
 
 			template<typename T = String>
 			void                        setValue(const T &value) noexcept;
@@ -60,6 +103,7 @@ namespace quasar {
 			ConfigNode                  *getLastChild();
 			const child_store_type      &getChildren() const noexcept;
 			child_store_type            &getChildren() noexcept;
+
 			child_iter_type             findChild(const String &name);
 			child_citer_type            findChild(const String &name) const;
 			child_riter_type            rfindChild(const String &name);
@@ -67,27 +111,62 @@ namespace quasar {
 			ConfigNode                  *setChild(const String &name, const ConfigNode &n) noexcept(false);
 			const ConfigNode            *getChild(const String &name, bool except = true) const  noexcept(false);
 			ConfigNode                  *getChild(const String &name, bool except = true)  noexcept(false);
-			bool                        hasChild(const String &name) noexcept;
+			bool                        hasChild(const String &name) const noexcept;
 			bool                        removeChild(const String &name, ConfigNode *out = nullptr);
+
+			ConfigNode                  *addDirectChild(const ConfigNode &n);
+			child_iter_type             findDirectChild(const String &name);
+			child_citer_type            findDirectChild(const String &name) const;
+			child_riter_type            rfindDirectChild(const String &name);
+			child_criter_type           rfindDirectChild(const String &name) const;
+			ConfigNode                  *setDirectChild(const String &name, const ConfigNode &n) noexcept(false);
+			const ConfigNode            *getDirectChild(const String &name, bool except = true) const  noexcept(false);
+			ConfigNode                  *getDirectChild(const String &name, bool except = true)  noexcept(false);
+			bool                        hasDirectChild(const String &name) const noexcept;
+			bool                        removeDirectChild(const String &name, ConfigNode *out = nullptr);
 
 			template<typename Type = String>
 			ConfigNode                  &setProperty(const String &name, const Type value);
+			bool                        hasProperties() const;
 			const prop_store_type       &getProperties() const noexcept;
 			prop_store_type             &getProperties() noexcept;
+			prop_iter_type              findProperty(const String &name);
+			prop_citer_type             findProperty(const String &name) const;
 			template<typename Type = String>
 			Type                        getProperty(const String &name, bool except = true, const Type defVal = Type()) const;
-			bool                        hasProperty(const String &name) noexcept;
+			bool                        hasProperty(const String &name) const noexcept;
 			bool                        removeProperty(const String &name, String *out = nullptr);
+			template<typename Type = String>
+			ConfigNode                  &setDirectProperty(const String &name, const Type value);
+
+			template<typename Type = String>
+			Type                        getDirectProperty(const String &name, bool except = true, const Type defVal = Type()) const;
+			bool                        hasDirectProperty(const String &name) const noexcept;
+			bool                        removeDirectProperty(const String &name, String *out = nullptr);
 
 			ConfigNode                  merged(const ConfigNode &with) const;
 			ConfigNode                  &merge(const ConfigNode &with);
 
+
 		protected:
 			void                        acquireChild(ConfigNode &child);
+
+			friend DotAccess;
+			friend ConstDotAccess;
 		};
 
 		template<typename Type>
 		ConfigNode &ConfigNode::setProperty(const String &name, const Type value) {
+			DotAccess access(this, name, DAF_CREATE_NODES | DAF_NEED_PROPERTY);
+			access.walk();
+			StringStream buf;
+			buf << value;
+			*access.property = buf.str();
+			return *this;
+		}
+
+		template<typename Type>
+		ConfigNode &ConfigNode::setDirectProperty(const String &name, const Type value) {
 			StringStream buf;
 			buf << value;
 			mProps.put(name, buf.str());
@@ -96,15 +175,34 @@ namespace quasar {
 
 		template<typename Type>
 		Type                        ConfigNode::getProperty(const String &name, bool except, const Type defVal) const {
-			auto prop = mProps->find(name);
-			if (prop == mProps.end()) {
+			String prop;
+			ConstDotAccess access(this, name, DAF_NEED_PROPERTY);
+			access.walk();
+			if (access.property == nullptr) {
 				if (except) {
-					throw std::runtime_error("Unknown property '" + name + "' in config node '" + mName + "'");
+					throw std::runtime_error("unknown property '" + name + "' in config node '" + getPath() + "'");
+				}
+				return defVal;
+			}
+			auto value = *access.property;
+			StringStream buf;
+			buf.str(value);
+			Type ret = Type();
+			buf >> ret;
+			return ret;
+		}
+
+		template<typename Type>
+		Type                        ConfigNode::getDirectProperty(const String &name, bool except, const Type defVal) const {
+			auto found = mProps->find(name);
+			if (found == mProps.end()) {
+				if (except) {
+					throw std::runtime_error("unknown property '" + name + "' in config node '" + mName + "'");
 				}
 				return defVal;
 			}
 			StringStream buf;
-			buf.str(prop->second);
+			buf.str(found->second);
 			Type ret = Type();
 			buf >> ret;
 			return ret;

@@ -88,7 +88,7 @@ namespace quasar {
 				return *this;
 			}
 
-			std::vector<self_type>  split(const self_type &delim, unsigned policy = SPLIT_DEFAULT) {
+			std::vector<self_type>  split(const self_type &delim, unsigned policy = SPLIT_DEFAULT) const {
 				std::vector<self_type>  ret;
 				ssize_t pos = -1, lastPos = 0;
 				auto addPart = [&]() {
