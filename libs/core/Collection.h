@@ -13,6 +13,7 @@
 
 #include <functional>
 #include <map>
+#include <core/sys/TypeName.h>
 #include "String.h"
 
 namespace quasar {
@@ -709,22 +710,70 @@ namespace quasar {
 			virtual void        add(value_type &&v) { base_type::mData.push_back(v); }
 			virtual void        add(const value_type &v) { base_type::mData.push_back(v); }
 		};
-/*
+
+		std::basic_ostream<char>        &operator<<(std::basic_ostream<char> &os, const std::pair<const BasicString<char>, BasicString<char>> &s);
+		std::basic_ostream<wchar_t>     &operator<<(std::basic_ostream<wchar_t> &os, const std::pair<const BasicString<wchar_t>, BasicString<wchar_t>> &s);
 
 		template<typename T, typename C> std::basic_ostream<char>        &operator<<(std::basic_ostream<char> &os, const Collection<T, C> &s) {
 			if (os) {
+				bool isBig = s.size() > 4;
 				os << "[";
+				if (isBig) {
+					os << std::endl;
+				}
 				for (auto it = s.begin(); it != s.end(); it++) {
 					if (it != s.begin()) {
-						os << ", ";
+						os << ",";
+						if (isBig) {
+							os << std::endl;
+						} else {
+							os << " ";
+						}
+					}
+					if (isBig) {
+						os << "\t";
 					}
 					os << *it;
+				}
+				if (isBig) {
+					os << std::endl;
 				}
 				os << "]";
 			}
 			return os;
 		}
-		template<typename T, typename C> std::basic_istream<char>        &operator>>(std::basic_istream<char> &is, Collection<T, C> &s) {
+
+		template<typename T, typename C> std::basic_ostream<wchar_t>     &operator<<(std::basic_ostream<wchar_t> &os, const Collection<T, C> &s) {
+			if (os) {
+				bool isBig = s.size() > 4;
+				os << "[";
+				if (isBig) {
+					os << std::endl;
+				}
+				for (auto it = s.begin(); it != s.end(); it++) {
+					if (it != s.begin()) {
+						os << ",";
+						if (isBig) {
+							os << std::endl;
+						} else {
+							os << " ";
+						}
+					}
+					if (isBig) {
+						os << "\t";
+					}
+					os << *it;
+				}
+				if (isBig) {
+					os << std::endl;
+				}
+				os << "]";
+			}
+			return os;
+		}
+
+/*
+	template<typename T, typename C> std::basic_istream<char>        &operator>>(std::basic_istream<char> &is, Collection<T, C> &s) {
 			s.clear();
 			BasicString<char> header(255, 0), body(255, 0);
 			is.getline(header.data(), 255, '[');
@@ -735,19 +784,6 @@ namespace quasar {
 			return is;
 		}
 
-		template<typename T, typename C> std::basic_ostream<wchar_t>     &operator<<(std::basic_ostream<wchar_t> &os, const Collection<T, C> &s) {
-			if (os) {
-				os << L"[";
-				for (auto it = s.begin(); it != s.end(); it++) {
-					if (it != s.begin()) {
-						os << L", ";
-					}
-					os << *it;
-				}
-				os << L"]";
-			}
-			return os;
-		}
 		template<typename T, typename C> std::basic_istream<wchar_t>     &operator>>(std::basic_istream<wchar_t> &is, Collection<T, C> &s) {
 			s.clear();
 			BasicString<wchar_t> header(255, 0), body(255, 0);
@@ -887,6 +923,124 @@ namespace quasar {
 		using StringQueue = Queue<String>;
 		using StringDeque = Deque<String>;
 		using StringStack = Stack<String>;
+
+		template<typename T> std::basic_ostream<char>                   &operator<<(std::basic_ostream<char> &os, const Vector<T> &s) {
+			if (os) {
+				bool isBig = s.size() > 4;
+				os << "[";
+				if (isBig) {
+					os << std::endl;
+				}
+				for (auto it = s.begin(); it != s.end(); it++) {
+					if (it != s.begin()) {
+						os << ",";
+						if (isBig) {
+							os << std::endl;
+						} else {
+							os << " ";
+						}
+					}
+					if (isBig) {
+						os << "\t";
+					}
+					os << *it;
+				}
+				if (isBig) {
+					os << std::endl;
+				}
+				os << "]";
+			}
+			return os;
+		}
+
+		template<typename K, typename V> std::basic_ostream<char>       &operator<<(std::basic_ostream<char> &os, const Map<K, V> &s) {
+			if (os) {
+				bool isBig = s.size() > 4;
+				os << "{";
+				if (isBig) {
+					os << std::endl;
+				}
+				for (auto it = s.begin(); it != s.end(); it++) {
+					if (it != s.begin()) {
+						os << ",";
+						if (isBig) {
+							os << std::endl;
+						} else {
+							os << " ";
+						}
+					}
+					if (isBig) {
+						os << "\t";
+					}
+					os << it->first << ": " << it->second;
+				}
+				if (isBig) {
+					os << std::endl;
+				}
+				os << "}";
+			}
+			return os;
+		}
+
+
+		template<typename T> std::basic_ostream<wchar_t>                   &operator<<(std::basic_ostream<wchar_t> &os, const Vector<T> &s) {
+			if (os) {
+				bool isBig = s.size() > 4;
+				os << "[";
+				if (isBig) {
+					os << std::endl;
+				}
+				for (auto it = s.begin(); it != s.end(); it++) {
+					if (it != s.begin()) {
+						os << ",";
+						if (isBig) {
+							os << std::endl;
+						} else {
+							os << " ";
+						}
+					}
+					if (isBig) {
+						os << "\t";
+					}
+					os << *it;
+				}
+				if (isBig) {
+					os << std::endl;
+				}
+				os << "]";
+			}
+			return os;
+		}
+
+		template<typename K, typename V> std::basic_ostream<wchar_t>       &operator<<(std::basic_ostream<wchar_t> &os, const Map<K, V> &s) {
+			if (os) {
+				bool isBig = s.size() > 4;
+				os << "{";
+				if (isBig) {
+					os << std::endl;
+				}
+				for (auto it = s.begin(); it != s.end(); it++) {
+					if (it != s.begin()) {
+						os << ",";
+						if (isBig) {
+							os << std::endl;
+						} else {
+							os << " ";
+						}
+					}
+					if (isBig) {
+						os << "\t";
+					}
+					os << it->first << ": " << it->second;
+				}
+				if (isBig) {
+					os << std::endl;
+				}
+				os << "}";
+			}
+			return os;
+		}
+
 	}
 }
 

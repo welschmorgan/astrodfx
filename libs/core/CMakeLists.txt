@@ -39,7 +39,8 @@ add_library(quasarfx-core
         LoggingConfig.cxx LoggingConfig.h
         EngineConfig.cxx EngineConfig.h
         ConfigValidator.cxx ConfigValidator.h
-        ConfigValidatorFlags.h)
+        ConfigValidatorFlags.h
+        sys/TypeName.cxx sys/TypeName.h)
 
 target_link_libraries(quasarfx-core stdc++fs)
 

@@ -11,6 +11,7 @@
 using quasar::core::Collection;
 using quasar::core::Map;
 using quasar::core::String;
+using quasar::core::BasicString;
 
 TEST_CASE("Collection iter works") {
 	auto collec = Collection<int>({1, 3, 6});
@@ -144,4 +145,63 @@ TEST_CASE("Collection<vector> can be reduced with id") {
 		return carry;
 	});
 	REQUIRE(reduced == 3);
+}
+
+TEST_CASE("Collection<vector> can be stringified when small") {
+	auto collec = Collection<int>({3, 2, 1});
+	std::stringstream buf;
+	buf << collec;
+	REQUIRE(buf.str() == "[3, 2, 1]");
+}
+
+TEST_CASE("Collection<map> can be stringified when small") {
+	auto collec = Map<String, int>({{"a", 3}, {"b", 2}, {"c", 1}});
+	std::stringstream buf;
+	buf << collec;
+	REQUIRE(buf.str() == "{a: 3, b: 2, c: 1}");
+}
+
+TEST_CASE("Collection<vector> can be stringified when large") {
+	auto collec = Collection<int>({3, 2, 1, 4, 5, 6, 7});
+	std::stringstream buf;
+	buf << collec;
+	REQUIRE(buf.str() == R"([
+	3,
+	2,
+	1,
+	4,
+	5,
+	6,
+	7
+])");
+}
+
+TEST_CASE("Collection<map> can be stringified when large") {
+	auto collec = Map<String, int>({{"a", 3}, {"b", 2}, {"c", 1}, {"d", 4}, {"e", 5}, {"f", 6}, {"g", 7}});
+	std::stringstream buf;
+	buf << collec;
+	REQUIRE(buf.str() == R"({
+	a: 3,
+	b: 2,
+	c: 1,
+	d: 4,
+	e: 5,
+	f: 6,
+	g: 7
+})");
+}
+
+
+TEST_CASE("Collection<vector> can be stringified when small on wchar streams") {
+	auto collec = Collection<int>({3, 2, 1});
+	std::wstringstream buf;
+	buf << collec;
+	REQUIRE(buf.str() == L"[3, 2, 1]");
+}
+
+TEST_CASE("Collection<map> can be stringified when small on wchar streams") {
+	auto collec = Map<BasicString<wchar_t>, int>({{L"a", 3}, {L"b", 2}, {L"c", 1}});
+	std::wstringstream buf;
+	buf << collec;
+	REQUIRE(buf.str() == L"{a: 3, b: 2, c: 1}");
 }

@@ -144,12 +144,12 @@ TEST_CASE ("ConfigNode supports aggregating direct children names") {
 
 TEST_CASE ("ConfigNode supports aggregating nested property names") {
 	Vector<String> names = node.getPropertyNames();
-	REQUIRE(names == Vector<String>{"root.root_value", "root.child.value", "root.child2.value2"});
+	REQUIRE(names == Vector<String>{"root.root_value", "root.child.value", "root.child.child2.value2"});
 }
 
 TEST_CASE ("ConfigNode supports aggregating nested children names") {
 	Vector<String> names = node.getChildrenNames();
-	REQUIRE(names == Vector<String>{"root.child", "root.child2"});
+	REQUIRE(names == Vector<String>{"root.child", "root.child.child2"});
 }
 
 TEST_CASE ("ConfigNode supports aggregating nested property name/value pairs") {
@@ -157,6 +157,16 @@ TEST_CASE ("ConfigNode supports aggregating nested property name/value pairs") {
 	REQUIRE(props == Map<String, String> {
 		{"root.root_value", "g"},
 		{"root.child.value", "a"},
-		{"root.child2.value2", "b"}
+		{"root.child.child2.value2", "b"}
 	});
+}
+
+
+//
+// Parent-child relation ships (acquiring)
+//
+
+TEST_CASE ("ConfigNode have a healthy parent-child relation ship") {
+	REQUIRE(node.getChild("child")->getParent() == &node);
+	REQUIRE(node.getChild("child")->getChild("child2")->getParent() == node.getChild("child"));
 }

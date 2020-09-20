@@ -21,8 +21,17 @@ namespace quasar {
 			: public ConfigNode
 		{
 		public:
-			static const ConfigNode     Schema;
-			static const LoggerConfig   Defaults;
+			static const ConfigNode     &Schema() {
+				static const ConfigNode schema(nullptr, "logger", {}, {
+					{"adapter", "none"}
+				});
+				return schema;
+			}
+
+			static const LoggerConfig   &Defaults() {
+				static const LoggerConfig defaults(Schema());
+				return defaults;
+			}
 
 		public:
 			LoggerConfig();
@@ -43,8 +52,18 @@ namespace quasar {
 			: public ConfigNode
 		{
 		public:
-			static const ConfigNode     Schema;
-			static const LoggerConfig   Defaults;
+			static const ConfigNode     &Schema() {
+				static const ConfigNode schema(nullptr, "adapter", {}, {
+					{"type", ""},
+					{"format", ""}
+				});
+				return schema;
+			}
+
+			static const LoggerConfig   &Defaults() {
+				static const LoggerConfig defaults(Schema());
+				return defaults;
+			}
 
 		public:
 			LogAdapterConfig();
@@ -74,8 +93,19 @@ namespace quasar {
 		public:
 			static const maker_map          AdapterMakers;
 
-			static const ConfigNode         Schema;
-			static const LoggerConfig       Defaults;
+			static const ConfigNode         &Schema() {
+				static const ConfigNode schema(nullptr, "logging", {
+					LoggerConfig::Schema(),
+					LogAdapterConfig::Schema(),
+				});
+				return schema;
+			}
+
+			static const LoggerConfig       &Defaults() {
+				static const LoggerConfig defaults(Schema());
+				return defaults;
+			}
+
 		public:
 			LoggingConfig();
 			LoggingConfig(const LoggingConfig &cfg) = default;

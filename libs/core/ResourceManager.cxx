@@ -201,7 +201,7 @@ namespace quasar {
 			}
 			if ((options & RDO_ONCE) == 0 || !mLocationsDiscovered) {
 				for (auto it = mLocations->begin(); it != mLocations->end(); it++) {
-					std::cout << *it << ": discovering location..." << std::endl;
+					std::cout << it->absolute() << ": discovering location..." << std::endl;
 					if (it->exists()) {
 						auto      entries = it->readDir((options & RDO_RECURSIVE) != 0);
 						for (auto &entry: entries) {

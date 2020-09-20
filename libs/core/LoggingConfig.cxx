@@ -11,23 +11,17 @@
 namespace quasar {
 	namespace core {
 
-		const ConfigNode     LoggerConfig::Schema(nullptr, "logger", {}, {
-			{"adapter", "none"}
-		});
-
-		const LoggerConfig   LoggerConfig::Defaults(Schema);
-
 		LoggerConfig::LoggerConfig()
 			: ConfigNode()
 		{
-			mSchema = &Schema;
-			*this = Defaults;
+			mSchema = &Schema();
+			*this = Defaults();
 		}
 
 		LoggerConfig::LoggerConfig(const ConfigNode &cfg)
 			: ConfigNode()
 		{
-			mSchema = &LoggerConfig::Schema;
+			mSchema = &LoggerConfig::Schema();
 			*this = cfg;
 		}
 
@@ -51,23 +45,17 @@ namespace quasar {
 			return *this;
 		}
 
-		const ConfigNode     LogAdapterConfig::Schema(nullptr, "adapter", {}, {
-			{"type", ""},
-			{"format", ""}
-		});
-		const LoggerConfig   LogAdapterConfig::Defaults(Schema);
-
 		LogAdapterConfig::LogAdapterConfig()
 			: ConfigNode()
 		{
-			mSchema = &Schema;
-			*this = Defaults;
+			mSchema = &Schema();
+			*this = Defaults();
 		}
 
 		LogAdapterConfig::LogAdapterConfig(const ConfigNode &cfg)
 			: ConfigNode()
 		{
-			mSchema = &Schema;
+			mSchema = &Schema();
 			*this = cfg;
 		}
 
@@ -133,23 +121,17 @@ namespace quasar {
 			}},
 		});
 
-		const ConfigNode         LoggingConfig::Schema(nullptr, "logging", {
-			LoggerConfig::Schema,
-			LogAdapterConfig::Schema,
-		});
-		const LoggerConfig       LoggingConfig::Defaults(Schema);
-
 		LoggingConfig::LoggingConfig()
 			: ConfigNode()
 		{
-			mSchema = &Schema;
-			*this = Defaults;
+			mSchema = &Schema();
+			*this = Defaults();
 		}
 
 		LoggingConfig::LoggingConfig(const ConfigNode &cfg)
 			: ConfigNode()
 		{
-			mSchema = &Schema;
+			mSchema = &Schema();
 			*this = cfg;
 		}
 

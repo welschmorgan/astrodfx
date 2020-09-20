@@ -23,7 +23,7 @@ TEST_CASE ("Engine can be initialized") {
 	eng.getResourceManager()->addFactory(std::make_shared<IniFactory>());
 
 	auto cfg = eng.loadConfig("test-engine-config-load.ini");
-	auto clearCol = cfg.getViewportClearColor();
+	auto clearCol = cfg.getRendering().getViewports()->front().getClearColor();
 
 	REQUIRE(clearCol == Color4uc(0, 128, 56));
 

@@ -164,7 +164,7 @@ namespace quasar {
 			, mValue(value)
 		{
 			for (auto &child: mChildren) {
-				acquireChild(child);
+				acquireChild(child, this);
 			}
 		}
 
@@ -187,16 +187,16 @@ namespace quasar {
 			mName = rhs.mName;
 			mValue = rhs.mValue;
 			for (auto &child: mChildren) {
-				acquireChild(child);
+				acquireChild(child, this);
 			}
 			validate();
 			return *this;
 		}
 
-		void        ConfigNode::acquireChild(ConfigNode &child) {
-			child.setParent(this);
+		void        ConfigNode::acquireChild(ConfigNode &child, ConfigNode *parent) {
+			child.setParent(parent);
 			for (auto &child2: child.getChildren()) {
-				acquireChild(child2);
+				acquireChild(child2, &child);
 			}
 		}
 
@@ -268,7 +268,7 @@ namespace quasar {
 			DotAccess access(this, name, DAF_CREATE_NODES);
 			access.walk();
 			*access.child = n;
-			acquireChild(*access.child);
+			acquireChild(*access.child, access.child->getParent());
 			return access.child;
 		}
 
@@ -354,7 +354,7 @@ namespace quasar {
 				throw std::runtime_error("Child '" + std::string(n.getName().begin(), n.getName().end()) + "' already exists in ConfigNode '" + std::string(mName.begin(), mName.end()) + "'");
 			}
 			mChildren.add(n);
-			acquireChild(mChildren->back());
+			acquireChild(mChildren->back(), this);
 			return &mChildren->back();
 		}
 
@@ -422,7 +422,7 @@ namespace quasar {
 			}
 			*found = n;
 			found->setName(name);
-			acquireChild(*found);
+			acquireChild(*found, this);
 			return &*found;
 		}
 
@@ -481,7 +481,7 @@ namespace quasar {
 				throw std::runtime_error("'" + n.getName() + "' already registered in ConfigNode '" + getPath() + "'");
 			}
 			mChildren.add(n);
-			acquireChild(mChildren->back());
+			acquireChild(mChildren->back(), this);
 			return &mChildren->back();
 		}
 
@@ -599,6 +599,22 @@ namespace quasar {
 				return false;
 			};
 			aggregate_node_data<Map<String, String>, String, std::pair<String, String>>(this, get_name, true, &ret);
+			return ret;
+		}
+
+		Map<String, String> ConfigNode::getDirectPropertyNameValuePairs() const noexcept {
+			Map<String, String>  ret;
+			auto get_name = [&](const ConfigNode *child, const std::pair<const String, String> *prop, std::pair<String, String> *res) -> bool {
+				if (prop != nullptr) {
+					*res = std::make_pair(
+						prop->first,
+						prop->second
+					);
+					return true;
+				}
+				return false;
+			};
+			aggregate_node_data<Map<String, String>, String, std::pair<String, String>>(this, get_name, false, &ret);
 			return ret;
 		}
 

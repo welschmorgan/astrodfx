@@ -158,6 +158,9 @@ namespace quasar {
 			/** Return the direct property names as an array */
 			Vector<String>              getDirectPropertyNames() const noexcept;
 
+			/** Return the direct property name/value pairs as a map */
+			Map<String, String>         getDirectPropertyNameValuePairs() const noexcept;
+
 			/** Return the children names as an array */
 			Vector<String>              getChildrenNames() const noexcept;
 
@@ -535,7 +538,7 @@ namespace quasar {
 
 		protected:
 			/** Update parent when adding nodes */
-			void                        acquireChild(ConfigNode &child);
+			static void                 acquireChild(ConfigNode &child, ConfigNode *parent);
 
 			/** DotAccessor is friendly */
 			friend DotAccess;
