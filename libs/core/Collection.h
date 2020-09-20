@@ -586,7 +586,7 @@ namespace quasar {
 			 * @return			A value representing this transformation
 			 */
 			template<typename Carry = value_type>
-			Carry               fold(fold_fn<Carry> r, Carry c = Carry()) {
+			Carry               fold(fold_fn<Carry> r, Carry c = Carry()) const {
 				for (citer_type it = mData.begin(); it != mData.end(); ++it) {
 					c = r(c, *it);
 				}
@@ -601,7 +601,7 @@ namespace quasar {
 			 * @return			A value representing this transformation
 			 */
 			template<typename Carry = value_type>
-			Carry               fold(fold_fn_with_id<Carry> r, Carry c = Carry()) {
+			Carry               fold(fold_fn_with_id<Carry> r, Carry c = Carry()) const {
 				size_t id = 0;
 				for (citer_type it = mData.begin(); it != mData.end(); ++it, ++id) {
 					c = r(id, c, *it);
@@ -617,7 +617,7 @@ namespace quasar {
 			 * @return			A value representing this transformation
 			 */
 			template<typename Carry = value_type>
-			Carry               rfold(fold_fn<Carry> r, Carry c = Carry()) {
+			Carry               rfold(fold_fn<Carry> r, Carry c = Carry()) const {
 				for (criter_type it = mData.rbegin(); it != mData.rend(); ++it) {
 					c = r(c, *it);
 				}
@@ -632,7 +632,7 @@ namespace quasar {
 			 * @return			A value representing this transformation
 			 */
 			template<typename Carry = value_type>
-			Carry               rfold(fold_fn_with_id<Carry> r, Carry c = Carry()) {
+			Carry               rfold(fold_fn_with_id<Carry> r, Carry c = Carry()) const {
 				size_t id = mData.size() - 1;
 				for (criter_type it = mData.rbegin(); it != mData.rend(); ++it, --id) {
 					c = r(id, c, *it);

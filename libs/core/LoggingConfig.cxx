@@ -10,14 +10,30 @@
 
 namespace quasar {
 	namespace core {
+
+		const ConfigNode     LoggerConfig::Schema(nullptr, "logger", {}, {
+			{"adapter", "none"}
+		});
+
+		const LoggerConfig   LoggerConfig::Defaults(Schema);
+
 		LoggerConfig::LoggerConfig()
-			: ConfigNode(nullptr, "logger", {}, {
-				{"adapter", ""},
-			})
-		{}
+			: ConfigNode()
+		{
+			mSchema = &Schema;
+			*this = Defaults;
+		}
+
+		LoggerConfig::LoggerConfig(const ConfigNode &cfg)
+			: ConfigNode()
+		{
+			mSchema = &LoggerConfig::Schema;
+			*this = cfg;
+		}
 
 		LoggerConfig &LoggerConfig::operator=(const ConfigNode &cfg) {
 			ConfigNode::operator=(cfg);
+			validate();
 			return *this;
 		}
 
@@ -35,12 +51,25 @@ namespace quasar {
 			return *this;
 		}
 
+		const ConfigNode     LogAdapterConfig::Schema(nullptr, "adapter", {}, {
+			{"type", ""},
+			{"format", ""}
+		});
+		const LoggerConfig   LogAdapterConfig::Defaults(Schema);
+
 		LogAdapterConfig::LogAdapterConfig()
-			: ConfigNode(nullptr, "adapter", {}, {
-				{"type", ""},
-				{"format", ""}
-			})
-		{}
+			: ConfigNode()
+		{
+			mSchema = &Schema;
+			*this = Defaults;
+		}
+
+		LogAdapterConfig::LogAdapterConfig(const ConfigNode &cfg)
+			: ConfigNode()
+		{
+			mSchema = &Schema;
+			*this = cfg;
+		}
 
 		LogAdapterConfig &LogAdapterConfig::setName(const String &a) {
 			ConfigNode::setName(a);
@@ -62,6 +91,12 @@ namespace quasar {
 
 		LogAdapterConfig &LogAdapterConfig::setFormat(const String &a) {
 			setProperty("format", a);
+			return *this;
+		}
+
+		LogAdapterConfig &LogAdapterConfig::operator=(const ConfigNode &cfg) {
+			ConfigNode::operator=(cfg);
+			validate();
 			return *this;
 		}
 
@@ -98,20 +133,30 @@ namespace quasar {
 			}},
 		});
 
+		const ConfigNode         LoggingConfig::Schema(nullptr, "logging", {
+			LoggerConfig::Schema,
+			LogAdapterConfig::Schema,
+		});
+		const LoggerConfig       LoggingConfig::Defaults(Schema);
+
 		LoggingConfig::LoggingConfig()
-			: ConfigNode(nullptr, "logging", {
-				ConfigNode(nullptr, "loggers"),
-				ConfigNode(nullptr, "adapters"),
-			})
-		{}
+			: ConfigNode()
+		{
+			mSchema = &Schema;
+			*this = Defaults;
+		}
 
 		LoggingConfig::LoggingConfig(const ConfigNode &cfg)
-			: ConfigNode(cfg)
-		{}
+			: ConfigNode()
+		{
+			mSchema = &Schema;
+			*this = cfg;
+		}
 
 
 		LoggingConfig &LoggingConfig::operator=(const ConfigNode &cfg) {
 			ConfigNode::operator=(cfg);
+			validate();
 			return *this;
 		}
 

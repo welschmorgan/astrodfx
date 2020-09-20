@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "Config.h"
+#include "ConfigValidator.h"
 
 namespace quasar {
 	namespace core {
@@ -155,18 +156,31 @@ namespace quasar {
 							   const child_store_type &children,
 							   const prop_store_type &props,
 							   const String &value)
-			: mParent(parent)
+			: mSchema(nullptr)
+			, mParent(parent)
 			, mChildren(children)
 			, mProps(props)
 			, mName(name)
 			, mValue(value)
-		{}
+		{
+			for (auto &child: mChildren) {
+				acquireChild(child);
+			}
+		}
 
-		ConfigNode::ConfigNode(const ConfigNode &rhs) {
+		ConfigNode::ConfigNode(const ConfigNode &rhs)
+			: mSchema(nullptr)
+			, mParent(nullptr)
+			, mChildren()
+			, mProps()
+			, mName()
+			, mValue()
+		{
 			*this = rhs;
 		}
 
 		ConfigNode &ConfigNode::operator=(const ConfigNode &rhs) {
+			mSchema = rhs.mSchema;
 			mParent = rhs.mParent;
 			mChildren = rhs.mChildren;
 			mProps = rhs.mProps;
@@ -175,6 +189,7 @@ namespace quasar {
 			for (auto &child: mChildren) {
 				acquireChild(child);
 			}
+			validate();
 			return *this;
 		}
 
@@ -193,7 +208,9 @@ namespace quasar {
 
 		ConfigNode *ConfigNode::getParent() noexcept { return mParent; }
 
-		void ConfigNode::setParent(ConfigNode *parent) { mParent = parent; }
+		void ConfigNode::setParent(ConfigNode *parent) {
+			mParent = parent;
+		}
 
 		bool                    ConfigNode::hasChildren() const {
 			return !mChildren.empty();
@@ -201,7 +218,7 @@ namespace quasar {
 		ConfigNode *ConfigNode::createChild(const String &name) {
 			child_iter_type child = findChild(name);
 			if (child == mChildren.end()) {
-				mChildren.add(ConfigNode(this, name));
+				addChild(ConfigNode(nullptr, name));;
 				child = mChildren.end() - 1;
 			}
 			return &*child;
@@ -337,7 +354,7 @@ namespace quasar {
 				throw std::runtime_error("Child '" + std::string(n.getName().begin(), n.getName().end()) + "' already exists in ConfigNode '" + std::string(mName.begin(), mName.end()) + "'");
 			}
 			mChildren.add(n);
-			mChildren->back().setParent(this);
+			acquireChild(mChildren->back());
 			return &mChildren->back();
 		}
 
@@ -491,6 +508,143 @@ namespace quasar {
 		ConfigNode::prop_citer_type ConfigNode::findProperty(const String &name) const {
 			return mProps->find(name);
 		}
+
+		bool ConfigNode::empty() const noexcept {
+			return mProps.empty() && mChildren.empty() && mValue.empty();
+		}
+
+		template<typename Out, typename Item = typename Out::value_type, typename ItemRes = typename Out::value_type>
+		static Out *aggregate_node_data(const ConfigNode *node,
+										std::function<bool(const ConfigNode *node, const std::pair<const Item, Item> *prop, ItemRes *result)> get_value,
+										bool recurs,
+										Out *ret) {
+			ItemRes item;
+			for (auto const& prop: node->getProperties()) {
+				if (get_value(node, &prop, &item)) {
+					ret->add(item);
+				}
+			}
+			for (auto const& child: node->getChildren()) {
+				if (get_value(&child, nullptr, &item)) {
+					ret->add(item);
+				}
+				if (recurs) {
+					ret = aggregate_node_data<Out, Item, ItemRes>(&child, get_value, recurs, ret);
+				}
+			}
+			return ret;
+		}
+
+		Vector<String> ConfigNode::getDirectChildrenNames() const noexcept {
+			Vector<String>  ret;
+			auto get_name = [&](const ConfigNode *child, const std::pair<const String, String> *prop, String *res) -> bool {
+				if (child != this && prop == nullptr) {
+					*res = child->getName();
+					return true;
+				}
+				return false;
+			};
+			return *aggregate_node_data<Vector<String>, String, String>(this, get_name, false, &ret);
+		}
+
+		Vector<String> ConfigNode::getDirectPropertyNames() const noexcept {
+			Vector<String>  ret;
+			auto get_name = [&](const ConfigNode *child, const std::pair<const String, String> *prop, String *res) -> bool {
+				if (child == this && prop != nullptr) {
+					*res = prop->first;
+					return true;
+				}
+				return false;
+			};
+			return *aggregate_node_data<Vector<String>, String, String>(this, get_name, false, &ret);
+		}
+
+		Vector<String> ConfigNode::getChildrenNames() const noexcept {
+			Vector<String>  ret;
+			auto get_name = [&](const ConfigNode *child, const std::pair<const String, String> *prop, String *res) -> bool {
+				if (child != this && prop == nullptr) {
+					*res = child->getPath();
+					return true;
+				}
+				return false;
+			};
+			aggregate_node_data<Vector<String>, String, String>(this, get_name, true, &ret);
+			return ret;
+		}
+
+		Vector<String> ConfigNode::getPropertyNames() const noexcept {
+			Vector<String>  ret;
+			auto get_name = [&](const ConfigNode *child, const std::pair<const String, String> *prop, String *res) -> bool {
+				if (prop != nullptr) {
+					*res = child->getPath().empty() ? String() : (child->getPath() + ".")
+							+ prop->first;
+					return true;
+				}
+				return false;
+			};
+			aggregate_node_data<Vector<String>, String, String>(this, get_name, true, &ret);
+			return ret;
+		}
+
+		Map<String, String> ConfigNode::getPropertyNameValuePairs() const noexcept {
+			Map<String, String>  ret;
+			auto get_name = [&](const ConfigNode *child, const std::pair<const String, String> *prop, std::pair<String, String> *res) -> bool {
+				if (prop != nullptr) {
+					*res = std::make_pair(
+						child->getPath().empty() ? String() : (child->getPath() + ".") + prop->first,
+						prop->second
+					);
+					return true;
+				}
+				return false;
+			};
+			aggregate_node_data<Map<String, String>, String, std::pair<String, String>>(this, get_name, true, &ret);
+			return ret;
+		}
+
+		const ConfigNode *ConfigNode::getSchema() const noexcept {
+			return mSchema;
+		}
+
+		void ConfigNode::setSchema(const ConfigNode *v) noexcept {
+			mSchema = v;
+		}
+
+		void ConfigNode::validate(unsigned int flags) noexcept(false) {
+			if (mSchema) {
+				ConfigValidator validator(*mSchema);
+				validator.validate(this, flags);
+			}
+		}
+
+		Vector<ConfigNode *> ConfigNode::getAncestors() {
+			Vector<ConfigNode*>     invret;
+			ConfigNode *cur = this;
+			while (cur) {
+				invret.add(cur);
+				cur = cur->getParent();
+			}
+			Vector<ConfigNode*>     ret;
+			for (auto it = invret.rbegin(); it != invret.rend(); it++) {
+				ret.add(*it);
+			}
+			return ret;
+		}
+
+		Vector<const ConfigNode *> ConfigNode::getAncestors() const {
+			Vector<const ConfigNode*>     invret;
+			const ConfigNode *cur = this;
+			while (cur) {
+				invret.add(cur);
+				cur = cur->getParent();
+			}
+			Vector<const ConfigNode*>     ret;
+			for (auto it = invret.rbegin(); it != invret.rend(); it++) {
+				ret.add(*it);
+			}
+			return ret;
+		}
+
 
 		ConfigFile::ConfigFile()
 				: Resource(), ConfigNode() {}

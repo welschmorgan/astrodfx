@@ -123,3 +123,40 @@ TEST_CASE ("ConfigNode supports removing direct properties") {
 	REQUIRE(tmp.removeDirectChild("child"));
 	REQUIRE_THROWS(tmp.getDirectChild("child"));
 }
+
+//
+// Aggregate direct properties / children names
+//
+
+TEST_CASE ("ConfigNode supports aggregating direct property names") {
+	Vector<String> names = node.getDirectPropertyNames();
+	REQUIRE(names == Vector<String>{"root_value"});
+}
+
+TEST_CASE ("ConfigNode supports aggregating direct children names") {
+	Vector<String> names = node.getDirectChildrenNames();
+	REQUIRE(names == Vector<String>{"child"});
+}
+
+//
+// Aggregate nested properties / children names
+//
+
+TEST_CASE ("ConfigNode supports aggregating nested property names") {
+	Vector<String> names = node.getPropertyNames();
+	REQUIRE(names == Vector<String>{"root.root_value", "root.child.value", "root.child2.value2"});
+}
+
+TEST_CASE ("ConfigNode supports aggregating nested children names") {
+	Vector<String> names = node.getChildrenNames();
+	REQUIRE(names == Vector<String>{"root.child", "root.child2"});
+}
+
+TEST_CASE ("ConfigNode supports aggregating nested property name/value pairs") {
+	Map<String, String> props = node.getPropertyNameValuePairs();
+	REQUIRE(props == Map<String, String> {
+		{"root.root_value", "g"},
+		{"root.child.value", "a"},
+		{"root.child2.value2", "b"}
+	});
+}

@@ -17,9 +17,16 @@ namespace quasar {
 
 		class LogManager;
 
-		class LoggerConfig: public ConfigNode {
+		class LoggerConfig
+			: public ConfigNode
+		{
+		public:
+			static const ConfigNode     Schema;
+			static const LoggerConfig   Defaults;
+
 		public:
 			LoggerConfig();
+			explicit LoggerConfig(const ConfigNode &cfg);
 			LoggerConfig(const LoggerConfig &cfg) = default;
 			virtual                     ~LoggerConfig() = default;
 
@@ -27,22 +34,26 @@ namespace quasar {
 			LoggerConfig                &operator=(const ConfigNode &cfg);
 
 			LoggerConfig                &setName(const String &a);
-
 			String                      getAdapter() const;
+
 			LoggerConfig                &setAdapter(const String &a);
 		};
 
-		class LogAdapterConfig: public ConfigNode {
+		class LogAdapterConfig
+			: public ConfigNode
+		{
+		public:
+			static const ConfigNode     Schema;
+			static const LoggerConfig   Defaults;
+
 		public:
 			LogAdapterConfig();
+			explicit LogAdapterConfig(const ConfigNode &cfg);
 			LogAdapterConfig(const LogAdapterConfig &cfg) = default;
 			virtual                     ~LogAdapterConfig() = default;
 
 			LogAdapterConfig            &operator=(const LogAdapterConfig &cfg) = default;
-			LogAdapterConfig            &operator=(const ConfigNode &cfg) {
-				ConfigNode::operator=(cfg);
-				return *this;
-			}
+			LogAdapterConfig            &operator=(const ConfigNode &cfg);
 
 			LogAdapterConfig            &setName(const String &a);
 
@@ -53,13 +64,19 @@ namespace quasar {
 			LogAdapterConfig            &setFormat(const String &a);
 		};
 
-		class LoggingConfig: public ConfigNode {
+		class LoggingConfig
+			: public ConfigNode
+		{
 		public:
 			using maker                     = std::function<SharedLogAdapter (const LogAdapterConfig &)>;
 			using maker_map                 = Map<String, maker>;
 
+		public:
 			static const maker_map          AdapterMakers;
 
+			static const ConfigNode         Schema;
+			static const LoggerConfig       Defaults;
+		public:
 			LoggingConfig();
 			LoggingConfig(const LoggingConfig &cfg) = default;
 			LoggingConfig(const ConfigNode &cfg);

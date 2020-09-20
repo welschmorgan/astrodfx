@@ -36,7 +36,10 @@ add_library(quasarfx-core
         LogAdapter.cxx LogAdapter.h
         LogManager.cxx LogManager.h
         LogAdapters.cxx LogAdapters.h
-        LoggingConfig.cxx LoggingConfig.h EngineConfig.cxx EngineConfig.h)
+        LoggingConfig.cxx LoggingConfig.h
+        EngineConfig.cxx EngineConfig.h
+        ConfigValidator.cxx ConfigValidator.h
+        ConfigValidatorFlags.h)
 
 target_link_libraries(quasarfx-core stdc++fs)
 
