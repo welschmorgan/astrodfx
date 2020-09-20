@@ -31,6 +31,9 @@ namespace quasar {
 			for (auto part = parts.begin(); part != parts.end(); part++) {
 				if ((part + 1) == parts.end()) {
 					if ((flags & DAF_NEED_PROPERTY)) {
+						if ((flags & DAF_CREATE_NODES) && !iter->hasDirectProperty(*part)) {
+							iter->setDirectProperty(*part, "");
+						}
 						if (iter->hasDirectProperty(*part)) {
 							child = iter;
 							propertyName = *part;
@@ -40,6 +43,9 @@ namespace quasar {
 						if (iter->getName() == *part) {
 							child = iter;
 						} else {
+							if ((flags & DAF_CREATE_NODES) && !iter->hasDirectChild(*part)) {
+								iter->addDirectChild(ConfigNode(nullptr, *part));
+							}
 							child = iter->getDirectChild(*part, false);
 						}
 					}

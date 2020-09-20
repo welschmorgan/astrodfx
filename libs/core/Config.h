@@ -12,8 +12,8 @@ namespace quasar {
 	namespace core {
 		class ConfigNode;
 		enum DotAccessFlags {
-			DAF_CREATE_NODES,
-			DAF_NEED_PROPERTY
+			DAF_CREATE_NODES = 1 << 1,
+			DAF_NEED_PROPERTY = 1 << 2
 		};
 
 		struct DotAccess {
