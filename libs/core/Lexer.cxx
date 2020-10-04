@@ -6,8 +6,8 @@
 
 namespace quasar {
 	namespace core {
-		template<> const BasicWordSplitToken<char> BasicWordSplitToken<char>::Word(0, "\\w", TF_REGEX | TF_AGGREGATE);
-		template<> const BasicWordSplitToken<char> BasicWordSplitToken<char>::NonWord(1, "\\W", TF_REGEX | TF_AGGREGATE);
+		template<> const BasicWordSplitToken<char> BasicWordSplitToken<char>::Word(0, "word", "\\w", TF_REGEX | TF_AGGREGATE);
+		template<> const BasicWordSplitToken<char> BasicWordSplitToken<char>::NonWord(1, "non-word", "\\W", TF_REGEX | TF_AGGREGATE);
 
 		template<> char *BasicLexer<char, BasicToken<char>>::find_str(const char *needle, const char *haystack) {
 			return strstr(haystack, needle);

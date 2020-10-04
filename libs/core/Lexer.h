@@ -11,6 +11,7 @@
 #include "Collection.h"
 #include "Either.h"
 #include "Token.h"
+#include "TokenList.h"
 
 namespace quasar {
 	namespace core {
@@ -26,7 +27,7 @@ namespace quasar {
 			using string_type       = BasicString<char_type>;
 			using token_type        = TokenT;
 			using stream_type       = std::basic_istream<CharT>;
-			using token_list        = std::vector<token_type>;
+			using token_list        = BasicTokenList<CharT>;
 			using result_type       = Collection<token_type>;
 			using self_type         = BasicLexer<CharT, TokenT>;
 
@@ -72,7 +73,7 @@ namespace quasar {
 				return regex_it->second;
 			}
 
-			void                    addResult(result_type &res, typename token_list::const_iterator sep, stream_type &stream, const string_type &text, std::streamoff offset, unsigned long line, unsigned short col) {
+			void                    addResult(result_type &res, typename token_list::citer_type sep, stream_type &stream, const string_type &text, std::streamoff offset, unsigned long line, unsigned short col) {
 //				std::cout << "lexer: " << std::string(text.begin(), text.end()) << " - offset: " << offset << " - line: " << line << ": " << col << std::endl;
 				if (!res->empty() && sep->shouldAggregate() && res->back().getType() == sep->getType()) {
 					res->back().setText(res->back().getText() + text);
@@ -113,8 +114,8 @@ namespace quasar {
 			static const BasicWordSplitToken<CharT>  NonWord;
 
 		protected:
-			BasicWordSplitToken(id_type type, const string_type &trigger, unsigned int flags = TF_NONE)
-				: base_type(type, trigger, flags)
+			BasicWordSplitToken(id_type type, const String &name, const string_type &trigger, unsigned int flags = TF_NONE)
+				: base_type(type, name, trigger, flags)
 			{}
 
 		public:

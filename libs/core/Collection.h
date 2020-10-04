@@ -98,6 +98,14 @@ namespace quasar {
 				}) != mData.end();
 			}
 
+			bool                includes(cfilter_predicate p) const noexcept {
+				return find(p) != mData.end();
+			}
+
+			bool                includes(cfilter_predicate_with_id p) const noexcept {
+				return find(p) != mData.end();
+			}
+
 			iter_type           begin() {
 				return mData.begin();
 			}
@@ -247,6 +255,25 @@ namespace quasar {
 				return mData.end();
 			}
 
+			citer_type          citer(const cfilter_predicate &p) const {
+				for (citer_type it = mData.begin(); it != mData.end(); ++it) {
+					if (p(*it)) {
+						return it;
+					}
+				}
+				return mData.end();
+			}
+
+			citer_type          citer(const cfilter_predicate_with_id &p) const {
+				size_t id = 0;
+				for (citer_type it = mData.begin(); it != mData.end(); ++it, ++id) {
+					if (p(id, *it)) {
+						return it;
+					}
+				}
+				return mData.end();
+			}
+
 			iter_type           iter(const filter_predicate_with_id &p) {
 				size_t id = 0;
 				for (iter_type it = mData.begin(); it != mData.end(); ++it, ++id) {
@@ -297,6 +324,38 @@ namespace quasar {
 					}
 				}
 				return false;
+			}
+
+			value_type          &get(filter_predicate p) noexcept(false) {
+				auto found = find(p);
+				if (found == mData.end()) {
+					throw std::runtime_error("could not get item with predicate");
+				}
+				return *found;
+			}
+
+			const value_type    &get(cfilter_predicate p) const noexcept(false) {
+				auto found = find(p);
+				if (found == mData.end()) {
+					throw std::runtime_error("could not get item with predicate");
+				}
+				return *found;
+			}
+
+			value_type          &get(filter_predicate_with_id p) noexcept(false) {
+				auto found = find(p);
+				if (found == mData.end()) {
+					throw std::runtime_error("could not get item with predicate");
+				}
+				return *found;
+			}
+
+			const value_type    &get(cfilter_predicate_with_id p) const noexcept(false) {
+				auto found = find(p);
+				if (found == mData.end()) {
+					throw std::runtime_error("could not get item with predicate");
+				}
+				return *found;
 			}
 
 			/**
@@ -709,12 +768,13 @@ namespace quasar {
 
 			virtual void        add(value_type &&v) { base_type::mData.push_back(v); }
 			virtual void        add(const value_type &v) { base_type::mData.push_back(v); }
+
 		};
 
-		std::basic_ostream<char>        &operator<<(std::basic_ostream<char> &os, const std::pair<const BasicString<char>, BasicString<char>> &s);
-		std::basic_ostream<wchar_t>     &operator<<(std::basic_ostream<wchar_t> &os, const std::pair<const BasicString<wchar_t>, BasicString<wchar_t>> &s);
+		std::basic_ostream<char>                &operator<<(std::basic_ostream<char> &os, const std::pair<const BasicString<char>, BasicString<char>> &s);
+		std::basic_ostream<wchar_t>             &operator<<(std::basic_ostream<wchar_t> &os, const std::pair<const BasicString<wchar_t>, BasicString<wchar_t>> &s);
 
-		template<typename T, typename C> std::basic_ostream<char>        &operator<<(std::basic_ostream<char> &os, const Collection<T, C> &s) {
+		template<typename T, typename C> std::basic_ostream<char>           &operator<<(std::basic_ostream<char> &os, const Collection<T, C> &s) {
 			if (os) {
 				bool isBig = s.size() > 4;
 				os << "[";

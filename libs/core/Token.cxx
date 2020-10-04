@@ -190,6 +190,21 @@ namespace quasar {
 			return ret;
 		}
 
+		template<typename CharT>
+		const BasicString<CharT> &BasicToken<CharT>::getName() const {
+			return mName;
+		}
+
+		template<typename CharT>
+		void BasicToken<CharT>::setName(const BasicString<CharT> &name) {
+			mName = name;
+		}
+
+		template<typename CharT>
+		void BasicToken<CharT>::setFlags(unsigned int flags) {
+			mFlags = flags;
+		}
+
 		template class BasicToken<char>;
 		template class BasicToken<wchar_t>;
 	}

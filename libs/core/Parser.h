@@ -89,17 +89,23 @@ namespace quasar {
 		protected:
 			result_type             mResult;
 			parse_fn_map            mFuncs;
+			parse_fn_type           mDefaultFunc;
+			parse_fn_type           mAnyTokenFunc;
 
 		public:
 			BasicParser() = default;
 			explicit BasicParser(const std::initializer_list<typename parse_fn_map::value_type> &parse_fns)
 				: mResult()
 				, mFuncs(parse_fns)
-			{}
+				, mDefaultFunc()
+				, mAnyTokenFunc()
+			{ resetDefaultFunc(); }
 			explicit BasicParser(const parse_fn_map &parse_fns)
 				: mResult()
 				, mFuncs(parse_fns)
-			{}
+				, mDefaultFunc()
+				, mAnyTokenFunc()
+			{ resetDefaultFunc(); }
 			BasicParser(const BasicParser &rhs) = default;
 			virtual                 ~BasicParser() = default;
 
@@ -121,14 +127,44 @@ namespace quasar {
 				reset();
 				while (it != tokens.end()) {
 					auto parse_fn = mFuncs.find(it->getType());
+					if (mAnyTokenFunc) {
+						mAnyTokenFunc(&tokens, it);
+					}
 					if (parse_fn != mFuncs.end()) {
 						parse_fn->second(&tokens, it);
 					} else {
-						throw std::runtime_error("missing parser_fn for token '" + it->getTrigger() + "'");
+						if (mDefaultFunc) {
+							mDefaultFunc(&tokens, it);
+						}
 					}
 					it++;
 				}
 				into = mResult;
+			}
+
+			const parse_fn_type     &getDefaultFunc() const {
+				return mDefaultFunc;
+			}
+
+			void                    resetDefaultFunc() {
+				setDefaultFunc(std::bind(&BasicParser::defaultParseFunc, this, std::placeholders::_1, std::placeholders::_2));
+			}
+
+			void                    setDefaultFunc(const parse_fn_type &defaultFunc) {
+				mDefaultFunc = defaultFunc;
+			}
+
+			const parse_fn_type     &getAnyTokenFunc() const {
+				return mAnyTokenFunc;
+			}
+
+			void                    setAnyTokenFunc(const parse_fn_type &anyFunc) {
+				mAnyTokenFunc = anyFunc;
+			}
+
+		protected:
+			virtual void            defaultParseFunc(const token_list *tokens, const typename token_list::citer_type &it) {
+				throw std::runtime_error("missing parser_fn for token '" + it->getTrigger() + "'");
 			}
 		};
 
