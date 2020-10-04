@@ -20,6 +20,10 @@ add_library(quasarfx-formats
         ini/IniParser.cxx ini/IniParser.h
         ini/IniGenerator.cxx ini/IniGenerator.h
         ini/IniFactory.cxx ini/IniFactory.h
+
+        # wavefront obj
+        obj/ObjLexer.cxx obj/ObjLexer.h
+        obj/ObjParser.cxx obj/ObjParser.h
 )
 
 target_include_directories(quasarfx-formats PRIVATE ${CMAKE_BINARY_DIR}/libs/core/include ${SDL2_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/libs ${CMAKE_SOURCE_DIR}/libs/core ${CMAKE_CURRENT_SOURCE_DIR}/include)
