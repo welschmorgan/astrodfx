@@ -41,7 +41,7 @@ add_library(quasarfx-core
         ConfigValidator.cxx ConfigValidator.h
         ConfigValidatorFlags.h
         sys/TypeName.cxx sys/TypeName.h
-        GeometryBuffer.cxx GeometryBuffer.h)
+        GeometryBuffer.cxx GeometryBuffer.h Mesh.cxx Mesh.h Pointers.h Material.cxx Material.h MeshParser.cxx MeshParser.h)
 
 target_link_libraries(quasarfx-core stdc++fs)
 

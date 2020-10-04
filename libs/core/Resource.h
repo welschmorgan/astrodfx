@@ -23,13 +23,14 @@ namespace quasar {
 			SharedIOStream      mStream;
 			PropertyMap         mProperties;
 
+		protected:
+			Resource(const Resource &rhs);
+			Resource                &operator=(const Resource &rhs);
+
 		public:
 			Resource();
 			Resource(ResourceFactory *factory, const String &name, const String &path, const ResourceType &type = ResourceType::Unknown, const PropertyMap &properties = PropertyMap(), const SharedIOStream &stream = SharedIOStream());
-			Resource(const Resource &rhs) = delete;
 			virtual ~Resource() noexcept;
-
-			Resource                &operator=(const Resource &rhs) = delete;
 
 			PropertyMap             getProperties() const noexcept;
 			void                    setProperties(const PropertyMap &props) noexcept;

@@ -7,6 +7,16 @@
 
 namespace quasar {
 	namespace core {
+		Resource::Resource(const Resource &rhs)
+			: mName()
+			, mPath()
+			, mStage()
+			, mType()
+			, mFactory(nullptr)
+			, mStream()
+			, mProperties()
+		{ *this = rhs; }
+
 		Resource::Resource(ResourceFactory *factory, const String &name, const String &path, const ResourceType &type, const PropertyMap &props, const SharedIOStream &stream)
 			: mName(name)
 			, mPath(path)
@@ -25,7 +35,7 @@ namespace quasar {
 			, mFactory(nullptr)
 			, mStream()
 			, mProperties()
-	{}
+		{}
 
 		Resource::~Resource() noexcept {
 			try {
@@ -33,6 +43,17 @@ namespace quasar {
 			} catch (std::exception &ex) {
 				std::cerr << mName << ": failed to destroy resource: " << ex.what() << std::endl;
 			}
+		}
+
+		Resource &Resource::operator=(const Resource &rhs) {
+			mName = rhs.mName;
+			mPath = rhs.mPath;
+			mStage = rhs.mStage;
+			mType = rhs.mType;
+			mFactory = rhs.mFactory;
+			mStream = rhs.mStream;
+			mProperties = rhs.mProperties;
+			return *this;
 		}
 
 		const String &Resource::getName() const noexcept {
