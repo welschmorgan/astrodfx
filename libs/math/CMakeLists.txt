@@ -3,7 +3,9 @@ cmake_minimum_required(VERSION 3.1...3.16)
 add_library(quasarfx-math
         ${QUASAR_BUILD_LIBS_TYPE}
         Vector.cxx Vector.h
-        Rect.cxx Rect.h)
+        Rect.cxx Rect.h
+        Polygon.cxx Polygon.h
+)
 
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 

@@ -40,7 +40,8 @@ add_library(quasarfx-core
         EngineConfig.cxx EngineConfig.h
         ConfigValidator.cxx ConfigValidator.h
         ConfigValidatorFlags.h
-        sys/TypeName.cxx sys/TypeName.h)
+        sys/TypeName.cxx sys/TypeName.h
+        GeometryBuffer.cxx GeometryBuffer.h)
 
 target_link_libraries(quasarfx-core stdc++fs)
 
