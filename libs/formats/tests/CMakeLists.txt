@@ -13,5 +13,6 @@ describe_test(formats json-generator TestJsonGenerator.cxx "" "" "")
 describe_test(formats json-serializer TestJsonSerializer.cxx "" "" "")
 
 describe_test(formats obj-parser TestObjParser.cxx "" "" "")
+describe_test(formats obj-generator TestObjGenerator.cxx "" "" "")
 
 describe_test(formats engine-config-loading-ini TestEngineConfigLoadingIni.cxx "" "" "test-engine-config-load.ini")

@@ -7,8 +7,10 @@
 namespace quasar {
 	namespace core {
 
-		GeometryBuffer::GeometryBuffer(const String &name_, const GeometryBuffer::vertex_list &v,
-		                               const GeometryBuffer::normal_list &n, const GeometryBuffer::tex_coord_list &tc,
+		GeometryBuffer::GeometryBuffer(const String &name_,
+									   const GeometryBuffer::vertex_list &v,
+		                               const GeometryBuffer::tex_coord_list &tc,
+		                               const GeometryBuffer::normal_list &n,
 		                               const GeometryBuffer::triangle_list &triangles,
 		                               const GeometryBuffer::quad_list &quads)
 			: mName(name_)
@@ -79,10 +81,21 @@ namespace quasar {
 			return *this;
 		}
 
+		GeometryBuffer &GeometryBuffer::addTriangle(triangle_type::index_type v0, triangle_type::index_type v1, triangle_type::index_type v2) {
+			mTriangles.add(triangle_type({v0, v1, v2}));
+			return *this;
+		}
+
 		GeometryBuffer &GeometryBuffer::addTriangle(triangle_type::index_type v0, triangle_type::index_type v1, triangle_type::index_type v2,
-		                                            triangle_type::index_type vn0, triangle_type::index_type vn1, triangle_type::index_type vn2,
 		                                            triangle_type::index_type vt0, triangle_type::index_type vt1, triangle_type::index_type vt2) {
-			mTriangles.add(triangle_type({v0, v1, v2}, {vn0, vn1, vn2}, {vt0, vt1, vt2}));
+			mTriangles.add(triangle_type({v0, v1, v2}, {vt0, vt1, vt2}));
+			return *this;
+		}
+
+		GeometryBuffer &GeometryBuffer::addTriangle(triangle_type::index_type v0, triangle_type::index_type v1, triangle_type::index_type v2,
+		                                            triangle_type::index_type vt0, triangle_type::index_type vt1, triangle_type::index_type vt2,
+		                                            triangle_type::index_type vn0, triangle_type::index_type vn1, triangle_type::index_type vn2) {
+			mTriangles.add(triangle_type({v0, v1, v2}, {vt0, vt1, vt2}, {vn0, vn1, vn2}));
 			return *this;
 		}
 
@@ -91,10 +104,21 @@ namespace quasar {
 			return *this;
 		}
 
+		GeometryBuffer &GeometryBuffer::addQuad(quad_type::index_type v0, quad_type::index_type v1, quad_type::index_type v2, quad_type::index_type v3) {
+			mQuads.add(quad_type({v0, v1, v2, v3}));
+			return *this;
+		}
+
 		GeometryBuffer &GeometryBuffer::addQuad(quad_type::index_type v0, quad_type::index_type v1, quad_type::index_type v2, quad_type::index_type v3,
-		                                        quad_type::index_type vn0, quad_type::index_type vn1, quad_type::index_type vn2, quad_type::index_type vn3,
 		                                        quad_type::index_type vt0, quad_type::index_type vt1, quad_type::index_type vt2, quad_type::index_type vt3) {
-			mQuads.add(quad_type({v0, v1, v2, v3}, {vn0, vn1, vn2, vn3}, {vt0, vt1, vt2, vt3}));
+			mQuads.add(quad_type({v0, v1, v2, v3}, {vt0, vt1, vt2, vt3}));
+			return *this;
+		}
+
+		GeometryBuffer &GeometryBuffer::addQuad(quad_type::index_type v0, quad_type::index_type v1, quad_type::index_type v2, quad_type::index_type v3,
+		                                        quad_type::index_type vt0, quad_type::index_type vt1, quad_type::index_type vt2, quad_type::index_type vt3,
+		                                        quad_type::index_type vn0, quad_type::index_type vn1, quad_type::index_type vn2, quad_type::index_type vn3) {
+			mQuads.add(quad_type({v0, v1, v2, v3}, {vt0, vt1, vt2, vt3}, {vn0, vn1, vn2, vn3}));
 			return *this;
 		}
 

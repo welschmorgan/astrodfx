@@ -215,7 +215,7 @@ namespace quasar {
 
 		public:
 			GeometryBuffer() = default;
-			GeometryBuffer(const String &name_, const vertex_list &v, const normal_list &n = normal_list(), const tex_coord_list &tc = tex_coord_list(), const triangle_list &triangles = triangle_list(), const quad_list &quads = quad_list());
+			GeometryBuffer(const String &name_, const vertex_list &v, const tex_coord_list &tc = tex_coord_list(), const normal_list &n = normal_list(), const triangle_list &triangles = triangle_list(), const quad_list &quads = quad_list());
 			GeometryBuffer(const GeometryBuffer &rhs) = default;
 			virtual ~GeometryBuffer() = default;
 
@@ -237,16 +237,22 @@ namespace quasar {
 			void                        setTexCoords(const Collection<tex_coord_type> &texCoords);
 
 			GeometryBuffer              &addTriangle(const triangle_type &v);
+			GeometryBuffer              &addTriangle(triangle_type::index_type v0, triangle_type::index_type v1, triangle_type::index_type v2);
 			GeometryBuffer              &addTriangle(triangle_type::index_type v0, triangle_type::index_type v1, triangle_type::index_type v2,
-		                                             triangle_type::index_type vn0, triangle_type::index_type vn1, triangle_type::index_type vn2,
 		                                             triangle_type::index_type vt0, triangle_type::index_type vt1, triangle_type::index_type vt2);
+			GeometryBuffer              &addTriangle(triangle_type::index_type v0, triangle_type::index_type v1, triangle_type::index_type v2,
+		                                             triangle_type::index_type vt0, triangle_type::index_type vt1, triangle_type::index_type vt2,
+		                                             triangle_type::index_type vn0, triangle_type::index_type vn1, triangle_type::index_type vn2);
 			const triangle_list         &getTriangles() const;
 			void                        setTriangles(const Collection<triangle_type> &triangles);
 
 			GeometryBuffer              &addQuad(const quad_type &v);
+			GeometryBuffer              &addQuad(quad_type::index_type v0, quad_type::index_type v1, quad_type::index_type v2, quad_type::index_type v3);
 			GeometryBuffer              &addQuad(quad_type::index_type v0, quad_type::index_type v1, quad_type::index_type v2, quad_type::index_type v3,
-			                                     quad_type::index_type vn0, quad_type::index_type vn1, quad_type::index_type vn2, quad_type::index_type vn3,
 			                                     quad_type::index_type vt0, quad_type::index_type vt1, quad_type::index_type vt2, quad_type::index_type vt3);
+			GeometryBuffer              &addQuad(quad_type::index_type v0, quad_type::index_type v1, quad_type::index_type v2, quad_type::index_type v3,
+			                                     quad_type::index_type vt0, quad_type::index_type vt1, quad_type::index_type vt2, quad_type::index_type vt3,
+			                                     quad_type::index_type vn0, quad_type::index_type vn1, quad_type::index_type vn2, quad_type::index_type vn3);
 			const quad_list             &getQuads() const;
 			void                        setQuads(const Collection<quad_type> &quads);
 

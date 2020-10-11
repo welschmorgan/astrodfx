@@ -6,8 +6,9 @@
 
 namespace quasar {
 	namespace core {
-		SubMesh::SubMesh(const String &n, const SharedGeometryBuffer &geometry, const SharedMaterial &material, const SubMeshList &subMeshes)
-			: mName(n)
+		SubMesh::SubMesh(SubMesh *parent, const String &n, const SharedGeometryBuffer &geometry, const SharedMaterial &material, const SubMeshList &subMeshes)
+			: mParent(parent)
+			, mName(n)
 			, mGeometry(geometry)
 			, mMaterial(material)
 			, mSubMeshes(subMeshes)
@@ -77,6 +78,50 @@ namespace quasar {
 			mGeometry.reset();
 			mMaterial.reset();
 			mSubMeshes.clear();
+		}
+
+		const SubMesh *SubMesh::getParent() const {
+			return mParent;
+		}
+
+		SubMesh *SubMesh::getParent() {
+			return mParent;
+		}
+
+		void SubMesh::setParent(SubMesh *p) {
+			mParent = p;
+		}
+
+		const SubMesh *SubMesh::getRootParent() const {
+			const SubMesh *cur = mParent;
+			while (cur && cur->getParent()) {
+				cur = cur->getParent();
+			}
+			return cur;
+		}
+
+		SubMesh *SubMesh::getRootParent() {
+			SubMesh *cur = mParent;
+			while (cur && cur->getParent()) {
+				cur = cur->getParent();
+			}
+			return cur;
+		}
+
+		const Mesh *SubMesh::getRootMesh() const {
+			const SubMesh *root = getRootParent();
+			if (root != nullptr) {
+				return &dynamic_cast<const Mesh&>(*root);
+			}
+			return nullptr;
+		}
+
+		Mesh *SubMesh::getRootMesh() {
+			SubMesh *root = getRootParent();
+			if (root != nullptr) {
+				return &dynamic_cast<Mesh&>(*root);
+			}
+			return nullptr;
 		}
 
 		Mesh::Mesh(const String &name)

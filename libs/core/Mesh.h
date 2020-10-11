@@ -14,19 +14,23 @@
 namespace quasar {
 	namespace core {
 
+		class Mesh;
+
 		class SubMesh;
 		using SharedSubMesh = SharedPtr<SubMesh>;
 		using SubMeshList = Collection<SharedSubMesh>;
 
 		class SubMesh {
 		protected:
+			SubMesh                 *mParent;
 			String                  mName;
 			SubMeshList             mSubMeshes;
 			SharedGeometryBuffer    mGeometry;
 			SharedMaterial          mMaterial;
 
 		public:
-			SubMesh(const String &name = String(),
+			SubMesh(SubMesh *parent = nullptr,
+					const String &name = String(),
 					const SharedGeometryBuffer &geometry = SharedGeometryBuffer(),
 					const SharedMaterial &material = SharedMaterial(),
 					const SubMeshList &subMeshes = SubMeshList());
@@ -38,6 +42,16 @@ namespace quasar {
 			const String            &getName() const;
 			void                    setName(const String &n);
 
+			const SubMesh           *getParent() const;
+			SubMesh                 *getParent();
+			void                    setParent(SubMesh *p);
+
+			const SubMesh           *getRootParent() const;
+			SubMesh                 *getRootParent();
+
+			const Mesh              *getRootMesh() const;
+			Mesh                    *getRootMesh();
+
 			SharedMaterial          getMaterial() const;
 			void                    setMaterial(const SharedMaterial &m);
 
@@ -48,7 +62,7 @@ namespace quasar {
 			void                    setSubMeshes(const SubMeshList &subMeshes);
 			template<typename ...Args>
 			SharedSubMesh           createSubMesh(Args ...args) {
-				return addSubMesh(std::make_shared<SubMesh>(args...));
+				return addSubMesh(std::make_shared<SubMesh>(this, args...));
 			}
 			SharedSubMesh           addSubMesh(const SharedSubMesh &subMesh);
 			SharedSubMesh           removeSubMesh(const String &name);

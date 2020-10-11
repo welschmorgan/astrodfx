@@ -18,7 +18,7 @@ namespace quasar {
 			using string_type = typename base_type::string_type;
 			using stream_type = typename base_type::stream_type;
 
-			IniGenerator() = default;
+			IniGenerator(): BasicGenerator("INI", "1.0") {}
 			IniGenerator(const IniGenerator &rhs) = default;
 			virtual                 ~IniGenerator() = default;
 
