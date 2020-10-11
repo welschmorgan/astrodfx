@@ -126,6 +126,9 @@ namespace quasar {
 				auto it = tokens.begin();
 				reset();
 				while (it != tokens.end()) {
+#ifndef NDEBUG
+					std::cout << "Parser::parse | " << *it << std::endl;
+#endif
 					auto parse_fn = mFuncs.find(it->getType());
 					if (mAnyTokenFunc) {
 						mAnyTokenFunc(&tokens, it);

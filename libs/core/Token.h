@@ -226,6 +226,9 @@ namespace quasar {
 			list_type               getNextSiblings(const list_type &types) const;
 		};
 
+		extern std::basic_ostream<char> &operator<<(std::basic_ostream<char> &os, const BasicToken<char> &token);
+		extern std::basic_ostream<wchar_t> &operator<<(std::basic_ostream<wchar_t> &os, const BasicToken<wchar_t> &token);
+
 		extern template class BasicToken<char>;
 		extern template class BasicToken<wchar_t>;
 

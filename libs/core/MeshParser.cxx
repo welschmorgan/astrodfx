@@ -37,61 +37,49 @@ namespace quasar {
 			if (mesh == nullptr) {
 				std::cout << "null";
 			} else {
-				if (!mesh->getName().empty()) {
-					std::cout << mesh->getName() << " ";
-				}
-				std::cout << "{" << std::endl;
-				std::cout << indentStr << "\tmaterial: ";
-				if (mesh->getMaterial() == nullptr) {
-					std::cout << "null," << std::endl;
-				} else {
-					std::cout << "\"" << mesh->getMaterial()->getName() << "\"," << std::endl;
-				}
-				std::cout << indentStr << "\tsubMeshes: [" << std::endl;
-				for (auto const &subMesh: mesh->getSubMeshes()) {
-					dumpSubMesh(subMesh.get(), indent + 2);
-				}
-				std::cout << indentStr << "\t]," << std::endl;
-				std::cout << indentStr << "}" << std::endl;
+				dumpSubMesh(mesh, mesh, indent);
 			}
 		}
 
-		void MeshParser::dumpSubMesh(const SubMesh *subMesh, size_t indent) {
+		void MeshParser::dumpSubMesh(const SubMesh *rootMesh, const SubMesh *subMesh, size_t indent) {
 			std::string indentStr(indent, '\t');
+			auto dumpList = [&](const String &key, auto list) {
+				std::cout << indentStr << "\t" << key << ": [" << std::endl;
+				for (auto it = list.begin(); it != list.end(); it++) {
+					std::cout << indentStr << "\t\t" << *it << (it != (list.end() - 1) ? "," : "") << std::endl;
+				}
+				std::cout << indentStr << "\t]";
+			};
+			std::cout << indentStr;
 			if (subMesh == nullptr) {
 				std::cout << "null";
 			} else {
-				std::cout << indentStr << "\"" << subMesh->getName() << "\": {";
-				std::cout << indentStr << "\tmaterial: \"" << subMesh->getMaterial()->getName() << "\"," << std::endl;
-				std::cout << indentStr << "\tvertices: [" << std::endl;
-				for (auto const &v: subMesh->getGeometry()->getVertices()) {
-					std::cout << indentStr << "\t\t" << v << "," << std::endl;
+				if (rootMesh != subMesh) {
+					std::cout << "\"" << subMesh->getName() << "\": ";
 				}
-				std::cout << indentStr << "\t]," << std::endl;
-				std::cout << indentStr << "\tnormals: [" << std::endl;
-				for (auto const &v: subMesh->getGeometry()->getVertices()) {
-					std::cout << indentStr << "\t\t" << v << "," << std::endl;
+				std::cout << "{" << std::endl;
+				std::cout << indentStr << "\tmaterial: ";
+				if (subMesh->getMaterial() == nullptr) {
+					std::cout << "null," << std::endl;
+				} else {
+					std::cout << "\"" << subMesh->getMaterial()->getName() << "\"," << std::endl;
 				}
-				std::cout << indentStr << "\t]," << std::endl;
-				std::cout << indentStr << "\ttexcoords: [" << std::endl;
-				for (auto const &v: subMesh->getGeometry()->getVertices()) {
-					std::cout << indentStr << "\t\t" << v << "," << std::endl;
+				dumpList("vertices", subMesh->getGeometry()->getVertices());
+				std::cout << "," << std::endl;
+				dumpList("normals", subMesh->getGeometry()->getNormals());
+				std::cout << "," << std::endl;
+				dumpList("texCoords", subMesh->getGeometry()->getTexCoords());
+				std::cout << "," << std::endl;
+				dumpList("triangles", subMesh->getGeometry()->getTriangles());
+				std::cout << "," << std::endl;
+				dumpList("quads", subMesh->getGeometry()->getQuads());
+				std::cout << "," << std::endl;
+				std::cout << indentStr << "\tsubMeshes: [" << std::endl;
+				for (auto it = subMesh->getSubMeshes().begin(); it != subMesh->getSubMeshes().end(); it++) {
+					dumpSubMesh(rootMesh, it->get(), indent + 1);
 				}
-				std::cout << indentStr << "\t]," << std::endl;
-				std::cout << indentStr << "\ttriangles: [" << std::endl;
-				for (auto const &v: subMesh->getGeometry()->getTriangles()) {
-					std::cout << indentStr << "\t\t" << v << "," << std::endl;
-				}
-				std::cout << indentStr << "\t]," << std::endl;
-				std::cout << indentStr << "\tquads: [" << std::endl;
-				for (auto const &v: subMesh->getGeometry()->getQuads()) {
-					std::cout << indentStr << "\t\t" << v << "," << std::endl;
-				}
-				std::cout << indentStr << "\t]," << std::endl;
-				for (auto const &subSubMesh: subMesh->getSubMeshes()) {
-					dumpSubMesh(subSubMesh.get(), indent + 1);
-				}
-				std::cout << indentStr << "}," << std::endl;
+				std::cout << indentStr << "\t]" << std::endl;
+				std::cout << indentStr << "}" << std::endl;
 			}
 		}
 	}

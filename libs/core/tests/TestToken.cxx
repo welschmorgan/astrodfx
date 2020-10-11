@@ -13,11 +13,11 @@ using quasar::core::Token;
 using quasar::core::TokenList;
 
 TEST_CASE("Token takeNextUntil works") {
-	const Token type0(0, "0");
-	const Token type1(1, "1");
-	const Token type2(2, "2");
-	const Token type3(3, "3");
-	const Token type4(4, "4");
+	const Token type0(0, "type0", "0");
+	const Token type1(1, "type1", "1");
+	const Token type2(2, "type2", "2");
+	const Token type3(3, "type3", "3");
+	const Token type4(4, "type4", "4");
 	TokenList tokens({
 		type0, type1, type2, type3, type4
 	});
@@ -40,11 +40,11 @@ TEST_CASE("Token takeNextUntil works") {
 }
 
 TEST_CASE("Token takePreviousUntil works") {
-	const Token type0(0, "0");
-	const Token type1(1, "1");
-	const Token type2(2, "2");
-	const Token type3(3, "3");
-	const Token type4(4, "4");
+	const Token type0(0, "type0", "0");
+	const Token type1(1, "type1", "1");
+	const Token type2(2, "type2", "2");
+	const Token type3(3, "type3", "3");
+	const Token type4(4, "type4", "4");
 	TokenList tokens({
 		type0, type1, type2, type3, type4
 	});
@@ -67,11 +67,11 @@ TEST_CASE("Token takePreviousUntil works") {
 }
 
 TEST_CASE("Token getPreviousSibling works") {
-	const Token type0(0, "0");
-	const Token type1(1, "1");
-	const Token type2(2, "2");
-	const Token type3(3, "3");
-	const Token type4(4, "4");
+	const Token type0(0, "type0", "0");
+	const Token type1(1, "type1", "1");
+	const Token type2(2, "type2", "2");
+	const Token type3(3, "type3", "3");
+	const Token type4(4, "type4", "4");
 	TokenList tokens({
 		type0, type1, type2, type3, type4
 	});
@@ -83,11 +83,11 @@ TEST_CASE("Token getPreviousSibling works") {
 
 
 TEST_CASE("Token getNextSibling works") {
-	const Token type0(0, "0");
-	const Token type1(1, "1");
-	const Token type2(2, "2");
-	const Token type3(3, "3");
-	const Token type4(4, "4");
+	const Token type0(0, "type0", "0");
+	const Token type1(1, "type1", "1");
+	const Token type2(2, "type2", "2");
+	const Token type3(3, "type3", "3");
+	const Token type4(4, "type4", "4");
 	TokenList tokens({
 	    type0, type1, type2, type3, type4
 	});
@@ -98,11 +98,11 @@ TEST_CASE("Token getNextSibling works") {
 }
 
 TEST_CASE("Token getPreviousSiblings works") {
-	const Token type0(0, "0");
-	const Token type1(1, "1");
-	const Token type2(2, "2");
-	const Token type3(3, "3");
-	const Token type4(4, "4");
+	const Token type0(0, "type0", "0");
+	const Token type1(1, "type1", "1");
+	const Token type2(2, "type2", "2");
+	const Token type3(3, "type3", "3");
+	const Token type4(4, "type4", "4");
 	TokenList tokens({
         type0, type1, type2, type3, type4
 	});
@@ -115,11 +115,11 @@ TEST_CASE("Token getPreviousSiblings works") {
 }
 
 TEST_CASE("Token getNextSiblings works") {
-	const Token type0(0, "0");
-	const Token type1(1, "1");
-	const Token type2(2, "2");
-	const Token type3(3, "3");
-	const Token type4(4, "4");
+	const Token type0(0, "type0", "0");
+	const Token type1(1, "type1", "1");
+	const Token type2(2, "type2", "2");
+	const Token type3(3, "type3", "3");
+	const Token type4(4, "type4", "4");
 	TokenList tokens({
         type0, type1, type2, type3, type4
 	});

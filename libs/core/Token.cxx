@@ -205,6 +205,15 @@ namespace quasar {
 			mFlags = flags;
 		}
 
+		std::basic_ostream<char> &operator<<(std::basic_ostream<char> &os, const BasicToken<char> &token) {
+			os << token.getName() << "(" << token.getText() << ")";
+			return os;
+		}
+		std::basic_ostream<wchar_t> &operator<<(std::basic_ostream<wchar_t> &os, const BasicToken<wchar_t> &token) {
+			os << token.getName() << L"(" << token.getText() << L")";
+			return os;
+		}
+
 		template class BasicToken<char>;
 		template class BasicToken<wchar_t>;
 	}

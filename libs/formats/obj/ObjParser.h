@@ -27,6 +27,12 @@ namespace quasar {
 			using token_list                    = typename base_type::token_list;
 			using result_type                   = typename base_type::result_type;
 
+			enum DataType {
+				DT_VERTEX,
+				DT_TEXCOORD,
+				DT_NORMAL
+			};
+
 		protected:
 			bool                                mInComment;
 			core::SubMesh                       *mRootObject = nullptr;
@@ -66,7 +72,17 @@ namespace quasar {
 			void                                createNormal(float x, float y, float z);
 			void                                createTexCoord(float u, float v = 0.0f, float w = 0.0f);
 
-			token_list                          getArgs(typename token_list::citer_type &it, core::String *str = nullptr);
+			void                                createTriangle(core::GeometryBuffer::triangle_type::index_type v[3],
+			                                                   core::GeometryBuffer::triangle_type::index_type vt[3],
+			                                                   core::GeometryBuffer::triangle_type::index_type vn[3]);
+
+			void                                createQuad(core::GeometryBuffer::quad_type::index_type v[4],
+			                                               core::GeometryBuffer::quad_type::index_type vt[4],
+			                                               core::GeometryBuffer::quad_type::index_type vn[4]);
+
+			token_list                          getArgs(typename token_list::citer_type &it, const std::vector<core::Token> &argTypes = {ObjLexer::Number}, core::String *str = nullptr);
+
+			unsigned long long                  convertRelativeIndexToAbsolute(long long idx, DataType type);
 		};
 	}
 }

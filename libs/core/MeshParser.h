@@ -27,7 +27,7 @@ namespace quasar {
 			void parse(const token_list &tokens, result_type &into) override;
 
 		protected:
-			void dumpSubMesh(const SubMesh *subMesh, size_t indent = 0);
+			void dumpSubMesh(const SubMesh *rootMesh, const SubMesh *subMesh, size_t indent = 0);
 			void dump(const Mesh *mesh, size_t indent = 0);
 		};
 	}
