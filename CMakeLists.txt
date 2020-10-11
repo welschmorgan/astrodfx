@@ -6,7 +6,7 @@ project(QuasarFX VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# define build options
+include(share/cmake/BuildOption.CMake)
 
 ## build shared or static libs
 set(QUASAR_BUILD_LIBS_TYPES STATIC SHARED)
@@ -23,20 +23,19 @@ else ()
     message(FATAL_ERROR "Unknown libs build type ${QUASAR_BUILD_LIBS_TYPE}")
 endif ()
 
-option(QUASAR_BUILD_CORE "Enable building core library" ON)
-option(QUASAR_BUILD_FORMATS "Enable building formats library" ON)
-option(QUASAR_BUILD_MATH "Enable building math library" ON)
-option(QUASAR_BUILD_RENDER "Enable building rendering library" ON)
-option(QUASAR_BUILD_EXAMPLES "Enable building examples" ON)
-option(QUASAR_BUILD_UNIT_TESTS "Enable building unit tests" ON)
-option(QUASAR_SUPPORT_MULTITHREADING "Enable support for multithreading" ON)
+# Configure build of engine parts
+declare_build_option(QUASAR_BUILD_CORE "Enable building core library" ON)
+declare_build_option(QUASAR_BUILD_FORMATS "Enable building formats library" ON)
+declare_build_option(QUASAR_BUILD_MATH "Enable building math library" ON)
+declare_build_option(QUASAR_BUILD_RENDER "Enable building rendering library" ON)
+declare_build_option(QUASAR_BUILD_EXAMPLES "Enable building examples" ON)
+declare_build_option(QUASAR_BUILD_UNIT_TESTS "Enable building unit tests" ON)
 
-if (QUASAR_SUPPORT_MULTITHREADING)
-    set(QUASAR_SUPPORT_MULTITHREADING_C 1)
-else()
-    set(QUASAR_SUPPORT_MULTITHREADING_C 0)
-endif ()
-message("Building libs in ${QUASAR_BUILD_LIBS_TYPE} mode")
+# Configure build of functionnalities
+declare_build_option(QUASAR_SUPPORT_ZIP_ARCHIVES "Enable support for zip archives" ON)
+declare_build_option(QUASAR_SUPPORT_MULTITHREADING "Enable support for multithreading" ON)
+
+message("Building libs in ${QUASAR_BUILD_LIBS_TYPE} mode (zip support: ${QUASAR_SUPPORT_ZIP_ARCHIVES}, multithreading: ${QUASAR_SUPPORT_MULTITHREADING}")
 
 # enable testing
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
