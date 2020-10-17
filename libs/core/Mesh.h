@@ -95,7 +95,7 @@ namespace quasar {
 
 		public:
 			Mesh(const String &name = String());
-			Mesh(ResourceFactory *factory, const String &name, const String &path, const ResourceType &type = ResourceType::Unknown, const PropertyMap &properties = PropertyMap(), const SharedIOStream &stream = SharedIOStream());
+			Mesh(ResourceFactory *factory, const String &name, const ResourceType &type = ResourceType::Unknown, const PropertyMap &properties = PropertyMap(), const SharedStream &stream = SharedStream());
 			virtual ~Mesh() = default;
 
 			void                setName(const String &name);

@@ -20,7 +20,7 @@ namespace quasar {
 
 			TextFactory                 &operator=(const TextFactory &rhs) = delete;
 
-			virtual SharedResource              create(const String &name, const String &path, const StringMap<String> &properties);
+			virtual SharedResource              create(const String &name, const StringMap<String> &properties, const SharedStream &stream);
 			virtual void                        destroy(Resource &res);
 		};
 	}

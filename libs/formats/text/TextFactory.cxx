@@ -9,8 +9,8 @@ namespace quasar {
 	namespace formats {
 
 		SharedResource
-		TextFactory::create(const String &name, const String &path, const StringMap<String> &properties) {
-			return std::make_shared<Text>(this, name, path, ResourceType::Text);
+		TextFactory::create(const String &name, const StringMap<String> &properties, const SharedStream &stream) {
+			return std::make_shared<Text>(this, name, ResourceType::Text, properties, stream);
 		}
 
 		void TextFactory::destroy(Resource &res) {

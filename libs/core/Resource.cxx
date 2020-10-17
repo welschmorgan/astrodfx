@@ -9,7 +9,6 @@ namespace quasar {
 	namespace core {
 		Resource::Resource(const Resource &rhs)
 			: mName()
-			, mPath()
 			, mStage()
 			, mType()
 			, mFactory(nullptr)
@@ -17,9 +16,8 @@ namespace quasar {
 			, mProperties()
 		{ *this = rhs; }
 
-		Resource::Resource(ResourceFactory *factory, const String &name, const String &path, const ResourceType &type, const PropertyMap &props, const SharedIOStream &stream)
+		Resource::Resource(ResourceFactory *factory, const String &name, const ResourceType &type, const PropertyMap &props, const SharedStream &stream)
 			: mName(name)
-			, mPath(path)
 			, mStage(ResourceStage::None)
 			, mType(type)
 			, mFactory(factory)
@@ -29,7 +27,6 @@ namespace quasar {
 
 		Resource::Resource()
 			: mName()
-			, mPath()
 			, mStage(ResourceStage::None)
 			, mType(ResourceType::None)
 			, mFactory(nullptr)
@@ -47,7 +44,6 @@ namespace quasar {
 
 		Resource &Resource::operator=(const Resource &rhs) {
 			mName = rhs.mName;
-			mPath = rhs.mPath;
 			mStage = rhs.mStage;
 			mType = rhs.mType;
 			mFactory = rhs.mFactory;
@@ -64,12 +60,15 @@ namespace quasar {
 			mName = name;
 		}
 
-		const String &Resource::getPath() const noexcept {
-			return mPath;
+		Path Resource::getPath() const noexcept {
+			return mStream ? mStream->getPath() : Path();
 		}
 
-		void Resource::setPath(const String &path) noexcept {
-			mPath = path;
+		void Resource::setPath(const Path &path) noexcept(false) {
+			if (!mStream) {
+				throw std::runtime_error("cannot set path for resource '" + std::string(mName.begin(), mName.end()) + "', no stream associated");
+			}
+			mStream->setPath(path);
 		}
 
 		const ResourceType &Resource::getType() const noexcept {
@@ -140,11 +139,11 @@ namespace quasar {
 			mStage = stage;
 		}
 
-		SharedIOStream Resource::getStream() const noexcept {
+		SharedStream Resource::getStream() const noexcept {
 			return mStream;
 		}
 
-		void Resource::setStream(SharedIOStream stream) noexcept {
+		void Resource::setStream(SharedStream stream) noexcept {
 			mStream = stream;
 		}
 

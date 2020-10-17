@@ -142,8 +142,8 @@ namespace quasar {
 			std::basic_stringstream<CharT>  mMemStream;
 
 		public:
-			BasicMemoryStream(const Path &path = Path(), access_mode_type openMode = std::ios::in | std::ios::out)
-				: base_type("memory", openMode, path)
+			BasicMemoryStream(const String &content = String(), access_mode_type openMode = std::ios::in | std::ios::out)
+				: base_type("memory", openMode, Path())
 			{ base_type::rdbuf(mMemStream.rdbuf()); }
 			BasicMemoryStream(const BasicMemoryStream &rhs) = delete;
 			virtual ~BasicMemoryStream() noexcept {

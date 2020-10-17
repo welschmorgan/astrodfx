@@ -10,17 +10,17 @@
 #include "ResourceType.h"
 #include "ResourceFactory.h"
 #include "ResourceStage.h"
+#include "Stream.h"
 
 namespace quasar {
 	namespace core {
 		class Resource {
 		protected:
 			String              mName;
-			String              mPath;
 			ResourceStage       mStage;
 			ResourceType        mType;
 			ResourceFactory     *mFactory;
-			SharedIOStream      mStream;
+			SharedStream        mStream;
 			PropertyMap         mProperties;
 
 		protected:
@@ -29,14 +29,14 @@ namespace quasar {
 
 		public:
 			Resource();
-			Resource(ResourceFactory *factory, const String &name, const String &path, const ResourceType &type = ResourceType::Unknown, const PropertyMap &properties = PropertyMap(), const SharedIOStream &stream = SharedIOStream());
+			Resource(ResourceFactory *factory, const String &name, const ResourceType &type = ResourceType::Unknown, const PropertyMap &properties = PropertyMap(), const SharedStream &stream = SharedStream());
 			virtual ~Resource() noexcept;
 
 			PropertyMap             getProperties() const noexcept;
 			void                    setProperties(const PropertyMap &props) noexcept;
 
-			SharedIOStream          getStream() const noexcept;
-			void                    setStream(SharedIOStream stream) noexcept;
+			SharedStream            getStream() const noexcept;
+			void                    setStream(SharedStream stream) noexcept;
 
 			ResourceFactory         *getFactory() noexcept;
 			const ResourceFactory   *getFactory() const noexcept;
@@ -48,8 +48,8 @@ namespace quasar {
 			const ResourceStage     &getStage() const noexcept;
 			void                    setStage(const ResourceStage &stage) noexcept;
 
-			const String            &getPath() const noexcept;
-			void                    setPath(const String &path) noexcept;
+			Path                    getPath() const noexcept;
+			void                    setPath(const Path &path) noexcept(false);
 
 			const ResourceType      &getType() const noexcept;
 			void                    setType(const ResourceType &type) noexcept;

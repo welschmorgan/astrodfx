@@ -16,8 +16,8 @@ namespace quasar {
 		{}
 
 		SharedResource
-		IniFactory::create(const String &name, const String &path, const StringMap<String> &properties, const SharedIOStream &stream) {
-			return std::make_shared<ConfigFile>(this, name, path, ResourceType::Config, properties, stream);
+		IniFactory::create(const String &name, const StringMap<String> &properties, const SharedStream &stream) {
+			return std::make_shared<ConfigFile>(this, name, ResourceType::Config, properties, stream);
 		}
 
 		void IniFactory::destroy(Resource &res) {

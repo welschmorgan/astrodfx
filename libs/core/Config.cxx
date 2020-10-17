@@ -665,9 +665,9 @@ namespace quasar {
 		ConfigFile::ConfigFile()
 				: Resource(), ConfigNode() {}
 
-		ConfigFile::ConfigFile(ResourceFactory *factory, const String &name, const String &path,
-		                       const ResourceType &type, const PropertyMap &props, const SharedIOStream &stream)
-				: Resource(factory, name, path, type == ResourceType::Unknown ? ResourceType::Config : type, props, stream)
+		ConfigFile::ConfigFile(ResourceFactory *factory, const String &name,
+		                       const ResourceType &type, const PropertyMap &props, const SharedStream &stream)
+				: Resource(factory, name, type == ResourceType::Unknown ? ResourceType::Config : type, props, stream)
 				, ConfigNode()
 		{}
 

@@ -69,7 +69,7 @@ namespace quasar {
 			bool                                removeFactory(SharedResourceFactory &f);
 
 			SharedResource                      loadResource(const Path &path, String name = String(), const StringMap<String> &properties = StringMap<String>());
-			SharedResource                      createResource(const String &name, const ResourceType &t, const StringMap<String> &properties = StringMap<String>());
+			SharedResource                      createResource(const String &name, const ResourceType &t, const StringMap<String> &properties = StringMap<String>(), const SharedStream &stream = SharedStream());
 			const SharedResourceList            &getResources() const noexcept;
 			SharedResource                      &addResource(const SharedResource &f);
 			SharedResource                      getResourceByName(const String &name, bool except = true) const;

@@ -18,7 +18,7 @@ namespace quasar {
 			ObjGenerator(const ObjGenerator &rhs) = delete;
 			virtual ~ObjGenerator() = default;
 
-			ObjGenerator       &operator=(const ObjGenerator &rhs) = delete;
+			ObjGenerator        &operator=(const ObjGenerator &rhs) = delete;
 
 			void                generate(const value_type &item, stream_type &to) override {
 				to << "# Generated using " << mName << " v" << mVersion << std::endl;
