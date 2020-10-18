@@ -55,7 +55,7 @@ namespace quasar {
 		void ObjParser::parseVertex(const token_list *tokens, typename token_list::citer_type &it) {
 			if (!mInComment) {
 				core::String str;
-				token_list args = getArgs(it, {ObjLexer::Number}, &str);
+				token_list args = getUntil(it, {ObjLexer::Number}, &str, {ObjLexer::NewLine});
 				if (args.size() != 3 && args.size() != 4) {
 					throw quasar::core::SyntaxError("invalid vertex declaration, should be 'v <x> <y> <z> [w]' in '" + str + "'", it->getLocation(), QUASAR_SOURCE_LOCATION);
 				}
@@ -65,7 +65,7 @@ namespace quasar {
 		void ObjParser::parseNormal(const token_list *tokens, typename token_list::citer_type &it) {
 			if (!mInComment) {
 				core::String str;
-				token_list args = getArgs(it, {ObjLexer::Number}, &str);
+				token_list args = getUntil(it, {ObjLexer::Number}, &str, {ObjLexer::NewLine});
 				if (args.size() != 3) {
 					throw quasar::core::SyntaxError("invalid normal declaration, should be 'vn <x> <y> <z>' in '" + str + "'", it->getLocation(), QUASAR_SOURCE_LOCATION);
 				}
@@ -75,7 +75,7 @@ namespace quasar {
 		void ObjParser::parseTextureCoord(const token_list *tokens, typename token_list::citer_type &it) {
 			if (!mInComment) {
 				core::String str;
-				token_list args = getArgs(it, {ObjLexer::Number}, &str);
+				token_list args = getUntil(it, {ObjLexer::Number}, &str, {ObjLexer::NewLine});
 				if (args.empty() || args.size() > 3) {
 					throw quasar::core::SyntaxError("invalid texture coord declaration, should be 'vt <u> [v] [w]' in '" + str + "'", it->getLocation(), QUASAR_SOURCE_LOCATION);
 				}
@@ -90,7 +90,7 @@ namespace quasar {
 		}
 		void ObjParser::parseFace(const token_list *tokens, typename token_list::citer_type &it) {
 			core::String str;
-			token_list args = getArgs(it, {ObjLexer::FaceElem, ObjLexer::Number}, &str);
+			token_list args = getUntil(it, {ObjLexer::FaceElem, ObjLexer::Number}, &str, {ObjLexer::NewLine});
 			if (args.size() != 3 && args.size() != 4) {
 				throw quasar::core::SyntaxError("invalid face declaration, should be 'f <v0> <v1> <v2>', 'f <v0> <v1> <v2> <v3>', 'f <v0>/<vn0> <v1>/<vn1> <v2>/<vn2>', 'f <v0>/<vn0>/<vt0> <v1>/<vn1>/<vt1> <v2>/<vn2>/<vt2>' or 'f <v0>//<vt0> <v1>//<vt1> <v2>//<vt2>' in '" + str + "'", it->getLocation(), QUASAR_SOURCE_LOCATION);
 			}
@@ -221,33 +221,6 @@ namespace quasar {
 			mCurrentGroup->getGeometry()->addTriangle(tri);
 		}
 
-		ObjParser::token_list ObjParser::getArgs(typename token_list::citer_type &it, const std::vector<core::Token> &argTypes, core::String *str) {
-			token_list args;
-			bool validArgType;
-			while (it->getType() != ObjLexer::NewLine.getType()) {
-				validArgType = argTypes.empty();
-				for (auto const &argType: argTypes) {
-					if (argType.getType() == it->getType()) {
-						validArgType = true;
-						break;
-					}
-				}
-				if (validArgType) {
-					args.add(*it);
-				}
-				if (str) {
-					*str += it->getText();
-				}
-#ifndef NDEBUG
-				if (validArgType) {
-					std::cout << "getArgs(" << args.size() << ") = " << *it << " / " << (str != nullptr ? *str : core::String()) << std::endl;
-				}
-#endif
-				it++;
-			}
-			return args;
-		}
-
 		unsigned long long ObjParser::convertRelativeIndexToAbsolute(long long idx, DataType type) {
 			long long ret = idx;
 			if (ret < 0) {
@@ -271,7 +244,7 @@ namespace quasar {
 		}
 
 		void ObjParser::parseMaterialImport(const token_list *tokens, typename token_list::citer_type &it) {
-			auto args = getArgs(it);
+			auto args = getUntil(it, {}, nullptr, {ObjLexer::NewLine});
 			if (args.empty()) {
 				throw core::SyntaxError("Cannot import material, no arguments given to 'mtllib'", it->getLocation(), QUASAR_SOURCE_LOCATION);
 			}
@@ -279,7 +252,7 @@ namespace quasar {
 		}
 
 		void ObjParser::parseMaterialUsage(const token_list *tokens, typename token_list::citer_type &it) {
-			auto args = getArgs(it);
+			auto args = getUntil(it, {}, nullptr, {ObjLexer::NewLine});
 			if (args.empty()) {
 				throw core::SyntaxError("Cannot use material, no arguments given to 'usemtl'", it->getLocation(), QUASAR_SOURCE_LOCATION);
 			}

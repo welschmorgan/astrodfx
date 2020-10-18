@@ -45,7 +45,7 @@ add_library(quasarfx-core
         Mesh.cxx Mesh.h
         Pointers.h
         Material.cxx Material.h
-        Stream.cxx Stream.h)
+        Stream.cxx Stream.h Texture.cxx Texture.h)
 
 target_link_libraries(quasarfx-core stdc++fs)
 

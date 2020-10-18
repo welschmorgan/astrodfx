@@ -25,6 +25,8 @@ namespace quasar {
 			static quasar::core::Token      Number;
 			static quasar::core::Token      NewLine;
 			static quasar::core::Token      Text;
+			static quasar::core::Token      Spectral;
+			static quasar::core::Token      XYZ;
 
 			static quasar::core::TokenList  All;
 

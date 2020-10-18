@@ -88,7 +88,19 @@ namespace quasar {
 				return *this;
 			}
 
-			std::vector<self_type>  split(const self_type &delim, unsigned policy = SPLIT_DEFAULT) const {
+			bool                    contains(const self_type &other) const {
+				return base_type::find(other) != base_type::npos;
+			}
+
+			bool                    contains(const value_type *other) const {
+				return base_type::find(other) != base_type::npos;
+			}
+
+			bool                    contains(value_type other) const {
+				return base_type::find(other) != base_type::npos;
+			}
+
+			std::vector<self_type>  split(const self_type &delim, int limit = -1, unsigned policy = SPLIT_DEFAULT) const {
 				std::vector<self_type>  ret;
 				ssize_t pos = -1, lastPos = 0;
 				auto addPart = [&]() {
@@ -97,10 +109,14 @@ namespace quasar {
 						part.trim();
 					}
 					if (!part.empty() || (policy & SPLIT_KEEP_EMPTY)) {
-						ret.push_back(part);
+						if (!ret.empty() && ret.size() >= limit) {
+							ret.back() += part;
+						} else {
+							ret.push_back(part);
+						}
 					}
 				};
-				while ((pos = base_type::find(delim, lastPos)) != self_type::npos) {
+				while ((limit == -1 || ret.size() < limit) && (pos = base_type::find(delim, lastPos)) != self_type::npos) {
 					addPart();
 					lastPos = pos + 1;
 				}

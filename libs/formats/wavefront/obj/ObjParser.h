@@ -81,8 +81,6 @@ namespace quasar {
 			                                               core::GeometryBuffer::quad_type::index_type vt[4],
 			                                               core::GeometryBuffer::quad_type::index_type vn[4]);
 
-			token_list                          getArgs(typename token_list::citer_type &it, const std::vector<core::Token> &argTypes = {ObjLexer::Number}, core::String *str = nullptr);
-
 			unsigned long long                  convertRelativeIndexToAbsolute(long long idx, DataType type);
 		};
 	}

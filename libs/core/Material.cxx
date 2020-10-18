@@ -38,6 +38,14 @@ namespace quasar {
 			mId = id;
 		}
 
+		SharedTexture TextureUnit::getTexture() const noexcept {
+			return mTexture;
+		}
+
+		void TextureUnit::setTexture(const SharedTexture &tex) noexcept {
+			mTexture = tex;
+		}
+
 		const TextureUnit   MaterialPass::DefaultTextureUnit(nullptr, "default");
 
 		MaterialPass::MaterialPass(Material *parent,
@@ -187,6 +195,24 @@ namespace quasar {
 			}
 		}
 
+		SharedTextureUnit MaterialPass::getFirstTextureUnit() const {
+			return mTextureUnits->front();
+		}
+
+		SharedTextureUnit MaterialPass::getLastTextureUnit() const {
+			return mTextureUnits->back();
+		}
+
+		SharedTextureUnit MaterialPass::addTextureUnit(const SharedTextureUnit &unit) {
+			if (hasTextureUnit(unit->getName())) {
+				throw std::runtime_error("Texture unit '" + unit->getName() + "' already created in material pass '" + mName + "' from material '" + getParentName() + "'");
+			}
+			unit->setId(mTextureUnits.size());
+			unit->setParent(this);
+			mTextureUnits.add(unit);
+			return mTextureUnits->back();
+		}
+
 		const MaterialPass       Material::DefaultPass(
 			nullptr,
 			"default",
@@ -260,6 +286,7 @@ namespace quasar {
 				throw std::runtime_error("Material '" + mName + "' already contains pass '" + pass->getName() + "' (id = " + std::to_string(pass->getId()) + ")");
 			}
 			pass->setId(mPasses.size() - 1);
+			pass->setParent(this);
 			mPasses.add(pass);
 			return mPasses->back();
 		}

@@ -19,7 +19,7 @@ TEST_CASE("MtlParser can parse simple material") {
 	MtlLexer l;
 	SharedMaterialList lib;
 	MemoryStream stream;
-	stream << "newmtl material0001" << std::endl;
+	stream << "newmtl material01:pass01" << std::endl;
 	stream << "Ka 0.000 1.000 0.000" << std::endl;
 	stream << "Kd 0.000 0.000 1.000" << std::endl;
 	stream << "Ks 1.000 0.000 0.000" << std::endl;
@@ -27,7 +27,7 @@ TEST_CASE("MtlParser can parse simple material") {
 	stream << "illum 2" << std::endl;
 	p.parse(l.analyse(stream), lib);
 	REQUIRE(lib.size() == 1);
-	REQUIRE(lib[0]->getName() == "material0001");
+	REQUIRE(lib[0]->getName() == "material01");
 	REQUIRE(lib[0]->getAmbient() == Color4f(0, 1, 0));
 	REQUIRE(lib[0]->getDiffuse() == Color4f(0, 0, 1));
 	REQUIRE(lib[0]->getSpecular() == Color4f(1, 0, 0));

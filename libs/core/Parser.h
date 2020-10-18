@@ -165,6 +165,33 @@ namespace quasar {
 				mAnyTokenFunc = anyFunc;
 			}
 
+			token_list              getUntil(typename token_list::citer_type &it, const Collection<core::Token> &include, core::String *fullText, const Collection<core::Token> &stoppers = Collection<core::Token>()) {
+				token_list args;
+				bool validArgType;
+				while (!stoppers.includes(*it)) {
+					validArgType = include.empty();
+					for (auto const &argType: include) {
+						if (argType.getType() == it->getType()) {
+							validArgType = true;
+							break;
+						}
+					}
+					if (validArgType) {
+						args.add(*it);
+					}
+					if (fullText) {
+						*fullText += it->getText();
+					}
+#ifndef NDEBUG
+					if (validArgType) {
+						std::cout << "\ttoken[" << args.size() << "] = " << *it << (fullText != nullptr ? (" / " + *fullText) : core::String()) << std::endl;
+					}
+#endif
+					it++;
+				}
+				return args;
+			}
+
 		protected:
 			virtual void            defaultParseFunc(const token_list *tokens, const typename token_list::citer_type &it) {
 				throw std::runtime_error("missing parser_fn for token '" + it->getTrigger() + "'");

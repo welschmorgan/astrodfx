@@ -10,14 +10,17 @@
 #include "Color.h"
 #include "Lexer.h"
 #include "Parser.h"
+#include "Texture.h"
 
 namespace quasar {
 	namespace core {
 		class MaterialPass;
 		class TextureUnit {
+		protected:
 			MaterialPass                    *mParent;
 			ssize_t                         mId;
 			String                          mName;
+			SharedTexture                   mTexture;
 		public:
 			TextureUnit(MaterialPass *parent = nullptr, const String &name = String());
 			TextureUnit(const TextureUnit &rhs) = default;
@@ -25,8 +28,6 @@ namespace quasar {
 
 			TextureUnit                     &operator=(const TextureUnit &rhs) = default;
 
-			const String                    &getName() const noexcept;
-			void                            setName(const String &name) noexcept;
 
 			MaterialPass                    *getParent() noexcept;
 			const MaterialPass              *getParent() const noexcept;
@@ -34,6 +35,12 @@ namespace quasar {
 
 			ssize_t                         getId() const noexcept;
 			void                            setId(ssize_t id) noexcept;
+
+			const String                    &getName() const noexcept;
+			void                            setName(const String &name) noexcept;
+
+			SharedTexture                   getTexture() const noexcept;
+			void                            setTexture(const SharedTexture &tex) noexcept;
 		};
 
 		using SharedTextureUnit = SharedPtr<TextureUnit>;
@@ -75,6 +82,11 @@ namespace quasar {
 
 			const SharedTextureUnitList     &getTextureUnits() const;
 			void                            setTextureUnits(const SharedTextureUnitList &units);
+			template<typename ...Args>
+			SharedTextureUnit               createTextureUnit(Args ...args) {
+				return addTextureUnit(std::make_shared<TextureUnit>(this, args...));
+			}
+			SharedTextureUnit               addTextureUnit(const SharedTextureUnit &unit);
 			SharedTextureUnit               getTextureUnit(const String &name) const;
 			SharedTextureUnit               getTextureUnit(ssize_t id) const;
 			bool                            hasTextureUnit(const String &name) const;
@@ -82,6 +94,9 @@ namespace quasar {
 			void                            removeTextureUnit(const String &name);
 			void                            removeTextureUnit(ssize_t id);
 			void                            clearTextureUnits();
+
+			SharedTextureUnit               getFirstTextureUnit() const;
+			SharedTextureUnit               getLastTextureUnit() const;
 
 			const Color4f                   &getAmbient() const;
 			void                            setAmbient(const Color4f &ambient);
@@ -151,7 +166,7 @@ namespace quasar {
 			bool                            hasPass(ssize_t id) const;
 			template<typename ...Args>
 			SharedMaterialPass              createPass(Args ...args) {
-				return addPass(std::make_shared(std::forward(args...)));
+				return addPass(std::make_shared(this, args...));
 			}
 			SharedMaterialPass              addPass(const SharedMaterialPass &pass);
 			void                            removePass(const String &name);

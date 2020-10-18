@@ -208,10 +208,14 @@ namespace quasar {
 			Color(const Color &rhs): base_type(rhs), r(base_type::mData[0]) {}
 			virtual ~Color() noexcept = default;
 
-			Color                  &operator=(const Color &rhs) {
+			Color                       &operator=(const Color &rhs) {
 				base_type::operator=(rhs);
 				r = base_type::mData[0];
 				return *this;
+			}
+
+			Color<T, 2>                 widen() const {
+				return Color<T, 2>(r, value_type(0));
 			}
 		};
 
@@ -233,11 +237,17 @@ namespace quasar {
 			Color(const Color &rhs): base_type(rhs), r(base_type::mData[0]), g(base_type::mData[1]) {}
 			virtual ~Color() noexcept = default;
 
-			Color                  &operator=(const Color &rhs) {
+			Color                       &operator=(const Color &rhs) {
 				base_type::operator=(rhs);
 				r = base_type::mData[0];
 				g = base_type::mData[1];
 				return *this;
+			}
+			Color<T, 3>                 widen() const {
+				return Color<T, 3>(r, g, value_type(0));
+			}
+			Color<T, 1>                 narrow() const {
+				return Color<T, 1>(r);
 			}
 		};
 
@@ -267,6 +277,12 @@ namespace quasar {
 				b = base_type::mData[2];
 				return *this;
 			}
+			Color<T, 4>                 widen() const {
+				return Color<T, 4>(r, g, b, value_type(1));
+			}
+			Color<T, 2>                 narrow() const {
+				return Color<T, 2>(r, g);
+			}
 		};
 
 		template<typename T>
@@ -283,7 +299,7 @@ namespace quasar {
 			value_type                  &b;
 			value_type                  &a;
 		public:
-			explicit Color(value_type r_ = value_type(), value_type g_ = value_type(), value_type b_ = value_type(), value_type a_ = value_type())
+			explicit Color(value_type r_ = value_type(), value_type g_ = value_type(), value_type b_ = value_type(), value_type a_ = value_type(1))
 				: base_type(), r(base_type::mData[0]), g(base_type::mData[1]), b(base_type::mData[2]), a(base_type::mData[3])
 			{ r = r_; g = g_; b = b_; a = a_; }
 			Color(const Color &rhs): base_type(rhs), r(base_type::mData[0]), g(base_type::mData[1]), b(base_type::mData[2]), a(base_type::mData[3]) {}
@@ -296,6 +312,10 @@ namespace quasar {
 				b = base_type::mData[2];
 				a = base_type::mData[3];
 				return *this;
+			}
+
+			Color<T, 3>                 narrow() const {
+				return Color<T, 3>(r, g, b);
 			}
 		};
 

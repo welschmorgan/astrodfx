@@ -23,9 +23,15 @@ namespace quasar {
 		quasar::core::Token      quasar::formats::MtlLexer::NewLine(10, "new-line", "\n", TF_AGGREGATE);
 		quasar::core::Token      quasar::formats::MtlLexer::Space(11, "space", "\\s+", TF_REGEX | TF_AGGREGATE);
 		quasar::core::Token      quasar::formats::MtlLexer::Text(12, "text", ".", TF_REGEX | TF_AGGREGATE);
+		quasar::core::Token      quasar::formats::MtlLexer::Spectral(13, "spectral", "spectral\\b", TF_REGEX);
+		quasar::core::Token      quasar::formats::MtlLexer::XYZ(14, "xyz", "xyz\\b", TF_REGEX);
 
 		quasar::core::TokenList  quasar::formats::MtlLexer::All({
-			Comment, Material, ColorAmbient, ColorDiffuse, ColorSpecular, ColorSpecularPower, IlluminationModel, NewLine, Number, Space, Text
+			Comment, Material, ColorAmbient, ColorDiffuse, ColorSpecular, ColorSpecularPower,
+			// TODO Spectral and xyz color modes would make 'newmtl' error out if the name
+			// TODO of the material is 'spectral' or 'xyz' (which is unlikely, but meh).
+			Spectral, XYZ,
+			IlluminationModel, NewLine, Number, Space, Text
 		});
 
 		MtlLexer::MtlLexer()
