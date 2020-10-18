@@ -11,17 +11,16 @@
 #include <core/Config.h>
 #include <core/GeometryBuffer.h>
 #include <core/Mesh.h>
-#include <core/MeshParser.h>
 #include "ObjLexer.h"
 
 namespace quasar {
 	namespace formats {
 		class ObjParser
-			: public core::MeshParser {
+			: public core::BasicParser<Char, core::Mesh, core::BasicLexer<Char, core::BasicToken<Char>>> {
 		public:
 			using lexer_type                    = ObjLexer;
 			using self_type                     = ObjParser;
-			using base_type                     = core::BasicParser<Char, core::Mesh, lexer_type>;
+			using base_type                     = core::BasicParser<Char, core::Mesh, core::BasicLexer<Char, core::BasicToken<Char>>>;
 			using token_type                    = typename base_type::token_type;
 			using id_type                       = typename token_type::id_type;
 			using token_list                    = typename base_type::token_list;
@@ -60,6 +59,8 @@ namespace quasar {
 			void                                parseNormal(const token_list *tokens, typename token_list::citer_type &it);
 			void                                parseTextureCoord(const token_list *tokens, typename token_list::citer_type &it);
 			void                                parseFreeFormVertex(const token_list *tokens, typename token_list::citer_type &it);
+			void                                parseMaterialImport(const token_list *tokens, typename token_list::citer_type &it);
+			void                                parseMaterialUsage(const token_list *tokens, typename token_list::citer_type &it);
 			void                                parseFace(const token_list *tokens, typename token_list::citer_type &it);
 			void                                parseLine(const token_list *tokens, typename token_list::citer_type &it);
 			void                                parseNumber(const token_list *tokens, typename token_list::citer_type &it);

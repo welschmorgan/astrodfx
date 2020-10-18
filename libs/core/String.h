@@ -17,11 +17,11 @@ using Char = wchar_t;
 # define T(x) L##x
 # else
 #  include <string>
-#include "Charsets.h"
-
 using Char = char;
-# define T(x) x
+#  define T(x) x
 # endif
+
+#  include "Charsets.h"
 
 template class std::basic_string<char>;
 template class std::basic_string<wchar_t>;
@@ -117,6 +117,13 @@ namespace quasar {
 			BasicString<CharT> ltrimmed(const BasicString<CharT> &charset = BasicCharsets<CharT>::Whitespaces) const;
 			BasicString<CharT> rtrimmed(const BasicString<CharT> &charset = BasicCharsets<CharT>::Whitespaces) const;
 			BasicString<CharT> trimmed(const BasicString<CharT> &charset = BasicCharsets<CharT>::Whitespaces) const;
+
+			BasicString<CharT> &lunquote();
+			BasicString<CharT> &runquote();
+			BasicString<CharT> &unquote();
+			BasicString<CharT> lunquoted() const;
+			BasicString<CharT> runquoted() const;
+			BasicString<CharT> unquoted() const;
 
 			self_type           &rpad(size_t num, const BasicString<CharT> &charset = BasicCharsets<CharT>::Space) {
 				if (base_type::size() < num) {

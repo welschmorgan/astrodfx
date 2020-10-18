@@ -208,7 +208,11 @@ namespace quasar {
 			Color(const Color &rhs): base_type(rhs), r(base_type::mData[0]) {}
 			virtual ~Color() noexcept = default;
 
-			Color                  &operator=(const Color &rhs) = default;
+			Color                  &operator=(const Color &rhs) {
+				base_type::operator=(rhs);
+				r = base_type::mData[0];
+				return *this;
+			}
 		};
 
 
@@ -229,7 +233,12 @@ namespace quasar {
 			Color(const Color &rhs): base_type(rhs), r(base_type::mData[0]), g(base_type::mData[1]) {}
 			virtual ~Color() noexcept = default;
 
-			Color                  &operator=(const Color &rhs) = default;
+			Color                  &operator=(const Color &rhs) {
+				base_type::operator=(rhs);
+				r = base_type::mData[0];
+				g = base_type::mData[1];
+				return *this;
+			}
 		};
 
 		template<typename T>
@@ -251,7 +260,13 @@ namespace quasar {
 			Color(const Color &rhs): base_type(rhs), r(base_type::mData[0]), g(base_type::mData[1]), b(base_type::mData[2]) {}
 			virtual ~Color() noexcept = default;
 
-			Color                  &operator=(const Color &rhs) = default;
+			Color                  &operator=(const Color &rhs) {
+				base_type::operator=(rhs);
+				r = base_type::mData[0];
+				g = base_type::mData[1];
+				b = base_type::mData[2];
+				return *this;
+			}
 		};
 
 		template<typename T>
@@ -274,7 +289,14 @@ namespace quasar {
 			Color(const Color &rhs): base_type(rhs), r(base_type::mData[0]), g(base_type::mData[1]), b(base_type::mData[2]), a(base_type::mData[3]) {}
 			virtual ~Color() noexcept = default;
 
-			Color                       &operator=(const Color &rhs) = default;
+			Color                  &operator=(const Color &rhs) {
+				base_type::operator=(rhs);
+				r = base_type::mData[0];
+				g = base_type::mData[1];
+				b = base_type::mData[2];
+				a = base_type::mData[3];
+				return *this;
+			}
 		};
 
 		template<typename T, unsigned char N>

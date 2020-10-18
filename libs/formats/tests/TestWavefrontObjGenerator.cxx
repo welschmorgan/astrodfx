@@ -5,11 +5,17 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "doctest.h"
-#include <formats/obj/ObjGenerator.h>
+#include <formats/wavefront/obj/ObjGenerator.h>
 
 using quasar::formats::ObjGenerator;
 using quasar::core::StringStream;
 using quasar::core::Mesh;
+using quasar::core::Material;
+using quasar::core::String;
+using quasar::core::Path;
+using quasar::core::ResourceType;
+using quasar::core::PropertyMap;
+using quasar::core::MemoryStream;
 using quasar::math::Vec4f;
 using quasar::math::Vec3f;
 
@@ -19,6 +25,7 @@ TEST_CASE("ObjGenerator can parse simple cube definition") {
 	Mesh mesh("test-model");
 
 	// root child 0
+	mesh.setMaterial(std::make_shared<Material>(nullptr, "Material0001", PropertyMap(), std::make_shared<MemoryStream>(String(), Path("test-mtl.lib"))));
 	auto child0 = mesh.createSubMesh("child0");
 	auto child0Geo = child0->getGeometry();
 

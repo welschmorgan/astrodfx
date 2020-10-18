@@ -30,10 +30,14 @@ namespace quasar {
 			static const string_type    Space;
 			static const string_type    NewLine;
 			static const string_type    Whitespaces;
+			static const string_type    Quotes;
 		};
 
 		template<> const BasicString<char>      BasicCharsets<char>::Whitespaces;
 		template<> const BasicString<wchar_t>   BasicCharsets<wchar_t>::Whitespaces;
+
+		template<> const BasicString<char>      BasicCharsets<char>::Quotes;
+		template<> const BasicString<wchar_t>   BasicCharsets<wchar_t>::Quotes;
 
 		template<> const BasicString<char>      BasicCharsets<char>::Tab;
 		template<> const BasicString<wchar_t>   BasicCharsets<wchar_t>::Tab;

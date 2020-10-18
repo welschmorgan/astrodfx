@@ -73,9 +73,6 @@ namespace quasar {
 			void                    reset();
 		};
 
-		class MeshParser;
-
-
 		template<typename CharT>
 		class BasicToken;
 
@@ -101,7 +98,6 @@ namespace quasar {
 			void                setName(const String &name);
 			const String        &getName() const;
 
-			friend class MeshParser;
 			friend class BasicParser<Char, Mesh, BasicLexer<Char, BasicToken<Char>>>;
 		};
 	}

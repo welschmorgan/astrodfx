@@ -18,6 +18,8 @@ namespace quasar {
 			static quasar::core::Token      Normal;
 			static quasar::core::Token      TextureCoord;
 			static quasar::core::Token      FreeFormVertex;
+			static quasar::core::Token      MaterialImport;
+			static quasar::core::Token      MaterialUsage;
 			static quasar::core::Token      Face;
 			static quasar::core::Token      Line;
 			static quasar::core::Token      Object;

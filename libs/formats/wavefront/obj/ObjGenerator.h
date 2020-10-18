@@ -28,7 +28,10 @@ namespace quasar {
 				to << std::endl;
 				core::StringVector materials;
 				for (auto const& material: getUsedMaterials(&item, materials)) {
-					to << "mtblib " + material;
+					to << "mtblib " + material << std::endl;
+				}
+				if (!materials.empty()) {
+					to << std::endl;
 				}
 				generateSubMesh(&item, &item, to);
 			}
@@ -95,7 +98,12 @@ namespace quasar {
 
 			core::StringVector  &getUsedMaterials(const core::SubMesh *sub, core::StringVector &ret) {
 				if (sub->getMaterial()) {
-					ret.add(sub->getMaterial()->getName());
+					core::SharedStream stream = sub->getMaterial()->getStream();
+					core::String name = sub->getMaterial()->getName();
+					if (stream) {
+						name = stream->getPath().base();
+					}
+					ret.add(sub->getMaterial()->getPath().base());
 				}
 				for (auto const &child: sub->getSubMeshes()) {
 					getUsedMaterials(child.get(), ret);

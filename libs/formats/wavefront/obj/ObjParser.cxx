@@ -3,25 +3,28 @@
 //
 
 #include <core/Location.h>
+#include <core/Parser.h>
 #include "ObjParser.h"
 
 namespace quasar {
 	namespace formats {
 		ObjParser::ObjParser()
-			: MeshParser({
-	            {lexer_type::Space.getType(), std::bind(&self_type::parseSpace, this, std::placeholders::_1, std::placeholders::_2)},
-                {lexer_type::Comment.getType(), std::bind(&self_type::parseComment, this, std::placeholders::_1, std::placeholders::_2)},
-                {lexer_type::Vertex.getType(), std::bind(&self_type::parseVertex, this, std::placeholders::_1, std::placeholders::_2)},
-                {lexer_type::Normal.getType(), std::bind(&self_type::parseNormal, this, std::placeholders::_1, std::placeholders::_2)},
-                {lexer_type::TextureCoord.getType(), std::bind(&self_type::parseTextureCoord, this, std::placeholders::_1, std::placeholders::_2)},
-                {lexer_type::FreeFormVertex.getType(), std::bind(&self_type::parseFreeFormVertex, this, std::placeholders::_1, std::placeholders::_2)},
-                {lexer_type::Face.getType(), std::bind(&self_type::parseFace, this, std::placeholders::_1, std::placeholders::_2)},
-                {lexer_type::Line.getType(), std::bind(&self_type::parseLine, this, std::placeholders::_1, std::placeholders::_2)},
-                {lexer_type::Number.getType(), std::bind(&self_type::parseNumber, this, std::placeholders::_1, std::placeholders::_2)},
-                {lexer_type::Object.getType(), std::bind(&self_type::parseObject, this, std::placeholders::_1, std::placeholders::_2)},
-                {lexer_type::Group.getType(), std::bind(&self_type::parseGroup, this, std::placeholders::_1, std::placeholders::_2)},
-                {lexer_type::FaceElem.getType(), std::bind(&self_type::parseFaceElem, this, std::placeholders::_1, std::placeholders::_2)},
-                {lexer_type::NewLine.getType(), std::bind(&self_type::parseNewLine, this, std::placeholders::_1, std::placeholders::_2)},
+			: base_type({
+	            {lexer_type::Space, std::bind(&self_type::parseSpace, this, std::placeholders::_1, std::placeholders::_2)},
+                {lexer_type::Comment, std::bind(&self_type::parseComment, this, std::placeholders::_1, std::placeholders::_2)},
+                {lexer_type::Vertex, std::bind(&self_type::parseVertex, this, std::placeholders::_1, std::placeholders::_2)},
+                {lexer_type::Normal, std::bind(&self_type::parseNormal, this, std::placeholders::_1, std::placeholders::_2)},
+                {lexer_type::TextureCoord, std::bind(&self_type::parseTextureCoord, this, std::placeholders::_1, std::placeholders::_2)},
+	            {lexer_type::FreeFormVertex, std::bind(&self_type::parseFreeFormVertex, this, std::placeholders::_1, std::placeholders::_2)},
+	            {lexer_type::MaterialImport, std::bind(&self_type::parseMaterialImport, this, std::placeholders::_1, std::placeholders::_2)},
+	            {lexer_type::MaterialUsage, std::bind(&self_type::parseMaterialUsage, this, std::placeholders::_1, std::placeholders::_2)},
+                {lexer_type::Face, std::bind(&self_type::parseFace, this, std::placeholders::_1, std::placeholders::_2)},
+                {lexer_type::Line, std::bind(&self_type::parseLine, this, std::placeholders::_1, std::placeholders::_2)},
+                {lexer_type::Number, std::bind(&self_type::parseNumber, this, std::placeholders::_1, std::placeholders::_2)},
+                {lexer_type::Object, std::bind(&self_type::parseObject, this, std::placeholders::_1, std::placeholders::_2)},
+                {lexer_type::Group, std::bind(&self_type::parseGroup, this, std::placeholders::_1, std::placeholders::_2)},
+                {lexer_type::FaceElem, std::bind(&self_type::parseFaceElem, this, std::placeholders::_1, std::placeholders::_2)},
+                {lexer_type::NewLine, std::bind(&self_type::parseNewLine, this, std::placeholders::_1, std::placeholders::_2)},
             })
             , mInComment(false)
 			, mRootObject(nullptr)
@@ -32,7 +35,7 @@ namespace quasar {
 		}
 
 		void ObjParser::reset() {
-			MeshParser::reset();
+			base_type::reset();
 			mInComment = false;
 			mRootObject = &mResult;
 			mCurrentObject = &mResult;
@@ -40,7 +43,7 @@ namespace quasar {
 		}
 
 		void ObjParser::parse(const token_list &tokens, core::Mesh &into) {
-			MeshParser::parse(tokens, into);
+			base_type::parse(tokens, into);
 		}
 
 		void ObjParser::parseSpace(const token_list *tokens, typename token_list::citer_type &it) {
@@ -222,7 +225,7 @@ namespace quasar {
 			token_list args;
 			bool validArgType;
 			while (it->getType() != ObjLexer::NewLine.getType()) {
-				validArgType = false;
+				validArgType = argTypes.empty();
 				for (auto const &argType: argTypes) {
 					if (argType.getType() == it->getType()) {
 						validArgType = true;
@@ -265,6 +268,22 @@ namespace quasar {
 				ret--;
 			}
 			return (unsigned long long)ret;
+		}
+
+		void ObjParser::parseMaterialImport(const token_list *tokens, typename token_list::citer_type &it) {
+			auto args = getArgs(it);
+			if (args.empty()) {
+				throw core::SyntaxError("Cannot import material, no arguments given to 'mtllib'", it->getLocation(), QUASAR_SOURCE_LOCATION);
+			}
+			std::cout << "Importing material: " << args.at(0) << std::endl;
+		}
+
+		void ObjParser::parseMaterialUsage(const token_list *tokens, typename token_list::citer_type &it) {
+			auto args = getArgs(it);
+			if (args.empty()) {
+				throw core::SyntaxError("Cannot use material, no arguments given to 'usemtl'", it->getLocation(), QUASAR_SOURCE_LOCATION);
+			}
+			std::cout << "Using material: " << args.at(0) << std::endl;
 		}
 
 	}

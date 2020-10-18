@@ -105,19 +105,19 @@ namespace quasar {
 			}
 
 			BasicToken(const BasicToken &rhs)
-				: mStream(rhs.mStream)
-				, mType(rhs.mType)
-				, mName(rhs.mName)
+				: mStream(nullptr)
+				, mType(-1)
+				, mName()
 				, mId(-1)
-				, mFlags(rhs.mFlags)
-				, mTrigger(rhs.mTrigger)
-				, mText(rhs.mText)
-				, mOffset(rhs.mOffset)
-				, mPath(rhs.mPath)
-				, mLine(rhs.mLine)
-				, mColumn(rhs.mColumn)
-				, mParent(rhs.mParent)
-			{}
+				, mFlags(0)
+				, mTrigger()
+				, mText()
+				, mOffset(-1)
+				, mPath()
+				, mLine(0)
+				, mColumn(0)
+				, mParent(nullptr)
+			{ *this = rhs; }
 
 			virtual ~BasicToken() noexcept = default;
 
@@ -138,11 +138,25 @@ namespace quasar {
 			}
 
 			bool                    operator==(const BasicToken &rhs) const noexcept {
-				return mId == rhs.mId && mStream == rhs.mStream && mTrigger == rhs.mTrigger && mText == rhs.mText && mOffset == rhs.mOffset && mType == rhs.mType && mLine == rhs.mLine && mPath == rhs.mPath;
+				return mType == rhs.mType;
 			}
 
 			bool                    operator!=(const BasicToken &rhs) const noexcept {
 				return !(*this == rhs);
+			}
+
+			bool                    operator<(const BasicToken &rhs) const noexcept {
+				return mType < rhs.mType;
+			}
+			bool                    operator<=(const BasicToken &rhs) const noexcept {
+				return mType <= rhs.mType;
+			}
+
+			bool                    operator>(const BasicToken &rhs) const noexcept {
+				return mType > rhs.mType;
+			}
+			bool                    operator>=(const BasicToken &rhs) const noexcept {
+				return mType >= rhs.mType;
 			}
 
 			unsigned int            getFlags() const noexcept { return mFlags; }

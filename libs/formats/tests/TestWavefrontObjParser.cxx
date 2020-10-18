@@ -5,7 +5,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "doctest.h"
-#include <formats/obj/ObjParser.h>
+#include <formats/wavefront/obj/ObjParser.h>
 #include <core/GeometryBuffer.h>
 
 using quasar::formats::ObjParser;

@@ -8,18 +8,18 @@ namespace quasar {
 	namespace formats {
 		JsonParser::JsonParser()
 				: base_type({
-						            {lexer_type::ObjectOpen.getType(), std::bind(&self_type::parseObjectOpen, this, std::placeholders::_1, std::placeholders::_2)},
-						            {lexer_type::ObjectClose.getType(), std::bind(&self_type::parseObjectClose, this, std::placeholders::_1, std::placeholders::_2)},
-						            {lexer_type::ArrayOpen.getType(), std::bind(&self_type::parseArrayOpen, this, std::placeholders::_1, std::placeholders::_2)},
-						            {lexer_type::ArrayClose.getType(), std::bind(&self_type::parseArrayClose, this, std::placeholders::_1, std::placeholders::_2)},
-						            {lexer_type::CommentStart.getType(), std::bind(&self_type::parseCommentStart, this, std::placeholders::_1, std::placeholders::_2)},
-						            {lexer_type::CommentEnd.getType(), std::bind(&self_type::parseCommentEnd, this, std::placeholders::_1, std::placeholders::_2)},
-						            {lexer_type::Assignment.getType(), std::bind(&self_type::parseAssignment, this, std::placeholders::_1, std::placeholders::_2)},
-						            {lexer_type::Comma.getType(), std::bind(&self_type::parseComma, this, std::placeholders::_1, std::placeholders::_2)},
-						            {lexer_type::DoubleQuote.getType(), std::bind(&self_type::parseDoubleQuote, this, std::placeholders::_1, std::placeholders::_2)},
-						            {lexer_type::Reference.getType(), std::bind(&self_type::parseReference, this, std::placeholders::_1, std::placeholders::_2)},
-						            {lexer_type::Text.getType(), std::bind(&self_type::parseText, this, std::placeholders::_1, std::placeholders::_2)},
-				            })
+				    {lexer_type::ObjectOpen, std::bind(&self_type::parseObjectOpen, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::ObjectClose, std::bind(&self_type::parseObjectClose, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::ArrayOpen, std::bind(&self_type::parseArrayOpen, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::ArrayClose, std::bind(&self_type::parseArrayClose, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::CommentStart, std::bind(&self_type::parseCommentStart, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::CommentEnd, std::bind(&self_type::parseCommentEnd, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::Assignment, std::bind(&self_type::parseAssignment, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::Comma, std::bind(&self_type::parseComma, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::DoubleQuote, std::bind(&self_type::parseDoubleQuote, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::Reference, std::bind(&self_type::parseReference, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::Text, std::bind(&self_type::parseText, this, std::placeholders::_1, std::placeholders::_2)},
+				})
 				, mCurNode(nullptr)
 				, mInComment(false)
 				, mInSection(false)

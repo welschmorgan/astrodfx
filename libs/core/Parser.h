@@ -84,7 +84,7 @@ namespace quasar {
 			using result_type       = ResultT;
 
 			using parse_fn_type     = std::function<void(const token_list *, typename token_list::citer_type &)>;
-			using parse_fn_map      = std::map<typename token_type::id_type, parse_fn_type>;
+			using parse_fn_map      = std::map<token_type, parse_fn_type>;
 
 		protected:
 			result_type             mResult;
@@ -129,7 +129,7 @@ namespace quasar {
 #ifndef NDEBUG
 					std::cout << "Parser::parse | " << *it << std::endl;
 #endif
-					auto parse_fn = mFuncs.find(it->getType());
+					auto parse_fn = mFuncs.find(*it);
 					if (mAnyTokenFunc) {
 						mAnyTokenFunc(&tokens, it);
 					}
