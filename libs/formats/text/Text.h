@@ -15,7 +15,7 @@ namespace quasar {
 			String          mContent;
 		public:
 			Text();
-			Text(ResourceFactory *factory, const String &name, const String &path, const ResourceType &type = ResourceType::Unknown, const PropertyMap &props = PropertyMap(), const SharedIOStream &stream = SharedIOStream());
+			Text(ResourceFactory *factory, const String &name, const ResourceType &type = ResourceType::Unknown, const PropertyMap &props = PropertyMap(), const SharedStream &stream = SharedStream());
 			Text(const Text &rhs) = delete;
 			virtual ~Text() noexcept = default;
 

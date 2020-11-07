@@ -120,18 +120,16 @@ namespace quasar {
 			if (name.empty()) {
 				name = path.base();
 			}
-			SharedIOStream stream;
+			SharedStream stream;
 			try {
-				stream = SharedIOStream(
-					new std::fstream(path.absolute(), std::ios::in | std::ios::out | std::ios::binary)
-				);
+				stream.reset(new FileStream(path, std::ios::in | std::ios::out | std::ios::binary));
 			} catch (std::exception &ex) {
 				throw std::runtime_error(std::string(path.begin(), path.end()) + ": failed open stream, " + ex.what());
 			}
 			for (auto fac: facs) {
 				try {
 //					std::cout << "try loading with " << fac->getName() << std::endl;
-					auto res = fac->create(name, path.absolute(), properties, stream);
+					auto res = fac->create(name, properties, stream);
 					if (res->getStage() < ResourceStage::Created) {
 						res->create();
 					}
@@ -148,11 +146,11 @@ namespace quasar {
 			return SharedResource();
 		}
 
-		SharedResource ResourceManager::createResource(const String &name, const ResourceType &t, const StringMap<String> &properties) {
+		SharedResource ResourceManager::createResource(const String &name, const ResourceType &t, const StringMap<String> &properties, const SharedStream &stream) {
 			auto facs = getFactoriesByType(t);
 			for (auto fac: facs) {
 				try {
-					auto res = fac->create(name, "", properties, SharedIOStream());
+					auto res = fac->create(name, properties, SharedStream());
 					auto &ret = this->addResource(res);
 					if (ret->getStage() < ResourceStage::Created) {
 						ret->create();

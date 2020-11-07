@@ -10,6 +10,7 @@
 #include "ResourceType.h"
 #include "ResourcePriority.h"
 #include "Serializer.h"
+#include "Stream.h"
 
 namespace quasar {
 	namespace core {
@@ -35,7 +36,7 @@ namespace quasar {
 			virtual void                        initialize();
 			virtual void                        shutdown();
 
-			virtual SharedResource              create(const String &name, const String &path, const StringMap<String> &properties, const SharedIOStream &stream) = 0;
+			virtual SharedResource              create(const String &name, const StringMap<String> &properties, const SharedStream &stream) = 0;
 			virtual void                        load(Resource &res, IStream &from) = 0;
 			virtual void                        save(Resource &res, OStream &to) = 0;
 			virtual void                        destroy(Resource &res) = 0;

@@ -13,7 +13,7 @@ namespace quasar {
 	namespace formats {
 		class JsonGenerator: public core::BasicGenerator<Char, core::ConfigNode> {
 		public:
-			JsonGenerator() = default;
+			JsonGenerator(): BasicGenerator("JSON", "1.0") {}
 			JsonGenerator(const JsonGenerator &rhs) = delete;
 			virtual ~JsonGenerator() = default;
 

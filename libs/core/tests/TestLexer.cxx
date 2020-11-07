@@ -23,7 +23,7 @@ TEST_CASE("Lexer can split words") {
 	std::stringstream       ss;
 	ss << "Hello, this.is a test!";
 	lex.setSeparators(token_list({
-		token(0, ","), token(0, "."), token(0, " "), token(0, "!")
+		token(0, "comma", ","), token(0, "dot", "."), token(0, "space", " "), token(0, "exlamation mark", "!")
 	}));
 	lex.analyse(ss, tokens);
 
@@ -59,7 +59,7 @@ TEST_CASE("Lexer can split words using regexes") {
 	std::stringstream       ss;
 	ss << "Hello, this.is a test!";
 	lex.setSeparators(token_list({
-	    token(0, "\\w", TF_REGEX | TF_AGGREGATE), token(1, "\\W", TF_REGEX | TF_AGGREGATE)
+	    token(0, "word", "\\w", TF_REGEX | TF_AGGREGATE), token(1, "non-word", "\\W", TF_REGEX | TF_AGGREGATE)
 	}));
 	lex.analyse(ss, tokens);
 	REQUIRE(tokens.size() == 10);

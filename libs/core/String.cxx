@@ -43,6 +43,26 @@ namespace quasar {
 			BasicString<CharT> ret(*this);
 			return ret.trim(charset);
 		}
+
+		template<typename CharT> BasicString<CharT> &BasicString<CharT>::lunquote() {
+			return ltrim().ltrim(BasicCharsets<CharT>::Quotes);
+		}
+		template<typename CharT> BasicString<CharT> &BasicString<CharT>::runquote() {
+			return rtrim().rtrim(BasicCharsets<CharT>::Quotes);
+		}
+		template<typename CharT> BasicString<CharT> &BasicString<CharT>::unquote() {
+			return trim().trim(BasicCharsets<CharT>::Quotes);
+		}
+		template<typename CharT> BasicString<CharT> BasicString<CharT>::lunquoted() const {
+			return ltrimmed().ltrimmed(BasicCharsets<CharT>::Quotes);
+		}
+		template<typename CharT> BasicString<CharT> BasicString<CharT>::runquoted() const {
+			return rtrimmed().rtrimmed(BasicCharsets<CharT>::Quotes);
+		}
+		template<typename CharT> BasicString<CharT> BasicString<CharT>::unquoted() const {
+			return trimmed().trimmed(BasicCharsets<CharT>::Quotes);
+		}
+
 	}
 }
 

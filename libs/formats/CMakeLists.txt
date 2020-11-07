@@ -20,7 +20,18 @@ add_library(quasarfx-formats
         ini/IniParser.cxx ini/IniParser.h
         ini/IniGenerator.cxx ini/IniGenerator.h
         ini/IniFactory.cxx ini/IniFactory.h
-)
+
+        # wavefront obj
+        wavefront/obj/ObjLexer.cxx wavefront/obj/ObjLexer.h
+        wavefront/obj/ObjParser.cxx wavefront/obj/ObjParser.h
+        wavefront/obj/ObjGenerator.cxx wavefront/obj/ObjGenerator.h
+        wavefront/obj/ObjSerializer.cxx wavefront/obj/ObjSerializer.h
+
+        # wavefront obj
+        wavefront/mtl/MtlLexer.cxx wavefront/mtl/MtlLexer.h
+        wavefront/mtl/MtlParser.cxx wavefront/mtl/MtlParser.h
+        wavefront/mtl/MtlGenerator.cxx wavefront/mtl/MtlGenerator.h
+        wavefront/mtl/MtlSerializer.cxx wavefront/mtl/MtlSerializer.h)
 
 target_include_directories(quasarfx-formats PRIVATE ${CMAKE_BINARY_DIR}/libs/core/include ${SDL2_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/libs ${CMAKE_SOURCE_DIR}/libs/core ${CMAKE_CURRENT_SOURCE_DIR}/include)
 

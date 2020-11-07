@@ -84,22 +84,28 @@ namespace quasar {
 			using result_type       = ResultT;
 
 			using parse_fn_type     = std::function<void(const token_list *, typename token_list::citer_type &)>;
-			using parse_fn_map      = std::map<typename token_type::id_type, parse_fn_type>;
+			using parse_fn_map      = std::map<token_type, parse_fn_type>;
 
 		protected:
 			result_type             mResult;
 			parse_fn_map            mFuncs;
+			parse_fn_type           mDefaultFunc;
+			parse_fn_type           mAnyTokenFunc;
 
 		public:
 			BasicParser() = default;
 			explicit BasicParser(const std::initializer_list<typename parse_fn_map::value_type> &parse_fns)
 				: mResult()
 				, mFuncs(parse_fns)
-			{}
+				, mDefaultFunc()
+				, mAnyTokenFunc()
+			{ resetDefaultFunc(); }
 			explicit BasicParser(const parse_fn_map &parse_fns)
 				: mResult()
 				, mFuncs(parse_fns)
-			{}
+				, mDefaultFunc()
+				, mAnyTokenFunc()
+			{ resetDefaultFunc(); }
 			BasicParser(const BasicParser &rhs) = default;
 			virtual                 ~BasicParser() = default;
 
@@ -120,15 +126,75 @@ namespace quasar {
 				auto it = tokens.begin();
 				reset();
 				while (it != tokens.end()) {
-					auto parse_fn = mFuncs.find(it->getType());
+#ifndef NDEBUG
+					std::cout << "Parser::parse | " << *it << std::endl;
+#endif
+					auto parse_fn = mFuncs.find(*it);
+					if (mAnyTokenFunc) {
+						mAnyTokenFunc(&tokens, it);
+					}
 					if (parse_fn != mFuncs.end()) {
 						parse_fn->second(&tokens, it);
 					} else {
-						throw std::runtime_error("missing parser_fn for token '" + it->getTrigger() + "'");
+						if (mDefaultFunc) {
+							mDefaultFunc(&tokens, it);
+						}
 					}
 					it++;
 				}
 				into = mResult;
+			}
+
+			const parse_fn_type     &getDefaultFunc() const {
+				return mDefaultFunc;
+			}
+
+			void                    resetDefaultFunc() {
+				setDefaultFunc(std::bind(&BasicParser::defaultParseFunc, this, std::placeholders::_1, std::placeholders::_2));
+			}
+
+			void                    setDefaultFunc(const parse_fn_type &defaultFunc) {
+				mDefaultFunc = defaultFunc;
+			}
+
+			const parse_fn_type     &getAnyTokenFunc() const {
+				return mAnyTokenFunc;
+			}
+
+			void                    setAnyTokenFunc(const parse_fn_type &anyFunc) {
+				mAnyTokenFunc = anyFunc;
+			}
+
+			token_list              getUntil(typename token_list::citer_type &it, const Collection<core::Token> &include, core::String *fullText, const Collection<core::Token> &stoppers = Collection<core::Token>()) {
+				token_list args;
+				bool validArgType;
+				while (!stoppers.includes(*it)) {
+					validArgType = include.empty();
+					for (auto const &argType: include) {
+						if (argType.getType() == it->getType()) {
+							validArgType = true;
+							break;
+						}
+					}
+					if (validArgType) {
+						args.add(*it);
+					}
+					if (fullText) {
+						*fullText += it->getText();
+					}
+#ifndef NDEBUG
+					if (validArgType) {
+						std::cout << "\ttoken[" << args.size() << "] = " << *it << (fullText != nullptr ? (" / " + *fullText) : core::String()) << std::endl;
+					}
+#endif
+					it++;
+				}
+				return args;
+			}
+
+		protected:
+			virtual void            defaultParseFunc(const token_list *tokens, const typename token_list::citer_type &it) {
+				throw std::runtime_error("missing parser_fn for token '" + it->getTrigger() + "'");
 			}
 		};
 

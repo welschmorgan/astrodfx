@@ -11,6 +11,7 @@
 #include "Collection.h"
 #include "Either.h"
 #include "Token.h"
+#include "TokenList.h"
 
 namespace quasar {
 	namespace core {
@@ -26,7 +27,7 @@ namespace quasar {
 			using string_type       = BasicString<char_type>;
 			using token_type        = TokenT;
 			using stream_type       = std::basic_istream<CharT>;
-			using token_list        = std::vector<token_type>;
+			using token_list        = BasicTokenList<CharT>;
 			using result_type       = Collection<token_type>;
 			using self_type         = BasicLexer<CharT, TokenT>;
 
@@ -49,53 +50,24 @@ namespace quasar {
 
 			self_type               &operator=(const self_type &rhs) = default;
 
-			result_type             analyse(stream_type &is) {
-				result_type         res;
-				analyse(is, res);
-				return res;
-			}
-
+			virtual result_type     analyse(stream_type &is);
 			virtual void            analyse(stream_type &is, result_type &res);
 
-			const token_list        &getSeparators() const noexcept { return mSeparators; }
-			token_list              &getSeparators() noexcept { return mSeparators; }
-			self_type               &setSeparators(const token_list &seps) noexcept { mSeparators = seps; return *this; }
+			const token_list        &getSeparators() const noexcept;
+			token_list              &getSeparators() noexcept;
+			self_type               &setSeparators(const token_list &seps) noexcept;
 
 		protected:
-			std::basic_regex<CharT> &getRegex(const string_type &k) {
-				auto regex_it = mRegexCache.find(k);
-				if (regex_it == mRegexCache.end()) {
-					// cache built regex
-					mRegexCache[k] = std::basic_regex<char_type>(k);
-					regex_it = mRegexCache.find(k);
-				}
-				return regex_it->second;
-			}
-
-			void                    addResult(result_type &res, typename token_list::const_iterator sep, stream_type &stream, const string_type &text, std::streamoff offset, unsigned long line, unsigned short col) {
-//				std::cout << "lexer: " << std::string(text.begin(), text.end()) << " - offset: " << offset << " - line: " << line << ": " << col << std::endl;
-				if (!res->empty() && sep->shouldAggregate() && res->back().getType() == sep->getType()) {
-					res->back().setText(res->back().getText() + text);
-				} else {
-					token_type new_tok(*sep);
-					new_tok.setStream(&stream);
-					new_tok.setText(text);
-					new_tok.setLine(line);
-					new_tok.setColumn(col);
-					new_tok.setOffset(offset);
-					res.add(new_tok);
-				}
-			}
-
+			std::basic_regex<CharT> &getRegex(const string_type &k);
+			size_t                  addResult(result_type &res, typename token_list::citer_type sep, stream_type &stream, const string_type &text, std::streamoff offset, unsigned long line, unsigned short col);
 			char_type               *find_str(const char_type *needle, const char_type *haystack);
 		};
 
-		template<> char *BasicLexer<char, BasicToken<char>>::find_str(const char *needle, const char *haystack);
+		template<> char                     *BasicLexer<char, BasicToken<char>>::find_str(const char *needle, const char *haystack);
+		template<> wchar_t                  *BasicLexer<wchar_t, BasicToken<wchar_t>>::find_str(const wchar_t *needle, const wchar_t *haystack);
 
-		template<> wchar_t *BasicLexer<wchar_t, BasicToken<wchar_t>>::find_str(const wchar_t *needle, const wchar_t *haystack);
-
-		extern template class BasicLexer<char, BasicToken<char>>;
-		extern template class BasicLexer<wchar_t, BasicToken<wchar_t>>;
+		extern template class       BasicLexer<char, BasicToken<char>>;
+		extern template class       BasicLexer<wchar_t, BasicToken<wchar_t>>;
 
 		using Lexer                 = BasicLexer<Char, BasicToken<char>>;
 
@@ -113,8 +85,8 @@ namespace quasar {
 			static const BasicWordSplitToken<CharT>  NonWord;
 
 		protected:
-			BasicWordSplitToken(id_type type, const string_type &trigger, unsigned int flags = TF_NONE)
-				: base_type(type, trigger, flags)
+			BasicWordSplitToken(id_type type, const String &name, const string_type &trigger, unsigned int flags = TF_NONE)
+				: base_type(type, name, trigger, flags)
 			{}
 
 		public:

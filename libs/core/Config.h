@@ -615,7 +615,7 @@ namespace quasar {
 
 		public:
 			ConfigFile();
-			ConfigFile(ResourceFactory *factory, const String &name, const String &path, const ResourceType &type = ResourceType::Unknown, const PropertyMap &props = PropertyMap(), const SharedIOStream &stream = SharedIOStream());
+			ConfigFile(ResourceFactory *factory, const String &name, const ResourceType &type = ResourceType::Unknown, const PropertyMap &props = PropertyMap(), const SharedStream &stream = SharedStream());
 			ConfigFile(const Resource &rhs) = delete;
 			virtual ~ConfigFile() noexcept = default;
 

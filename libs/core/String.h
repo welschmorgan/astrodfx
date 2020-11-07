@@ -17,11 +17,11 @@ using Char = wchar_t;
 # define T(x) L##x
 # else
 #  include <string>
-#include "Charsets.h"
-
 using Char = char;
-# define T(x) x
+#  define T(x) x
 # endif
+
+#  include "Charsets.h"
 
 template class std::basic_string<char>;
 template class std::basic_string<wchar_t>;
@@ -88,7 +88,19 @@ namespace quasar {
 				return *this;
 			}
 
-			std::vector<self_type>  split(const self_type &delim, unsigned policy = SPLIT_DEFAULT) const {
+			bool                    contains(const self_type &other) const {
+				return base_type::find(other) != base_type::npos;
+			}
+
+			bool                    contains(const value_type *other) const {
+				return base_type::find(other) != base_type::npos;
+			}
+
+			bool                    contains(value_type other) const {
+				return base_type::find(other) != base_type::npos;
+			}
+
+			std::vector<self_type>  split(const self_type &delim, int limit = -1, unsigned policy = SPLIT_DEFAULT) const {
 				std::vector<self_type>  ret;
 				ssize_t pos = -1, lastPos = 0;
 				auto addPart = [&]() {
@@ -97,10 +109,14 @@ namespace quasar {
 						part.trim();
 					}
 					if (!part.empty() || (policy & SPLIT_KEEP_EMPTY)) {
-						ret.push_back(part);
+						if (!ret.empty() && ret.size() >= limit) {
+							ret.back() += part;
+						} else {
+							ret.push_back(part);
+						}
 					}
 				};
-				while ((pos = base_type::find(delim, lastPos)) != self_type::npos) {
+				while ((limit == -1 || ret.size() < limit) && (pos = base_type::find(delim, lastPos)) != self_type::npos) {
 					addPart();
 					lastPos = pos + 1;
 				}
@@ -117,6 +133,13 @@ namespace quasar {
 			BasicString<CharT> ltrimmed(const BasicString<CharT> &charset = BasicCharsets<CharT>::Whitespaces) const;
 			BasicString<CharT> rtrimmed(const BasicString<CharT> &charset = BasicCharsets<CharT>::Whitespaces) const;
 			BasicString<CharT> trimmed(const BasicString<CharT> &charset = BasicCharsets<CharT>::Whitespaces) const;
+
+			BasicString<CharT> &lunquote();
+			BasicString<CharT> &runquote();
+			BasicString<CharT> &unquote();
+			BasicString<CharT> lunquoted() const;
+			BasicString<CharT> runquoted() const;
+			BasicString<CharT> unquoted() const;
 
 			self_type           &rpad(size_t num, const BasicString<CharT> &charset = BasicCharsets<CharT>::Space) {
 				if (base_type::size() < num) {

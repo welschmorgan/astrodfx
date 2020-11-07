@@ -22,7 +22,7 @@ using quasar::core::ResourceManager;
 using quasar::core::String;
 using quasar::core::Path;
 using quasar::core::IStream;
-using quasar::core::SharedIOStream;
+using quasar::core::SharedStream;
 using quasar::core::OStream;
 using quasar::core::StringMap;
 
@@ -31,8 +31,8 @@ public:
 	MockResourceFactory(const String &name = "Mock", ResourcePriority prio = ResourcePriority::None): ResourceFactory(name, ResourceType::Text, prio) {}
 	virtual ~MockResourceFactory() {}
 
-	virtual SharedResource  create(const String &name, const String &path, const StringMap<String> &props, const SharedIOStream &stream) override {
-		return std::make_shared<Resource>(this, "test", "tmp:///test", mType, props, stream);
+	virtual SharedResource  create(const String &name, const StringMap<String> &props, const SharedStream &stream) override {
+		return std::make_shared<Resource>(this, "test", mType, props, stream);
 	}
 	virtual void            load(Resource &res, IStream &from) override {
 	}

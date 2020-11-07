@@ -6,6 +6,7 @@
 #define QUASARFX_INILEXER_H
 
 #include <core/Lexer.h>
+#include <core/TokenList.h>
 
 namespace quasar {
 	namespace formats {
@@ -50,8 +51,8 @@ namespace quasar {
 		template<> const core::BasicToken<char> BasicIniLexer<char>::Text;
 		template<> const core::BasicToken<wchar_t> BasicIniLexer<wchar_t>::Text;
 
-		template<> const std::vector<core::BasicToken<char>> BasicIniLexer<char>::All;
-		template<> const std::vector<core::BasicToken<wchar_t>> BasicIniLexer<wchar_t>::All;
+		template<> const core::BasicTokenList<char> BasicIniLexer<char>::All;
+		template<> const core::BasicTokenList<wchar_t> BasicIniLexer<wchar_t>::All;
 
 		extern template class BasicIniLexer<char>;
 		extern template class BasicIniLexer<wchar_t>;

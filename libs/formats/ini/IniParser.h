@@ -37,12 +37,12 @@ namespace quasar {
 		public:
 			IniParser()
 				: base_type({
-				    {lexer_type::SectionOpen.getType(), std::bind(&self_type::parseSectionOpen, this, std::placeholders::_1, std::placeholders::_2)},
-				    {lexer_type::SectionClose.getType(), std::bind(&self_type::parseSectionClose, this, std::placeholders::_1, std::placeholders::_2)},
-				    {lexer_type::Comment.getType(), std::bind(&self_type::parseComment, this, std::placeholders::_1, std::placeholders::_2)},
-				    {lexer_type::NewLine.getType(), std::bind(&self_type::parseNewLine, this, std::placeholders::_1, std::placeholders::_2)},
-				    {lexer_type::ValueAssign.getType(), std::bind(&self_type::parseAssign, this, std::placeholders::_1, std::placeholders::_2)},
-				    {lexer_type::Text.getType(), std::bind(&self_type::parseText, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::SectionOpen, std::bind(&self_type::parseSectionOpen, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::SectionClose, std::bind(&self_type::parseSectionClose, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::Comment, std::bind(&self_type::parseComment, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::NewLine, std::bind(&self_type::parseNewLine, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::ValueAssign, std::bind(&self_type::parseAssign, this, std::placeholders::_1, std::placeholders::_2)},
+				    {lexer_type::Text, std::bind(&self_type::parseText, this, std::placeholders::_1, std::placeholders::_2)},
 				})
 				, mInComment(false)
 				, mInSection(false)

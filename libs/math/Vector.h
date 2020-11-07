@@ -265,6 +265,17 @@ namespace quasar {
 		};
 
 		template<typename T, unsigned short Dims>
+		std::basic_ostream<char>    &operator<<(std::basic_ostream<char> &os, const VecBase<T, Dims> &v) {
+			for (unsigned short i = 0; i < Dims; i++) {
+				if (i != 0) {
+					os << std::string(" ");
+				}
+				os << v.data(i);
+			}
+			return os;
+		}
+
+		template<typename T, unsigned short Dims>
 		class Vec: public VecBase<T, Dims> {};
 
 		template<typename T>

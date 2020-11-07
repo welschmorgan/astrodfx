@@ -12,4 +12,10 @@ describe_test(formats json-parser TestJsonParser.cxx "" "" "")
 describe_test(formats json-generator TestJsonGenerator.cxx "" "" "")
 describe_test(formats json-serializer TestJsonSerializer.cxx "" "" "")
 
+describe_test(formats wavefront-obj-parser TestWavefrontObjParser.cxx "" "" "")
+describe_test(formats wavefront-obj-generator TestWavefrontObjGenerator.cxx "" "" "")
+
+describe_test(formats wavefront-mtl-parser TestWavefrontMtlParser.cxx "" "" "")
+describe_test(formats wavefront-mtl-generator TestWavefrontMtlGenerator.cxx "" "" "")
+
 describe_test(formats engine-config-loading-ini TestEngineConfigLoadingIni.cxx "" "" "test-engine-config-load.ini")

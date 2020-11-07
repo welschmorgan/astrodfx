@@ -1,0 +1,161 @@
+//
+// Created by darkboss on 10/3/20.
+//
+
+#include "Mesh.h"
+
+namespace quasar {
+	namespace core {
+		SubMesh::SubMesh(SubMesh *parent, const String &n, const SharedGeometryBuffer &geometry, const SharedMaterial &material, const SubMeshList &subMeshes)
+			: mParent(parent)
+			, mName(n)
+			, mGeometry(geometry)
+			, mMaterial(material)
+			, mSubMeshes(subMeshes)
+		{
+			if (!mGeometry) {
+				mGeometry = std::make_shared<GeometryBuffer>();
+			}
+		}
+
+		const SubMeshList   &SubMesh::getSubMeshes() const {
+			return mSubMeshes;
+		}
+		void                SubMesh::setSubMeshes(const SubMeshList &subMeshes) {
+			mSubMeshes = subMeshes;
+		}
+		SharedSubMesh       SubMesh::addSubMesh(const SharedSubMesh &subMesh) {
+			if (hasSubMesh(subMesh->getName())) {
+				throw std::runtime_error("SubMesh '" + subMesh->getName() + "' already exists in '" + mName + "'");
+			}
+			mSubMeshes.add(subMesh);
+			return mSubMeshes->back();
+		}
+		SharedSubMesh       SubMesh::removeSubMesh(const String &name) {
+			return mSubMeshes.remove([&](const SharedSubMesh &sm) {
+				return sm->getName() == name;
+			});
+		}
+		void                SubMesh::removeAllSubMeshes() {
+			mSubMeshes.clear();
+		}
+		SharedSubMesh       SubMesh::getSubMesh(const String &name) const {
+			return mSubMeshes.get([&](const SharedSubMesh &sm) {
+				return sm->getName() == name;
+			});
+		}
+		bool                SubMesh::hasSubMesh(const String &name) const {
+			return mSubMeshes.includes([&](const SharedSubMesh &sm) {
+				return sm->getName() == name;
+			});
+		}
+
+		const String &SubMesh::getName() const {
+			return mName;
+		}
+
+		void                SubMesh::setName(const String &n) {
+			mName = n;
+		}
+
+		SharedMaterial SubMesh::getMaterial() const {
+			return mMaterial;
+		}
+
+		void SubMesh::setMaterial(const SharedMaterial &m) {
+			mMaterial = m;
+		}
+
+		SharedGeometryBuffer SubMesh::getGeometry() const {
+			return mGeometry;
+		}
+
+		void SubMesh::setGeometry(const SharedGeometryBuffer &m) {
+			mGeometry = m;
+		}
+
+		void SubMesh::reset() {
+			mGeometry.reset();
+			mMaterial.reset();
+			mSubMeshes.clear();
+		}
+
+		const SubMesh *SubMesh::getParent() const {
+			return mParent;
+		}
+
+		SubMesh *SubMesh::getParent() {
+			return mParent;
+		}
+
+		void SubMesh::setParent(SubMesh *p) {
+			mParent = p;
+		}
+
+		const SubMesh *SubMesh::getRootParent() const {
+			const SubMesh *cur = mParent;
+			while (cur && cur->getParent()) {
+				cur = cur->getParent();
+			}
+			return cur;
+		}
+
+		SubMesh *SubMesh::getRootParent() {
+			SubMesh *cur = mParent;
+			while (cur && cur->getParent()) {
+				cur = cur->getParent();
+			}
+			return cur;
+		}
+
+		const Mesh *SubMesh::getRootMesh() const {
+			const SubMesh *root = getRootParent();
+			if (root != nullptr) {
+				return &dynamic_cast<const Mesh&>(*root);
+			}
+			return nullptr;
+		}
+
+		Mesh *SubMesh::getRootMesh() {
+			SubMesh *root = getRootParent();
+			if (root != nullptr) {
+				return &dynamic_cast<Mesh&>(*root);
+			}
+			return nullptr;
+		}
+
+		Mesh::Mesh(const String &name)
+			: Resource()
+			, SubMesh()
+		{
+			Resource::setName(name);
+			SubMesh::setName(name);
+		}
+
+		Mesh::Mesh(ResourceFactory *factory, const String &name, const ResourceType &type,
+		           const PropertyMap &properties, const SharedStream &stream)
+			: Resource(factory, name, type, properties, stream)
+		{}
+
+		Mesh::Mesh(const Mesh &rhs)
+			: Resource()
+			, SubMesh()
+		{ *this = rhs; }
+
+		Mesh &Mesh::operator=(const Mesh &rhs) {
+			Resource::operator=(rhs);
+			SubMesh::operator=(rhs);
+			return *this;
+		}
+
+		void                Mesh::setName(const String &name) {
+			Resource::setName(name);
+			SubMesh::setName(name);
+		}
+
+		const String        &Mesh::getName() const {
+			return SubMesh::getName();
+		}
+
+	}
+}

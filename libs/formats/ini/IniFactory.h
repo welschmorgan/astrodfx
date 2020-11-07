@@ -22,7 +22,7 @@ namespace quasar {
 
 			IniFactory                          &operator=(const IniFactory &rhs) = delete;
 
-			virtual SharedResource              create(const String &name, const String &path, const PropertyMap &properties, const SharedIOStream &stream) override;
+			virtual SharedResource              create(const String &name, const PropertyMap &properties, const SharedStream &stream) override;
 			virtual void                        load(Resource &res, IStream &from) override;
 			virtual void                        save(Resource &res, OStream &to) override;
 			virtual void                        destroy(Resource &res) override;

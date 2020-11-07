@@ -2,8 +2,8 @@
 // Created by darkboss on 9/5/20.
 //
 
-#ifndef QUASARFX_INIPARSER_H
-#define QUASARFX_INIPARSER_H
+#ifndef QUASARFX_JSONPARSER_H
+#define QUASARFX_JSONPARSER_H
 
 #include <core/Parser.h>
 #include <core/Exception.h>
@@ -86,4 +86,4 @@ namespace quasar {
 }
 
 
-#endif //QUASARFX_INIPARSER_H
+#endif //QUASARFX_JSONPARSER_H

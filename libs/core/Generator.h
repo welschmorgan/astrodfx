@@ -19,12 +19,22 @@ namespace quasar {
 			using string_type       = BasicString<char_type>;
 			using stream_type       = std::basic_ostream<char_type>;
 
+		protected:
+			String                  mName;
+			String                  mVersion;
+
 		public:
-			BasicGenerator() = default;
+			BasicGenerator(const String &name, const String &version)
+				: mName(name)
+				, mVersion(version)
+			{}
 			BasicGenerator(const BasicGenerator &rhs) = default;
 			virtual                 ~BasicGenerator() = default;
 
 			BasicGenerator          &operator=(const BasicGenerator &rhs) = default;
+
+			const String            &getName() const { return mName; }
+			const String            &getVersion() const { return mVersion; }
 
 			virtual string_type     generate(const value_type &from) {
 				std::basic_stringstream<char_type>  buf;

@@ -43,6 +43,7 @@ namespace quasar {
 		protected:
 			stream_type             *mStream;
 			id_type                 mType;
+			string_type             mName;
 			id_type                 mId;
 			unsigned int            mFlags;
 			string_type             mTrigger;
@@ -57,6 +58,7 @@ namespace quasar {
 			BasicToken()
 				: mStream(nullptr)
 				, mType(0)
+				, mName()
 				, mId(-1)
 				, mFlags(TF_NONE)
 				, mTrigger()
@@ -68,9 +70,10 @@ namespace quasar {
 				, mParent(nullptr)
 			{}
 
-			BasicToken(stream_type *stream, id_type type, const string_type &trigger, const string_type &text, offset_type offset, const string_type &path = string_type(), line_id_type line = line_id_type(), column_id_type column = column_id_type(), unsigned int flags = TF_NONE)
+			BasicToken(stream_type *stream, const string_type &name, id_type type, const string_type &trigger, const string_type &text, offset_type offset, const string_type &path = string_type(), line_id_type line = line_id_type(), column_id_type column = column_id_type(), unsigned int flags = TF_NONE)
 				: mStream(stream)
 				, mType(type)
+				, mName(name)
 				, mId(-1)
 				, mFlags(flags)
 				, mTrigger()
@@ -84,9 +87,10 @@ namespace quasar {
 				setTrigger(trigger);
 			}
 
-			BasicToken(id_type type, const string_type &trigger, unsigned int flags = TF_NONE)
+			BasicToken(id_type type, const string_type &name, const string_type &trigger, unsigned int flags = TF_NONE)
 				: mStream(nullptr)
 				, mType(type)
+				, mName(name)
 				, mId(-1)
 				, mFlags(flags)
 				, mTrigger()
@@ -101,24 +105,26 @@ namespace quasar {
 			}
 
 			BasicToken(const BasicToken &rhs)
-				: mStream(rhs.mStream)
-				, mType(rhs.mType)
+				: mStream(nullptr)
+				, mType(-1)
+				, mName()
 				, mId(-1)
-				, mFlags(rhs.mFlags)
-				, mTrigger(rhs.mTrigger)
-				, mText(rhs.mText)
-				, mOffset(rhs.mOffset)
-				, mPath(rhs.mPath)
-				, mLine(rhs.mLine)
-				, mColumn(rhs.mColumn)
-				, mParent(rhs.mParent)
-			{}
+				, mFlags(0)
+				, mTrigger()
+				, mText()
+				, mOffset(-1)
+				, mPath()
+				, mLine(0)
+				, mColumn(0)
+				, mParent(nullptr)
+			{ *this = rhs; }
 
 			virtual ~BasicToken() noexcept = default;
 
 			BasicToken              &operator=(const BasicToken &rhs) {
 				mStream = rhs.mStream;
 				mType = rhs.mType;
+				mName = rhs.mName;
 				mId = rhs.mId;
 				mFlags = rhs.mFlags;
 				mTrigger = rhs.mTrigger;
@@ -132,11 +138,25 @@ namespace quasar {
 			}
 
 			bool                    operator==(const BasicToken &rhs) const noexcept {
-				return mId == rhs.mId && mStream == rhs.mStream && mTrigger == rhs.mTrigger && mText == rhs.mText && mOffset == rhs.mOffset && mType == rhs.mType && mLine == rhs.mLine && mPath == rhs.mPath;
+				return mType == rhs.mType;
 			}
 
 			bool                    operator!=(const BasicToken &rhs) const noexcept {
 				return !(*this == rhs);
+			}
+
+			bool                    operator<(const BasicToken &rhs) const noexcept {
+				return mType < rhs.mType;
+			}
+			bool                    operator<=(const BasicToken &rhs) const noexcept {
+				return mType <= rhs.mType;
+			}
+
+			bool                    operator>(const BasicToken &rhs) const noexcept {
+				return mType > rhs.mType;
+			}
+			bool                    operator>=(const BasicToken &rhs) const noexcept {
+				return mType >= rhs.mType;
 			}
 
 			unsigned int            getFlags() const noexcept { return mFlags; }
@@ -155,7 +175,24 @@ namespace quasar {
 				return *this;
 			}
 
-			const string_type       &getText() const noexcept { return mText; }
+			template<typename AS = BasicString<CharT>>
+			AS                      getTextAs() const noexcept {
+				std::basic_stringstream<CharT> buf;
+				AS ret = AS();
+				buf.str(mText);
+				buf >> ret;
+				return ret;
+			}
+
+			template<typename AS = BasicString<CharT>>
+			BasicToken              &setTextAs(AS t) noexcept {
+				std::basic_stringstream<CharT> buf;
+				buf << t;
+				mText = buf.str();
+				return *this;
+			}
+
+			BasicString<CharT>      getText() const noexcept { return mText; }
 			BasicToken              &setText(const string_type &t) noexcept { mText = t; return *this; }
 
 			const string_type       &getPath() const noexcept { return mPath; }
@@ -166,6 +203,11 @@ namespace quasar {
 
 			column_id_type          getColumn() const noexcept { return mColumn; }
 			BasicToken              &setColumn(column_id_type t) noexcept { mColumn = t; return *this; }
+
+			const string_type       &getName() const;
+			void                    setName(const string_type &name);
+
+			void                    setFlags(unsigned int flags);
 
 			id_type                 getType() const noexcept { return mType; }
 			BasicToken              &setType(id_type t) noexcept { mType = t; return *this; }
@@ -197,6 +239,9 @@ namespace quasar {
 			list_type               getPreviousSiblings(const list_type &types) const;
 			list_type               getNextSiblings(const list_type &types) const;
 		};
+
+		extern std::basic_ostream<char> &operator<<(std::basic_ostream<char> &os, const BasicToken<char> &token);
+		extern std::basic_ostream<wchar_t> &operator<<(std::basic_ostream<wchar_t> &os, const BasicToken<wchar_t> &token);
 
 		extern template class BasicToken<char>;
 		extern template class BasicToken<wchar_t>;
