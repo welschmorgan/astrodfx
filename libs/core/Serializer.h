@@ -34,7 +34,7 @@ namespace quasar {
 			OSerializer(const OSerializer &) = default;
 			virtual         ~OSerializer() noexcept = default;
 
-			OSerializer      &operator=(const OSerializer &) = default;
+			OSerializer     &operator=(const OSerializer &) = default;
 
 			virtual void    write(ostream_type &os, const value_type &from) = 0;
 		};

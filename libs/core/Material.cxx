@@ -190,8 +190,10 @@ namespace quasar {
 
 		void MaterialPass::initTextureUnits() {
 			if (mTextureUnits.empty()) {
-				mTextureUnits.add(std::make_shared<TextureUnit>(DefaultTextureUnit));
-				mTextureUnits->back()->setParent(this);
+				auto texUnit = std::make_shared<TextureUnit>(DefaultTextureUnit);
+				texUnit->setParent(this);
+				texUnit->setId(0);
+				mTextureUnits.add(texUnit);
 			}
 		}
 
@@ -247,8 +249,10 @@ namespace quasar {
 
 		void                            Material::initPasses() {
 			if (mPasses.empty()) {
-				mPasses.add(std::make_shared<MaterialPass>(DefaultPass));
-				mPasses->back()->setParent(this);
+				auto pass = std::make_shared<MaterialPass>(DefaultPass);
+				pass->setId(0);
+				pass->setParent(this);
+				mPasses.add(pass);
 			}
 		}
 
@@ -285,7 +289,7 @@ namespace quasar {
 			if (hasPass(pass->getName())) {
 				throw std::runtime_error("Material '" + mName + "' already contains pass '" + pass->getName() + "' (id = " + std::to_string(pass->getId()) + ")");
 			}
-			pass->setId(mPasses.size() - 1);
+			pass->setId(mPasses.size());
 			pass->setParent(this);
 			mPasses.add(pass);
 			return mPasses->back();
